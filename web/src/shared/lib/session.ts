@@ -3,8 +3,7 @@ import { expressSession, promisifyStore } from 'next-session/lib/compat';
 import RedisStoreFactory from 'connect-redis';
 import { Redis } from 'ioredis';
 
-const redis = new Redis({
-  port: 6668,
+const redis = new Redis(process.env.REDIS_URL as string, {
   connectTimeout: 10000,
 });
 

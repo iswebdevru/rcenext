@@ -17,6 +17,9 @@ export default function Register({ csrf }: { csrf: string }) {
         password,
         csrf,
       }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
   }
 
