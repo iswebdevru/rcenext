@@ -1,0 +1,12 @@
+services:
+  db:
+    image: postgres
+    ports:
+      - '6667:5432'
+    environment:
+      - POSTGRES_PASSWORD=postgres
+  inmemory-store:
+    image: redis
+    command: redis-server --save 20 1
+    ports:
+      - '6668:6379'
