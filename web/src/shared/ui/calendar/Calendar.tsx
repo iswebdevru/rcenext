@@ -1,84 +1,93 @@
+import { className } from '@/shared/lib/ui';
 import { Dispatch, SetStateAction } from 'react';
+import { getDaysAroundCurrentMonth, HUMAN_READABLE_MONTHS } from './lib';
 
 type CalendarProps = {
   date: Date;
   setDate: Dispatch<SetStateAction<Date>>;
 };
 
-type SimplifiedDate = {
-  day: number;
-  date: number;
-  month: number;
-};
-
-const DAY = 86400000;
-
-const DAYS_OF_THE_WEEK = {
-  0: 'ВС',
-  1: 'ПН',
-  2: 'ВТ',
-  3: 'СР',
-  4: 'ЧТ',
-  5: 'ПТ',
-  6: 'СБ',
-} as const;
-
-function get5WeeksAroundCurrentMonth(date: Date) {
-  const nextMonth = (date.getMonth() + 1) % 12;
-  const currentDate = new Date(date);
-  currentDate.setDate(1);
-  while (currentDate.getDay() !== 1) {
-    currentDate.setTime(currentDate.getTime() - DAY);
-  }
-  const weeks: SimplifiedDate[][] = [];
-  let days: SimplifiedDate[] = [];
-  while (currentDate.getMonth() !== nextMonth || currentDate.getDay() !== 1) {
-    if (currentDate.getDay() === 1) {
-      days = [];
-      weeks.push(days);
-    }
-    days.push({
-      date: currentDate.getDate(),
-      month: currentDate.getMonth(),
-      day: currentDate.getDay(),
-    });
-    currentDate.setTime(currentDate.getTime() + DAY);
-  }
-  return weeks;
-}
-
-export default function Calendar({ date }: CalendarProps) {
-  const weeks = get5WeeksAroundCurrentMonth(date);
+export default function Calendar({ date, setDate }: CalendarProps) {
+  const currentMonth = date.getMonth() as keyof typeof HUMAN_READABLE_MONTHS;
+  const currentDate = date.getDate();
+  const currentYear = date.getFullYear();
+  const days = getDaysAroundCurrentMonth(date);
+  console.log(currentMonth);
 
   return (
-    <div className="border border-black">
-      <div className="flex justify-between">
-        <p>Январь 2020</p>
+    <div className="p-2">
+      <div className="flex items-center justify-between p-2 mb-4">
+        <p className="text-xl font-bold">
+          {HUMAN_READABLE_MONTHS[currentMonth]} {currentYear}
+        </p>
         <div className="flex gap-4">
-          <div>{'<'}</div>
-          <div>{'>'}</div>
+          <button
+            className="text-2xl font-bold"
+            onClick={() => {
+              const newDate = new Date(date);
+              newDate.setMonth((currentMonth + 11) % 12);
+              setDate(newDate);
+            }}
+          >
+            {'<'}
+          </button>
+          <button
+            className="text-2xl font-bold"
+            onClick={() => {
+              const newDate = new Date(date);
+              newDate.setMonth((currentMonth + 1) % 12);
+              setDate(newDate);
+            }}
+          >
+            {'>'}
+          </button>
         </div>
       </div>
-      <table className="w-full">
-        <tbody>
-          <tr>
-            <th>ПН</th>
-            <th>ВТ</th>
-            <th>СР</th>
-            <th>ЧТ</th>
-            <th>ПТ</th>
-            <th>СБ</th>
-            <th>ВС</th>
-          </tr>
-          {weeks.map((week, i) => (
-            <tr key={i}>
-              {week.map(day => (
-                <td key={`${day.date}-${day.month}`}>{day.date}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="grid justify-center grid-cols-7 gap-2">
+        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+          ПН
+        </div>
+        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+          ВТ
+        </div>
+        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+          СР
+        </div>
+        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+          ЧТ
+        </div>
+        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+          ПТ
+        </div>
+        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+          СБ
+        </div>
+        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+          ВС
+        </div>
+        {days.map(day => (
+          <button
+            onClick={() => {
+              const newDate = new Date(date);
+              newDate.setDate(day.date);
+              setDate(newDate);
+            }}
+            key={`${day.date}-${day.month}`}
+            disabled={day.month !== currentMonth}
+            className={className({
+              'rounded-md aspect-square text-center': true,
+              'text-neutral-900': day.month === currentMonth,
+              'hover:bg-slate-100':
+                day.month === currentMonth && day.date !== currentDate,
+              'text-neutral-300': day.month !== currentMonth,
+              'bg-slate-200':
+                day.month === currentMonth && day.date === currentDate,
+            })}
+          >
+            {day.date}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
