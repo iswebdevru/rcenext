@@ -281,7 +281,9 @@ export default function Classes() {
   return (
     <div className="container flex gap-4 basis-full">
       <div className="grow">
-        <h1 className="mb-2 text-xl font-bold">Расписание занятий</h1>
+        <h1 className="mb-2 text-xl font-bold">
+          Расписание занятий (числитель/знаменатель)
+        </h1>
         <h2 className="mb-2 text-lg font-bold">1-5 корпус</h2>
         <div className="grid justify-between grid-cols-1 gap-4 mb-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {timetableData.map((timetable, i) => (
