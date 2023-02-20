@@ -12,11 +12,10 @@ export default function Calendar({ date, setDate }: CalendarProps) {
   const currentDate = date.getDate();
   const currentYear = date.getFullYear();
   const days = getDaysAroundCurrentMonth(date);
-  console.log(currentMonth);
 
   return (
-    <div className="p-2">
-      <div className="flex items-center justify-between p-2 mb-4">
+    <div>
+      <div className="flex items-center justify-between px-1 py-2 mb-4">
         <p className="text-xl font-bold">
           {HUMAN_READABLE_MONTHS[currentMonth]} {currentYear}
         </p>
@@ -75,7 +74,7 @@ export default function Calendar({ date, setDate }: CalendarProps) {
             key={`${day.date}-${day.month}`}
             disabled={day.month !== currentMonth}
             className={className({
-              'rounded-md aspect-square text-center': true,
+              'rounded-md leading-none aspect-square text-center p-2': true,
               'text-neutral-900': day.month === currentMonth,
               'hover:bg-slate-100':
                 day.month === currentMonth && day.date !== currentDate,

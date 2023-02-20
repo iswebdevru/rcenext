@@ -4,3 +4,7 @@ export function className(classes: Record<string, boolean>) {
     .map(([v]) => v)
     .join(' ');
 }
+
+export function classNameForMirrorComponent(base: string, additional?: string) {
+  return additional ? `${base} ${additional}` : base;
+}
