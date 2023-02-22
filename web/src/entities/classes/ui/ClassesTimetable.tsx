@@ -1,3 +1,6 @@
+import { classNameForMirrorComponent } from '@/shared/lib/ui';
+import { ReactNode } from 'react';
+
 export type Timetable = {
   group: string;
   classes: {
@@ -11,15 +14,24 @@ export type Timetable = {
 
 export type ClassesTimetableProps = {
   timetable: Timetable;
+  className?: string;
+  controlPanel?: ReactNode;
 };
 
-export function ClassesTimetable({ timetable }: ClassesTimetableProps) {
+export function ClassesTimetable({
+  timetable,
+  className,
+  controlPanel,
+}: ClassesTimetableProps) {
   return (
-    <table className="w-full border">
+    <table className={classNameForMirrorComponent('w-full border', className)}>
       <tbody>
         <tr className="border">
           <th className="px-3 py-1 text-left border" colSpan={3}>
-            {timetable.group}
+            <div className="flex items-center justify-between">
+              <div>{timetable.group}</div>
+              <div>{controlPanel}</div>
+            </div>
           </th>
         </tr>
         {timetable.classes.map(lesson => (
