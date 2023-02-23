@@ -82,7 +82,7 @@ export function Select<T>({
   });
 
   return (
-    <div ref={componentRef}>
+    <div className="relative" ref={componentRef}>
       <button
         onClick={() => setIsOpened(p => !p)}
         className={className({
@@ -99,18 +99,17 @@ export function Select<T>({
           height: isOpened ? dropDownRef.current?.offsetHeight : 0,
         }}
         className={className({
-          'rounded-sm overflow-hidden transition-[height]': true,
+          'absolute bg-white z-10 left-0 top-[120%] right-0 rounded-sm overflow-hidden transition-[height]':
+            true,
         })}
       >
-        <div ref={dropDownRef} className="pt-2">
-          <div className="border">
-            {searchString && onSearchStringChange ? (
-              <div className="p-2 border-b">
-                <input type="text" className="w-full px-1 border" />
-              </div>
-            ) : null}
-            <ul className="flex flex-col">{items}</ul>
-          </div>
+        <div ref={dropDownRef} className="border">
+          {searchString && onSearchStringChange ? (
+            <div className="p-2 border-b">
+              <input type="text" className="w-full px-1 border" />
+            </div>
+          ) : null}
+          <ul className="flex flex-col">{items}</ul>
         </div>
       </div>
     </div>

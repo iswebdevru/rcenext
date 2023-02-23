@@ -7,3 +7,7 @@ html,
 body {
   @apply h-full;
 }
+
+body {
+  @apply bg-neutral-100;
+}

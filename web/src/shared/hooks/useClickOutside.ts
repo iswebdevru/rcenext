@@ -10,6 +10,7 @@ export function useClickOutside(
         return;
       }
       if (!ref.current.contains(e.target)) {
+        console.log(e.target);
         onClick(e);
       }
     };

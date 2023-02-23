@@ -5,6 +5,6 @@ export function className(classes: Record<string, boolean>) {
     .join(' ');
 }
 
-export function classNameForMirrorComponent(base: string, additional?: string) {
-  return additional ? `${base} ${additional}` : base;
+export function classNameWithDefaults(defaults: string, additional?: string) {
+  return additional ? `${defaults} ${additional}` : defaults;
 }

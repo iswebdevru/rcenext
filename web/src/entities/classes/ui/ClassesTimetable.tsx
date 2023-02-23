@@ -1,4 +1,4 @@
-import { classNameForMirrorComponent } from '@/shared/lib/ui';
+import { classNameWithDefaults } from '@/shared/lib/ui';
 import { ReactNode } from 'react';
 
 export type Timetable = {
@@ -24,7 +24,7 @@ export function ClassesTimetable({
   controlPanel,
 }: ClassesTimetableProps) {
   return (
-    <table className={classNameForMirrorComponent('w-full border', className)}>
+    <table className={classNameWithDefaults('w-full border', className)}>
       <tbody>
         <tr className="border">
           <th className="px-3 py-1 text-left border" colSpan={3}>

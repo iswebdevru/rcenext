@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import { ClassesTimetable, Timetable } from '@/entities/classes';
+import Button from '@/shared/ui/button';
 import Calendar from '@/shared/ui/calendar';
 import { Search } from '@/shared/ui/input';
+import Modal from '@/shared/ui/modal';
 import { Select } from '@/shared/ui/select';
 import Toggles, { Variant } from '@/shared/ui/toggles';
 import AdminNav from '@/widgets/admin-nav';
-import { useState } from 'react';
 
 const timetableData: Timetable[] = [
   {
@@ -297,58 +299,72 @@ export default function Edit() {
   const [selectedTimetableType, setTimetableType] = useState(0);
   const [date, setDate] = useState(new Date());
   const [selectedDayOfTheWeek, setSelectedDayOfTheWeek] = useState('1');
+  const [showEditTimetableModal, setShowEditTimetableModal] = useState(false);
 
   return (
-    <div className="flex h-full">
-      <div className="h-full shrink-0">
-        <AdminNav />
-      </div>
-      <div className="grow">
-        <div className="h-10 bg-slate-400">общее редактирование удаление</div>
-        <div className="grid grid-cols-4">
-          {timetableData.map((data, i) => (
-            <ClassesTimetable
-              key={i}
-              timetable={data}
-              controlPanel={
-                <div className="flex gap-2">
-                  <button>Select</button>
-                  <button>Edit</button>
-                  <button>Del</button>
-                </div>
-              }
-            ></ClassesTimetable>
-          ))}
+    <>
+      <div className="flex h-full">
+        <div className="h-full shrink-0">
+          <AdminNav />
         </div>
-      </div>
-      <div className="p-2 w-80">
-        <div className="mb-2">
-          <Search placeholder="Группа" />
-        </div>
-        <div className="mb-2">
-          <Toggles value={selectedTimetableType} setValue={setTimetableType}>
-            {timetableTypes.map(timetableType => (
-              <Variant key={timetableType.id} value={timetableType.id}>
-                {timetableType.value}
-              </Variant>
+        <div className="pl-4 pr-2 grow">
+          <div className="py-2">
+            <Button>Удалить</Button>
+            <button onClick={() => setShowEditTimetableModal(true)}>
+              Добавить
+            </button>
+          </div>
+          <div className="grid grid-cols-4">
+            {timetableData.map((data, i) => (
+              <ClassesTimetable
+                key={i}
+                timetable={data}
+                controlPanel={
+                  <div className="flex gap-2">
+                    <button>Select</button>
+                    <button>Edit</button>
+                    <button>Del</button>
+                  </div>
+                }
+              ></ClassesTimetable>
             ))}
-          </Toggles>
+          </div>
         </div>
-        {selectedTimetableType === 0 ? (
-          <Select
-            value={selectedDayOfTheWeek}
-            onChange={setSelectedDayOfTheWeek}
-          >
-            {daysOfTheWeek.map(day => (
-              <Select.Option key={day.id} value={day.id}>
-                {day.value}
-              </Select.Option>
-            ))}
-          </Select>
-        ) : (
-          <Calendar date={date} setDate={setDate} />
-        )}
+        <div className="p-2 w-80">
+          <div className="mb-2">
+            <Search placeholder="Группа" />
+          </div>
+          <div className="mb-2">
+            <Toggles value={selectedTimetableType} setValue={setTimetableType}>
+              {timetableTypes.map(timetableType => (
+                <Variant key={timetableType.id} value={timetableType.id}>
+                  {timetableType.value}
+                </Variant>
+              ))}
+            </Toggles>
+          </div>
+          {selectedTimetableType === 0 ? (
+            <Select
+              value={selectedDayOfTheWeek}
+              onChange={setSelectedDayOfTheWeek}
+            >
+              {daysOfTheWeek.map(day => (
+                <Select.Option key={day.id} value={day.id}>
+                  {day.value}
+                </Select.Option>
+              ))}
+            </Select>
+          ) : (
+            <Calendar date={date} setDate={setDate} />
+          )}
+        </div>
       </div>
-    </div>
+      <Modal
+        state={showEditTimetableModal}
+        onClose={() => setShowEditTimetableModal(false)}
+      >
+        hello there
+      </Modal>
+    </>
   );
 }
