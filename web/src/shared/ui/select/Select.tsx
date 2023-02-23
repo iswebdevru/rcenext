@@ -1,3 +1,4 @@
+import { useClickOutside } from '@/shared/hooks';
 import { className } from '@/shared/lib/ui';
 import {
   ChangeEvent,
@@ -39,11 +40,12 @@ export function Select<T>({
   onSearchStringChange,
 }: SelectProps<T>) {
   const [isOpened, setIsOpened] = useState(false);
-  const listRef = useRef<HTMLInputElement>(null);
+  const dropDownRef = useRef<HTMLDivElement>(null);
+  const componentRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(componentRef, () => setIsOpened(false));
 
   let displayValue: string[] | string = multiple ? [] : '';
-
-  console.log(listRef.current);
 
   const items = Children.map(children, child => {
     if (multiple && value.includes(child.props.value)) {
@@ -78,12 +80,13 @@ export function Select<T>({
       </li>
     );
   });
+
   return (
-    <div>
+    <div ref={componentRef}>
       <button
         onClick={() => setIsOpened(p => !p)}
         className={className({
-          'w-full p-2 mb-2 text-left border rounded-sm': true,
+          'w-full p-2 text-left border rounded-sm': true,
           'border-green-600': isOpened,
         })}
       >
@@ -93,19 +96,21 @@ export function Select<T>({
       </button>
       <div
         style={{
-          height: isOpened ? listRef.current?.offsetHeight : 0,
+          height: isOpened ? dropDownRef.current?.offsetHeight : 0,
         }}
         className={className({
-          'rounded-sm  overflow-hidden transition-[height]': true,
+          'rounded-sm overflow-hidden transition-[height]': true,
         })}
       >
-        <div className="border" ref={listRef}>
-          {searchString && onSearchStringChange ? (
-            <div className="p-2 border-b">
-              <input type="text" className="w-full px-1 border" />
-            </div>
-          ) : null}
-          <ul className="flex flex-col">{items}</ul>
+        <div ref={dropDownRef} className="pt-2">
+          <div className="border">
+            {searchString && onSearchStringChange ? (
+              <div className="p-2 border-b">
+                <input type="text" className="w-full px-1 border" />
+              </div>
+            ) : null}
+            <ul className="flex flex-col">{items}</ul>
+          </div>
         </div>
       </div>
     </div>
