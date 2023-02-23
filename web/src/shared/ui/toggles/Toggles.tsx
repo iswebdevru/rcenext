@@ -14,14 +14,14 @@ export type TogglesProps<T> = {
   setValue: Dispatch<SetStateAction<T>>;
 } & PropsWithChildren;
 
-export type TogglesContext = {
+type TogglesContext = {
   value: VariantId;
   setValue: Dispatch<SetStateAction<VariantId>>;
 };
 
 const TogglesContext = createContext<TogglesContext>(undefined as any);
 
-export default function Toggles<T extends VariantId>({
+export function Toggles<T extends VariantId>({
   children,
   ...providerProps
 }: TogglesProps<T>) {
@@ -38,7 +38,7 @@ export type VariantProps = {
   value: VariantId;
 } & PropsWithChildren;
 
-export function Variant({ value, children }: VariantProps) {
+Toggles.Variant = function Variant({ value, children }: VariantProps) {
   const { setValue, value: selected } = useContext(TogglesContext);
 
   return (
@@ -54,4 +54,4 @@ export function Variant({ value, children }: VariantProps) {
       </button>
     </li>
   );
-}
+};

@@ -1,8 +1,8 @@
 import { ClassesTimetable, Timetable } from '@/entities/classes';
-import Calendar from '@/shared/ui/calendar';
+import { Calendar } from '@/shared/ui/calendar';
 import { Search } from '@/shared/ui/input';
-import Sidebar from '@/shared/ui/sidebar';
-import Toggles, { Variant } from '@/shared/ui/toggles';
+import { Sidebar } from '@/shared/ui/sidebar';
+import { Toggles } from '@/shared/ui/toggles';
 import { useState } from 'react';
 
 const timetableData: Timetable[] = [
@@ -306,14 +306,14 @@ export default function Classes() {
             </div>
             <div className="mb-3">
               <Toggles value={blocks} setValue={setBlocks}>
-                <Variant value="1-5">1-5</Variant>
-                <Variant value="6">6</Variant>
+                <Toggles.Variant value="1-5">1-5</Toggles.Variant>
+                <Toggles.Variant value="6">6</Toggles.Variant>
               </Toggles>
             </div>
             <div className="mb-3">
               <Toggles value={withChanges} setValue={setWithChanges}>
-                <Variant value={false}>Основное</Variant>
-                <Variant value={true}>С изменениями</Variant>
+                <Toggles.Variant value={false}>Основное</Toggles.Variant>
+                <Toggles.Variant value={true}>С изменениями</Toggles.Variant>
               </Toggles>
             </div>
             <Search placeholder="Группа" />

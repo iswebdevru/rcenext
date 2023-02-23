@@ -8,7 +8,7 @@ export type ModalProps = {
   children?: ReactNode;
 };
 
-export default function Modal({ state, onClose, children }: ModalProps) {
+export function Modal({ state, onClose, children }: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement | null>(null);
   const [mounted, setMounted] = useState(false);

@@ -1,11 +1,11 @@
 import { className } from '@/shared/lib/ui';
 import { PropsWithChildren } from 'react';
 
-type RightSideMenuProps = {
+export type SidebarProps = {
   opened: boolean;
 } & PropsWithChildren;
 
-export default function Sidebar({ children, opened }: RightSideMenuProps) {
+export function Sidebar({ children, opened }: SidebarProps) {
   return (
     <div
       className={className({

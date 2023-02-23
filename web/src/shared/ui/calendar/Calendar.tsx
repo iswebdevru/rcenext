@@ -2,12 +2,12 @@ import { className } from '@/shared/lib/ui';
 import { Dispatch, SetStateAction } from 'react';
 import { getDaysAroundCurrentMonth, HUMAN_READABLE_MONTHS } from './lib';
 
-type CalendarProps = {
+export type CalendarProps = {
   date: Date;
   setDate: Dispatch<SetStateAction<Date>>;
 };
 
-export default function Calendar({ date, setDate }: CalendarProps) {
+export function Calendar({ date, setDate }: CalendarProps) {
   const currentMonth = date.getMonth() as keyof typeof HUMAN_READABLE_MONTHS;
   const currentDate = date.getDate();
   const currentYear = date.getFullYear();

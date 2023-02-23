@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { ClassesTimetable, Timetable } from '@/entities/classes';
-import Button from '@/shared/ui/button';
-import Calendar from '@/shared/ui/calendar';
+import { Button } from '@/shared/ui/button';
+import { Calendar } from '@/shared/ui/calendar';
 import { Search } from '@/shared/ui/input';
-import Modal from '@/shared/ui/modal';
+import { Modal } from '@/shared/ui/modal';
 import { Select } from '@/shared/ui/select';
-import Toggles, { Variant } from '@/shared/ui/toggles';
+import { Toggles } from '@/shared/ui/toggles';
 import AdminNav from '@/widgets/admin-nav';
 
 const timetableData: Timetable[] = [
@@ -337,9 +337,12 @@ export default function Edit() {
           <div className="mb-2">
             <Toggles value={selectedTimetableType} setValue={setTimetableType}>
               {timetableTypes.map(timetableType => (
-                <Variant key={timetableType.id} value={timetableType.id}>
+                <Toggles.Variant
+                  key={timetableType.id}
+                  value={timetableType.id}
+                >
                   {timetableType.value}
-                </Variant>
+                </Toggles.Variant>
               ))}
             </Toggles>
           </div>

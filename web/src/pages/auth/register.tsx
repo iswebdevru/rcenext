@@ -1,11 +1,11 @@
 import { FormEvent, useState } from 'react';
 import { withCSRF } from '@/shared/middlewares';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
 
 export default function Register({ csrf }: { csrf: string }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter();
+  // const router = useRouter();
   // const [password2, setPassword2] = useState('');
 
   async function submit(e: FormEvent) {
