@@ -18,6 +18,18 @@ export function Modal({ state, onClose, children }: ModalProps) {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    const listener = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', listener);
+    return () => {
+      window.removeEventListener('keydown', listener);
+    };
+  }, [onClose]);
+
   if (!rootRef.current || !mounted) {
     return null;
   }
@@ -31,8 +43,8 @@ export function Modal({ state, onClose, children }: ModalProps) {
         'invisible opacity-0': !state,
       })}
     >
-      <div ref={modalRef} className="z-50 w-1/2 bg-white h-1/2">
-        здесь будет модал окно
+      <div ref={modalRef} className="z-50">
+        {children}
       </div>
       <div
         onClick={onClose}

@@ -7,6 +7,12 @@ import { Modal } from '@/shared/ui/modal';
 import { Select } from '@/shared/ui/select';
 import { Toggles } from '@/shared/ui/toggles';
 import AdminNav from '@/widgets/admin-nav';
+import {
+  DAYS_OF_THE_WEEK,
+  TIMETABLE_TYPES,
+  WEEK_TYPES,
+} from '@/shared/constants';
+import { CreateTimetable } from '@/features/classes';
 
 const timetableData: Timetable[] = [
   {
@@ -275,31 +281,12 @@ const timetableData: Timetable[] = [
   },
 ];
 
-const timetableTypes = [
-  {
-    id: 0,
-    value: 'Основное',
-  },
-  {
-    id: 1,
-    value: 'Изменения',
-  },
-] as const;
-
-const daysOfTheWeek = [
-  { id: '1', value: 'Понедельник' },
-  { id: '2', value: 'Вторник' },
-  { id: '3', value: 'Среда' },
-  { id: '4', value: 'Четверг' },
-  { id: '5', value: 'Пятница' },
-  { id: '6', value: 'Суббота' },
-] as const;
-
 export default function Edit() {
   const [selectedTimetableType, setTimetableType] = useState(0);
+  const [selectedWeekType, setSelectedWeekType] = useState(0);
   const [date, setDate] = useState(new Date());
   const [selectedDayOfTheWeek, setSelectedDayOfTheWeek] = useState('1');
-  const [showEditTimetableModal, setShowEditTimetableModal] = useState(false);
+  const [showTimetableModal, setShowTimetableModal] = useState(false);
 
   return (
     <>
@@ -310,7 +297,7 @@ export default function Edit() {
         <div className="pl-4 pr-2 grow">
           <div className="py-2">
             <Button>Удалить</Button>
-            <button onClick={() => setShowEditTimetableModal(true)}>
+            <button onClick={() => setShowTimetableModal(true)}>
               Добавить
             </button>
           </div>
@@ -336,7 +323,7 @@ export default function Edit() {
           </div>
           <div className="mb-2">
             <Toggles value={selectedTimetableType} setValue={setTimetableType}>
-              {timetableTypes.map(timetableType => (
+              {TIMETABLE_TYPES.map(timetableType => (
                 <Toggles.Variant
                   key={timetableType.id}
                   value={timetableType.id}
@@ -347,26 +334,39 @@ export default function Edit() {
             </Toggles>
           </div>
           {selectedTimetableType === 0 ? (
-            <Select
-              value={selectedDayOfTheWeek}
-              onChange={setSelectedDayOfTheWeek}
-            >
-              {daysOfTheWeek.map(day => (
-                <Select.Option key={day.id} value={day.id}>
-                  {day.value}
-                </Select.Option>
-              ))}
-            </Select>
+            <>
+              <div className="mb-2">
+                <Select
+                  value={selectedDayOfTheWeek}
+                  onChange={setSelectedDayOfTheWeek}
+                >
+                  {DAYS_OF_THE_WEEK.map(day => (
+                    <Select.Option key={day.id} value={day.id}>
+                      {day.value}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </div>
+              <Select value={selectedWeekType} onChange={setSelectedWeekType}>
+                {WEEK_TYPES.map(weekType => (
+                  <Select.Option key={weekType.id} value={weekType.id}>
+                    {weekType.value}
+                  </Select.Option>
+                ))}
+              </Select>
+            </>
           ) : (
             <Calendar date={date} setDate={setDate} />
           )}
         </div>
       </div>
       <Modal
-        state={showEditTimetableModal}
-        onClose={() => setShowEditTimetableModal(false)}
+        state={showTimetableModal}
+        onClose={() => setShowTimetableModal(false)}
       >
-        hello there
+        <div className="bg-white rounded-sm">
+          <CreateTimetable />
+        </div>
       </Modal>
     </>
   );

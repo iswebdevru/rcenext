@@ -9,35 +9,42 @@ import {
   useState,
 } from 'react';
 
-type SingleSelectProps<T> = {
-  multiple?: false;
-  value: T;
-  onChange: (value: T) => void;
+type CommonSelectProps<T extends string | number> = {
   searchString?: string;
   onSearchStringChange?: EventHandler<ChangeEvent>;
-  children: ReactElement<OptionProps<T>>[];
+  children?: ReactElement<OptionProps<T>>[];
+  placeholder?: string;
+  required?: boolean;
 };
 
-type MultipleSelectProps<T> = {
+type SingleSelectProps<T extends string | number> = {
+  multiple?: false;
+  value?: T;
+  onChange: (value: T) => void;
+} & CommonSelectProps<T>;
+
+type MultipleSelectProps<T extends string | number> = {
   multiple: true;
   value: T[];
   onChange: (value: T[]) => void;
-  searchString?: string;
-  onSearchStringChange?: EventHandler<ChangeEvent>;
-  children: ReactElement<OptionProps<T>>[];
-};
+} & CommonSelectProps<T>;
 
-export type SelectProps<T> = T extends Array<infer K>
-  ? MultipleSelectProps<K>
-  : SingleSelectProps<T>;
+export type SelectProps<T extends string | number | (string | number)[]> =
+  T extends Array<infer K extends string | number>
+    ? MultipleSelectProps<K>
+    : T extends string | number
+    ? SingleSelectProps<T>
+    : never;
 
-export function Select<T>({
+export function Select<T extends string | number | (string | number)[]>({
   children,
   value,
   onChange,
   multiple,
   searchString,
   onSearchStringChange,
+  placeholder,
+  required,
 }: SelectProps<T>) {
   const [isOpened, setIsOpened] = useState(false);
   const dropDownRef = useRef<HTMLDivElement>(null);
@@ -45,9 +52,19 @@ export function Select<T>({
 
   useClickOutside(componentRef, () => setIsOpened(false));
 
-  let displayValue: string[] | string = multiple ? [] : '';
+  const isSelected =
+    value !== undefined && !(Array.isArray(value) && value.length === 0);
+
+  let displayValue: string[] | string = isSelected
+    ? multiple
+      ? []
+      : ''
+    : placeholder ?? 'Не выбрано';
 
   const items = Children.map(children, child => {
+    if (!child) {
+      return null;
+    }
     if (multiple && value.includes(child.props.value)) {
       (displayValue as string[]).push(child.props.children.toString());
     } else if (!multiple && value === child.props.value) {
@@ -56,6 +73,7 @@ export function Select<T>({
     return (
       <li className="group">
         <button
+          type="button"
           className={className({
             'px-2 py-1 border-b group-last:border-b-0 w-full text-left': true,
             'bg-slate-200': multiple
@@ -71,7 +89,7 @@ export function Select<T>({
               }
             } else {
               setIsOpened(false);
-              onChange(child.props.value as any);
+              onChange(child.props.value as never);
             }
           }}
         >
@@ -84,10 +102,14 @@ export function Select<T>({
   return (
     <div className="relative" ref={componentRef}>
       <button
+        type="button"
         onClick={() => setIsOpened(p => !p)}
         className={className({
-          'w-full p-2 text-left border rounded-sm': true,
-          'border-green-600': isOpened,
+          'w-full transition-[outline] p-2 text-left text-sm outline outline-1 outline-neutral-300 rounded-sm':
+            true,
+          'outline-slate-400': isOpened,
+          'outline-green-600': !!required && !isOpened && isSelected,
+          'outline-red-600': !!required && !isOpened && !isSelected,
         })}
       >
         {Array.isArray(displayValue)
