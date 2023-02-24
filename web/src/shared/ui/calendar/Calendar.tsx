@@ -14,7 +14,7 @@ export function Calendar({ date, setDate }: CalendarProps) {
   const days = getDaysAroundCurrentMonth(date);
 
   return (
-    <div>
+    <div className="p-2 bg-white border rounded-md">
       <div className="flex items-center justify-between px-1 py-2 mb-4">
         <p className="text-xl font-bold">
           {HUMAN_READABLE_MONTHS[currentMonth]} {currentYear}

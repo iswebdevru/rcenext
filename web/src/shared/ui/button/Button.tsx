@@ -12,7 +12,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
         className={classNameWithDefaults(
           className({
-            'border rounded-lg px-4 py-1 bg-white border-slate-300': true,
+            'border rounded-md px-3 py-1 bg-white border-slate-300': true,
           }),
           addClassName
         )}

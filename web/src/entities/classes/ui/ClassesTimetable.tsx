@@ -24,11 +24,13 @@ export function ClassesTimetable({
   controlPanel,
 }: ClassesTimetableProps) {
   return (
-    <table className={classNameWithDefaults('w-full border', className)}>
+    <table
+      className={classNameWithDefaults('w-full bg-white border', className)}
+    >
       <tbody>
         <tr className="border">
-          <th className="px-3 py-1 text-left border" colSpan={3}>
-            <div className="flex items-center justify-between">
+          <th className="px-3 py-2 text-left border" colSpan={3}>
+            <div className="flex items-center justify-between text-sm">
               <div>{timetable.group}</div>
               <div>{controlPanel}</div>
             </div>

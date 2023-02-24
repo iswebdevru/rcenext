@@ -109,7 +109,7 @@ export function Select<T extends string | number | (string | number)[]>({
             true,
           'outline-slate-400': isOpened,
           'outline-green-600': !!required && !isOpened && isSelected,
-          'outline-red-600': !!required && !isOpened && !isSelected,
+          'outline-red-800': !!required && !isOpened && !isSelected,
         })}
       >
         {Array.isArray(displayValue)
@@ -121,7 +121,7 @@ export function Select<T extends string | number | (string | number)[]>({
           height: isOpened ? dropDownRef.current?.offsetHeight : 0,
         }}
         className={className({
-          'absolute bg-white z-10 left-0 top-[120%] right-0 rounded-sm overflow-hidden transition-[height]':
+          'absolute bg-white z-10 -left-1 top-[120%] -right-1 rounded-sm overflow-hidden transition-[height]':
             true,
         })}
       >

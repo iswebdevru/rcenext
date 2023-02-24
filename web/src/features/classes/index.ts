@@ -1,1 +1,1 @@
-export * from './CreateTimetable';
+export * from './CreateClassesTimetable';

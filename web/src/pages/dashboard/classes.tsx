@@ -12,7 +12,7 @@ import {
   TIMETABLE_TYPES,
   WEEK_TYPES,
 } from '@/shared/constants';
-import { CreateTimetable } from '@/features/classes';
+import { CreateClassesTimetable } from '@/features/classes';
 
 const timetableData: Timetable[] = [
   {
@@ -297,11 +297,14 @@ export default function Edit() {
         <div className="pl-4 pr-2 grow">
           <div className="py-2">
             <Button>Удалить</Button>
-            <button onClick={() => setShowTimetableModal(true)}>
+            <Button
+              className="ml-2"
+              onClick={() => setShowTimetableModal(true)}
+            >
               Добавить
-            </button>
+            </Button>
           </div>
-          <div className="grid grid-cols-4">
+          <div className="grid grid-cols-4 gap-4">
             {timetableData.map((data, i) => (
               <ClassesTimetable
                 key={i}
@@ -364,9 +367,7 @@ export default function Edit() {
         state={showTimetableModal}
         onClose={() => setShowTimetableModal(false)}
       >
-        <div className="bg-white rounded-sm">
-          <CreateTimetable />
-        </div>
+        <CreateClassesTimetable />
       </Modal>
     </>
   );
