@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function Header() {
   return (
-    <header className="bg-white border-b h-14">
+    <header className="relative z-10 bg-white border-b shadow-sm h-14 border-neutral-200">
       <div className="container flex items-center justify-between h-full">
         <Link href="/">rcenext</Link>
         <ul className="flex gap-4">

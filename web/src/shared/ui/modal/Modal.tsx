@@ -37,17 +37,17 @@ export function Modal({ state, onClose, children }: ModalProps) {
   return createPortal(
     <div
       className={className({
-        'fixed top-0 left-0 w-full h-full flex transition p-4': true,
+        'fixed z-20 top-0 left-0 w-full h-full flex transition p-4': true,
         'visible opacity-100': state,
         'invisible opacity-0': !state,
       })}
     >
-      <div ref={modalRef} className="relative z-50 max-w-4xl m-auto grow">
+      <div ref={modalRef} className="relative z-30 max-w-4xl m-auto grow">
         {children}
       </div>
       <div
         onClick={onClose}
-        className="fixed top-0 left-0 z-40 w-full h-full bg-black opacity-50 cursor-pointer"
+        className="fixed top-0 left-0 w-full h-full bg-black opacity-50 cursor-pointer"
       ></div>
     </div>,
     rootRef.current

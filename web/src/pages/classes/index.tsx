@@ -1,4 +1,5 @@
 import { ClassesTimetable, Timetable } from '@/entities/classes';
+import { BaseLayout } from '@/layouts';
 import { Calendar } from '@/shared/ui/calendar';
 import { Search } from '@/shared/ui/input';
 import { Sidebar } from '@/shared/ui/sidebar';
@@ -279,47 +280,49 @@ export default function Classes() {
   const [withChanges, setWithChanges] = useState(true);
 
   return (
-    <div className="container flex gap-4 basis-full">
-      <div className="grow">
-        <h1 className="mb-2 text-xl font-bold">
-          Расписание занятий (числитель/знаменатель)
-        </h1>
-        <h2 className="mb-2 text-lg font-bold">1-5 корпус</h2>
-        <div className="grid justify-between grid-cols-1 gap-4 mb-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-          {timetableData.map((timetable, i) => (
-            <ClassesTimetable key={i} timetable={timetable} />
-          ))}
-        </div>
-        <h2 className="mb-2 text-lg font-bold">6 корпус</h2>
-        <div className="grid justify-between grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-          {timetableData.map((timetable, i) => (
-            <ClassesTimetable key={i} timetable={timetable} />
-          ))}
-        </div>
-        <button onClick={() => setOpened(p => !p)}>oopene</button>
-      </div>
-      <div className="flex-shrink-0">
-        <Sidebar opened={opened}>
-          <div className="h-full">
-            <div className="mb-3">
-              <Calendar date={date} setDate={setDate} />
-            </div>
-            <div className="mb-3">
-              <Toggles value={blocks} setValue={setBlocks}>
-                <Toggles.Variant value="1-5">1-5</Toggles.Variant>
-                <Toggles.Variant value="6">6</Toggles.Variant>
-              </Toggles>
-            </div>
-            <div className="mb-3">
-              <Toggles value={withChanges} setValue={setWithChanges}>
-                <Toggles.Variant value={false}>Основное</Toggles.Variant>
-                <Toggles.Variant value={true}>С изменениями</Toggles.Variant>
-              </Toggles>
-            </div>
-            <Search placeholder="Группа" />
+    <BaseLayout>
+      <div className="container flex gap-4">
+        <div className="grow">
+          <h1 className="mb-2 text-xl font-bold">
+            Расписание занятий (числитель/знаменатель)
+          </h1>
+          <h2 className="mb-2 text-lg font-bold">1-5 корпус</h2>
+          <div className="grid justify-between grid-cols-1 gap-4 mb-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+            {timetableData.map((timetable, i) => (
+              <ClassesTimetable key={i} timetable={timetable} />
+            ))}
           </div>
-        </Sidebar>
+          <h2 className="mb-2 text-lg font-bold">6 корпус</h2>
+          <div className="grid justify-between grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+            {timetableData.map((timetable, i) => (
+              <ClassesTimetable key={i} timetable={timetable} />
+            ))}
+          </div>
+          <button onClick={() => setOpened(p => !p)}>oopene</button>
+        </div>
+        <div className="flex-shrink-0">
+          <Sidebar opened={opened}>
+            <div className="h-full">
+              <div className="mb-3">
+                <Calendar date={date} setDate={setDate} />
+              </div>
+              <div className="mb-3">
+                <Toggles value={blocks} setValue={setBlocks}>
+                  <Toggles.Variant value="1-5">1-5</Toggles.Variant>
+                  <Toggles.Variant value="6">6</Toggles.Variant>
+                </Toggles>
+              </div>
+              <div className="mb-3">
+                <Toggles value={withChanges} setValue={setWithChanges}>
+                  <Toggles.Variant value={false}>Основное</Toggles.Variant>
+                  <Toggles.Variant value={true}>С изменениями</Toggles.Variant>
+                </Toggles>
+              </div>
+              <Search placeholder="Группа" />
+            </div>
+          </Sidebar>
+        </div>
       </div>
-    </div>
+    </BaseLayout>
   );
 }

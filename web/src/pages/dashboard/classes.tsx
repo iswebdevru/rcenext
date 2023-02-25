@@ -6,13 +6,13 @@ import { Search } from '@/shared/ui/input';
 import { Modal } from '@/shared/ui/modal';
 import { Select } from '@/shared/ui/select';
 import { Toggles } from '@/shared/ui/toggles';
-import AdminNav from '@/widgets/admin-nav';
 import {
   DAYS_OF_THE_WEEK,
   TIMETABLE_TYPES,
   WEEK_TYPES,
 } from '@/shared/constants';
 import { CreateClassesTimetable } from '@/features/classes';
+import { DashboardLayout } from '@/layouts';
 
 const timetableData: Timetable[] = [
   {
@@ -289,13 +289,10 @@ export default function Edit() {
   const [showTimetableModal, setShowTimetableModal] = useState(false);
 
   return (
-    <>
-      <div className="flex h-full">
-        <div className="h-full shrink-0">
-          <AdminNav />
-        </div>
-        <div className="pl-4 pr-2 grow">
-          <div className="py-2">
+    <DashboardLayout>
+      <div className="flex gap-4 p-4">
+        <div className="grow">
+          <div className="mb-4">
             <Button>Удалить</Button>
             <Button
               className="ml-2"
@@ -320,7 +317,7 @@ export default function Edit() {
             ))}
           </div>
         </div>
-        <div className="p-2 w-80">
+        <div className="shrink-0 w-80">
           <div className="mb-2">
             <Search placeholder="Группа" />
           </div>
@@ -369,6 +366,6 @@ export default function Edit() {
       >
         <CreateClassesTimetable />
       </Modal>
-    </>
+    </DashboardLayout>
   );
 }
