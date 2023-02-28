@@ -1,5 +1,5 @@
 from django.db import models
-from subjects.models import Subject
+from api.subjects.models import Subject
 
 
 class Teacher(models.Model):
