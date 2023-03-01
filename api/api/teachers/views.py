@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from .models import Teacher
 from .serializers import TeacherSerializer
+from api.subjects.serializers import SubjectSerializer
 
 
 class TeacherViewSet(viewsets.ModelViewSet):
@@ -11,5 +12,6 @@ class TeacherViewSet(viewsets.ModelViewSet):
 
     @action(detail=True)
     def subjects(self, *args, **kwargs):
-        teacher = self.get_object()
-        return Response(teacher.subjects.all())
+        subjects_of_teacher = self.get_object().subjects.all()
+        serialized_subjects = SubjectSerializer(subjects_of_teacher, many=True)
+        return Response(serialized_subjects.data)
