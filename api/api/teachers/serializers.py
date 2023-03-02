@@ -17,8 +17,8 @@ class TeacherSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
             'patronymic',
+            'subjects',
+            'subjects_url',
             'created_at',
             'updated_at',
-            'subjects_url',
-            'subjects',
         ]
