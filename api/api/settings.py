@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'api.teachers',
     'api.subjects',
-    'api.groups'
+    'api.groups',
+    'api.timetables',
 ]
 
 MIDDLEWARE = [
