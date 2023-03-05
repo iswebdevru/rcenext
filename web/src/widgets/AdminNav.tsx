@@ -7,8 +7,9 @@ const links = [
   { href: '/dashboard/classes', text: 'Занятия' },
   { href: '/dashboard/practice', text: 'Практика' },
   { href: '/dashboard/teachers', text: 'Преподаватели' },
-  { href: '/dashboard/...', text: 'Звонки' },
-  { href: '/dashboard/...', text: 'Календарь' },
+  { href: '/dashboard/groups', text: 'Группы' },
+  { href: '/dashboard/bells', text: 'Звонки' },
+  { href: '/dashboard/calendar', text: 'Календарь' },
 ] as const;
 
 export default function AdminNav() {
@@ -25,15 +26,15 @@ export default function AdminNav() {
                 <Link
                   href={link.href}
                   className={className({
-                    'group transition-color hover:text-indigo-500': true,
-                    'text-indigo-500': isActive,
+                    'group transition-color hover:text-blue-500': true,
+                    'text-blue-500': isActive,
                     'text-neutral-700': !isActive,
                   })}
                 >
                   <div className="flex">
                     <span
                       className={className({
-                        'w-[2px] bg-indigo-500 transition origin-left group-hover:scale-x-100':
+                        'w-[2px] bg-blue-500 transition origin-left group-hover:scale-x-100':
                           true,
                         'scale-x-100': isActive,
                         'scale-x-0': !isActive,
@@ -41,9 +42,9 @@ export default function AdminNav() {
                     ></span>
                     <span
                       className={className({
-                        'w-6 h-6 ml-5 group-hover:bg-indigo-500 transition-[background]':
+                        'w-6 h-6 ml-5 group-hover:bg-blue-500 transition-[background]':
                           true,
-                        'bg-indigo-500': isActive,
+                        'bg-blue-500': isActive,
                         'bg-neutral-700': !isActive,
                       })}
                     ></span>

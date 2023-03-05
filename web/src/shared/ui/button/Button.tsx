@@ -2,7 +2,7 @@ import { classNameWithDefaults, className } from '@/shared/lib/ui';
 import { ComponentPropsWithRef, forwardRef } from 'react';
 
 export type ButtonProps = {
-  variant?: 'a' | 'b' | 'c';
+  variant?: 'primary' | 'danger' | 'common' | 'danger-outline';
 } & ComponentPropsWithRef<'button'>;
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -12,7 +12,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
         className={classNameWithDefaults(
           className({
-            'border rounded-md px-3 py-1 bg-white border-slate-300': true,
+            'transition-[background,color,border-color] border rounded-md px-3 py-1 text-sm font-semibold':
+              true,
+            'bg-blue-600 border-blue-600 text-white enabled:hover:bg-blue-800 enabled:hover:border-blue-800  disabled:bg-blue-200 disabled:border-blue-200':
+              variant === 'primary',
+            'bg-white border-red-600 text-red-600 enabled:hover:bg-red-600 enabled:hover:text-white disabled:text-red-300 disabled:border-red-200':
+              variant === 'danger-outline',
           }),
           addClassName
         )}

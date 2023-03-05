@@ -2,7 +2,7 @@ import { ClassesTimetable, Timetable } from '@/entities/classes';
 import { BaseLayout } from '@/layouts';
 import { Calendar } from '@/shared/ui/calendar';
 import { Search } from '@/shared/ui/input';
-import { Sidebar } from '@/shared/ui/sidebar';
+import { Sidebar } from '@/shared/ui/Sidebar';
 import { Toggles } from '@/shared/ui/toggles';
 import { useState } from 'react';
 
