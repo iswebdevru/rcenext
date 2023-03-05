@@ -1,15 +1,25 @@
 import { className } from '@/shared/lib/ui';
+import {
+  faBell,
+  faBook,
+  faBuildingUser,
+  faCalendarDays,
+  faHouse,
+  faUserGroup,
+  faUserTie,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 const links = [
-  { href: '/dashboard', text: 'Главная' },
-  { href: '/dashboard/classes', text: 'Занятия' },
-  { href: '/dashboard/practice', text: 'Практика' },
-  { href: '/dashboard/teachers', text: 'Преподаватели' },
-  { href: '/dashboard/groups', text: 'Группы' },
-  { href: '/dashboard/bells', text: 'Звонки' },
-  { href: '/dashboard/calendar', text: 'Календарь' },
+  { href: '/dashboard', text: 'Главная', icon: faHouse },
+  { href: '/dashboard/classes', text: 'Занятия', icon: faBook },
+  { href: '/dashboard/practice', text: 'Практика', icon: faBuildingUser },
+  { href: '/dashboard/teachers', text: 'Преподаватели', icon: faUserTie },
+  { href: '/dashboard/groups', text: 'Группы', icon: faUserGroup },
+  { href: '/dashboard/bells', text: 'Звонки', icon: faBell },
+  { href: '/dashboard/calendar', text: 'Календарь', icon: faCalendarDays },
 ] as const;
 
 export default function AdminNav() {
@@ -31,23 +41,21 @@ export default function AdminNav() {
                     'text-neutral-700': !isActive,
                   })}
                 >
-                  <div className="flex">
+                  <div className="flex items-center">
                     <span
                       className={className({
-                        'w-[2px] bg-blue-500 transition origin-left group-hover:scale-x-100':
+                        'w-[2px] self-stretch bg-blue-500 transition origin-left group-hover:scale-x-100':
                           true,
                         'scale-x-100': isActive,
                         'scale-x-0': !isActive,
                       })}
                     ></span>
-                    <span
-                      className={className({
-                        'w-6 h-6 ml-5 group-hover:bg-blue-500 transition-[background]':
-                          true,
-                        'bg-blue-500': isActive,
-                        'bg-neutral-700': !isActive,
-                      })}
-                    ></span>
+                    <FontAwesomeIcon
+                      icon={link.icon}
+                      size="lg"
+                      fixedWidth
+                      className="ml-3"
+                    />
                     <span className="ml-5 mr-10">{link.text}</span>
                   </div>
                 </Link>

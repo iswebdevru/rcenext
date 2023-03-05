@@ -13,7 +13,7 @@ export default function Teachers() {
             <Table.Head>Предметы</Table.Head>
           </Table.Row>
           <Table.Row creator>
-            <Table.Data>editing</Table.Data>
+            <Table.Data>input</Table.Data>
             <Table.Data>editing</Table.Data>
             <Table.Data>editing</Table.Data>
             <Table.Data>editing</Table.Data>
