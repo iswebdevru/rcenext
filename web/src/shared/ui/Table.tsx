@@ -1,66 +1,107 @@
+import { faPenToSquare, faRotateBack } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Children, PropsWithChildren, ReactElement, useState } from 'react';
 import { compareArrays } from '../lib/common';
-import { className } from '../lib/ui';
+import { clsx } from '../lib/ui';
 import { Button } from './button';
 import { Search } from './input';
 
+export type Id = string | number;
+
 export type TableProps = {
-  onDelete: (ids: (string | number)[]) => void;
+  onDelete: (ids: Id[]) => void;
   children: ReactElement<TableRowProps>[];
+  EditComponent: (props: TableEditRowProps) => JSX.Element;
 };
 
-export function Table({ children, onDelete }: TableProps) {
-  const [selectedItems, setSelectedItems] = useState<(string | number)[]>([]);
-  const [showCreator, setShowCreator] = useState(false);
+export function Table({ children, onDelete, EditComponent }: TableProps) {
+  const [selectedItems, setSelectedItems] = useState<Id[]>([]);
+  const [editableRowsIds, setEditableRowsIds] = useState<Id[]>([]);
+  const [newRowsIds, setNewRowsIds] = useState<number[]>([]);
 
   const allItems = Children.map(children, child => child.props.id).filter(
     id => id !== undefined
   );
 
-  const allSelected = compareArrays(selectedItems, allItems);
+  const allSelectedItems = compareArrays(selectedItems, allItems);
+
+  const newRows = newRowsIds.map(i => (
+    <tr key={i} className="bg-white border-b last:border-b-0">
+      <Table.Data></Table.Data>
+      <EditComponent />
+      {
+        <Table.Data>
+          <button
+            className="p-1 group"
+            onClick={() => setNewRowsIds(p => p.filter(v => v !== i))}
+          >
+            <FontAwesomeIcon
+              icon={faRotateBack}
+              fixedWidth
+              className="text-xl text-neutral-600 group-hover:text-yellow-500 group-hover:scale-110"
+            />
+          </button>
+        </Table.Data>
+      }
+    </tr>
+  ));
 
   const rows = Children.map(children, row => {
     if (row.props.head) {
       return (
-        <tr className="border-b">
-          <Table.Head>
-            <input
-              type="checkbox"
-              checked={allSelected}
-              onChange={() => {
-                if (allSelected) {
-                  return setSelectedItems([]);
-                }
-                setSelectedItems(allItems);
-              }}
-            />
-          </Table.Head>
-          {row.props.children}
-          <Table.Data></Table.Data>
-        </tr>
-      );
-    }
-    if (row.props.creator) {
-      if (showCreator) {
-        return (
-          <tr className="border-b">
-            <Table.Data></Table.Data>
+        <>
+          <tr className="bg-white border-b last:border-b-0">
+            <Table.Head>
+              <input
+                type="checkbox"
+                checked={allSelectedItems}
+                onChange={() => {
+                  if (allSelectedItems) {
+                    return setSelectedItems([]);
+                  }
+                  setSelectedItems(allItems);
+                }}
+              />
+            </Table.Head>
             {row.props.children}
-            <Table.Data>
-              <button onClick={() => setShowCreator(false)}>Отменить</button>
-            </Table.Data>
+            <Table.Data></Table.Data>
           </tr>
-        );
-      }
-      return null;
+          {newRows}
+        </>
+      );
     }
     const id = row.props.id;
     const isSelected = selectedItems.includes(id);
+
+    if (editableRowsIds.includes(id)) {
+      return (
+        <tr className="bg-white border-b last:border-b-0">
+          <Table.Data></Table.Data>
+          <EditComponent id={id} />
+          {
+            <Table.Data>
+              <button
+                className="flex items-center justify-center p-1 group"
+                onClick={() => setEditableRowsIds(p => p.filter(v => v !== id))}
+              >
+                <FontAwesomeIcon
+                  icon={faRotateBack}
+                  fixedWidth
+                  className="text-xl text-neutral-600 group-hover:text-yellow-500 group-hover:scale-110"
+                />
+              </button>
+            </Table.Data>
+          }
+        </tr>
+      );
+    }
+
     return (
       <tr
-        className={className({
-          'border-b': true,
+        className={clsx({
+          'border-b last:border-b-0': true,
           'bg-blue-50': isSelected,
+          'bg-white': !isSelected,
         })}
       >
         {
@@ -80,11 +121,22 @@ export function Table({ children, onDelete }: TableProps) {
           </Table.Data>
         }
         {row.props.children}
-        {row.props.head ? null : (
+        {
           <Table.Data>
-            <button>edit</button>
+            <button
+              className="p-1 group"
+              onClick={() => {
+                setEditableRowsIds(p => [...p, id]);
+              }}
+            >
+              <FontAwesomeIcon
+                icon={faPenToSquare}
+                fixedWidth
+                className="text-lg text-blue-500 transition-colors group-hover:text-blue-900 group-hover:scale-110"
+              />
+            </button>
           </Table.Data>
-        )}
+        }
       </tr>
     );
   });
@@ -105,15 +157,16 @@ export function Table({ children, onDelete }: TableProps) {
         <Button
           type="button"
           variant="primary"
-          disabled={showCreator}
-          onClick={() => setShowCreator(p => !p)}
+          onClick={() => setNewRowsIds(p => [Date.now(), ...p])}
         >
           Добавить
         </Button>
       </div>
-      <table className="w-full bg-white border">
-        <tbody>{rows}</tbody>
-      </table>
+      <div className="overflow-hidden border rounded-md">
+        <table className="w-full">
+          <tbody>{rows}</tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -121,28 +174,17 @@ export function Table({ children, onDelete }: TableProps) {
 type TableRowHeadProps = {
   head: true;
   id?: undefined;
-  editing?: false;
-  creator?: false;
-} & PropsWithChildren;
-
-type TableRowCreatorProps = {
-  head?: false;
-  id?: undefined;
-  editing?: false;
-  creator: true;
 } & PropsWithChildren;
 
 type TableRowContentProps = {
   head?: false;
-  id: number | string;
-  editing?: boolean;
-  creator?: boolean;
+  id: Id;
 } & PropsWithChildren;
 
-export type TableRowProps =
-  | TableRowHeadProps
-  | TableRowContentProps
-  | TableRowCreatorProps;
+export type TableRowProps = TableRowHeadProps | TableRowContentProps;
+export type TableEditRowProps = {
+  id?: Id;
+};
 
 Table.Row = function TableRow(_: TableRowProps) {
   return null;
@@ -152,7 +194,7 @@ export type TableDataProps = {} & PropsWithChildren;
 
 Table.Data = function TableData({ children }: TableDataProps) {
   return (
-    <td className="px-6 py-3">
+    <td className="px-6 py-3 text-sm">
       <div className="flex items-center">{children}</div>
     </td>
   );
@@ -167,25 +209,3 @@ Table.Head = function TableHead({ children }: TableHeadProps) {
     </th>
   );
 };
-
-/**
- * The idea:
- * <Table onDelete={(ids) => void}>
- *   <Table.Row>
- *      <Table.Head>1</Table.Head>
- *      <Table.Head>2</Table.Head>
- *      <Table.Head>3</Table.Head>
- *   </Table.Row>
- *   <Table.Row editing={true} show={true|false}>
- *     <Table.Data>1</Table.Data>
- *     <Table.Data>1</Table.Data>
- *     <Table.Data>1</Table.Data>
- *   </Table.Row>
- *   <Table.Row id={id}>
- *      <Table.Data>1</Table.Data>
- *      <Table.Data>2</Table.Data>
- *      <Table.Data>3</Table.Data>
- *   </Table.Row>
- * </Table>
- *
- */

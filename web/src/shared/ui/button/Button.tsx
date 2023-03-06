@@ -1,4 +1,4 @@
-import { classNameWithDefaults, className } from '@/shared/lib/ui';
+import { classNameWithDefaults, clsx } from '@/shared/lib/ui';
 import { ComponentPropsWithRef, forwardRef } from 'react';
 
 export type ButtonProps = {
@@ -11,7 +11,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         {...props}
         className={classNameWithDefaults(
-          className({
+          clsx({
             'transition-[background,color,border-color] border rounded-md px-3 py-1 text-sm font-semibold':
               true,
             'bg-blue-600 border-blue-600 text-white enabled:hover:bg-blue-800 enabled:hover:border-blue-800  disabled:bg-blue-200 disabled:border-blue-200':

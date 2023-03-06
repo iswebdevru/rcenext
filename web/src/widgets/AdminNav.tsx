@@ -1,4 +1,4 @@
-import { className } from '@/shared/lib/ui';
+import { clsx } from '@/shared/lib/ui';
 import {
   faBell,
   faBook,
@@ -35,7 +35,7 @@ export default function AdminNav() {
               <li className="mb-6 font-semibold" key={link.href}>
                 <Link
                   href={link.href}
-                  className={className({
+                  className={clsx({
                     'group transition-color hover:text-blue-500': true,
                     'text-blue-500': isActive,
                     'text-neutral-700': !isActive,
@@ -43,7 +43,7 @@ export default function AdminNav() {
                 >
                   <div className="flex items-center">
                     <span
-                      className={className({
+                      className={clsx({
                         'w-[2px] self-stretch bg-blue-500 transition origin-left group-hover:scale-x-100':
                           true,
                         'scale-x-100': isActive,

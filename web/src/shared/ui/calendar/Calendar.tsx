@@ -1,4 +1,4 @@
-import { className } from '@/shared/lib/ui';
+import { clsx } from '@/shared/lib/ui';
 import { Dispatch, SetStateAction } from 'react';
 import { getDaysAroundCurrentMonth, HUMAN_READABLE_MONTHS } from './lib';
 
@@ -73,7 +73,7 @@ export function Calendar({ date, setDate }: CalendarProps) {
             }}
             key={`${day.date}-${day.month}`}
             disabled={day.month !== currentMonth}
-            className={className({
+            className={clsx({
               'rounded-md leading-none aspect-square text-center p-2': true,
               'text-neutral-900': day.month === currentMonth,
               'hover:bg-slate-100':

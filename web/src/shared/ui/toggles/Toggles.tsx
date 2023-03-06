@@ -1,4 +1,4 @@
-import { className } from '@/shared/lib/ui';
+import { clsx } from '@/shared/lib/ui';
 import {
   createContext,
   Dispatch,
@@ -44,7 +44,7 @@ Toggles.Variant = function Variant({ value, children }: VariantProps) {
   return (
     <li className="group grow">
       <button
-        className={className({
+        className={clsx({
           'w-full border-r group-last:border-r-0 transition': true,
           'bg-slate-200': value === selected,
         })}

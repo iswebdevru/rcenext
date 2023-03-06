@@ -1,4 +1,4 @@
-export function className(classes: Record<string, boolean>) {
+export function clsx(classes: Record<string, boolean>) {
   return Object.entries(classes)
     .filter(([_, shouldCommit]) => shouldCommit)
     .map(([v]) => v)

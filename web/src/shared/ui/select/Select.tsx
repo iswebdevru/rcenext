@@ -1,5 +1,5 @@
 import { useClickOutside } from '@/shared/hooks';
-import { className } from '@/shared/lib/ui';
+import { clsx } from '@/shared/lib/ui';
 import {
   ChangeEvent,
   Children,
@@ -74,7 +74,7 @@ export function Select<T extends string | number | (string | number)[]>({
       <li className="group">
         <button
           type="button"
-          className={className({
+          className={clsx({
             'px-2 py-1 border-b group-last:border-b-0 w-full text-left': true,
             'bg-slate-200': multiple
               ? value.includes(child.props.value)
@@ -104,7 +104,7 @@ export function Select<T extends string | number | (string | number)[]>({
       <button
         type="button"
         onClick={() => setIsOpened(p => !p)}
-        className={className({
+        className={clsx({
           'w-full transition-[outline] p-2 text-left text-sm outline outline-1 outline-neutral-300 rounded-sm':
             true,
           'outline-slate-400': isOpened,
@@ -120,7 +120,7 @@ export function Select<T extends string | number | (string | number)[]>({
         style={{
           height: isOpened ? dropDownRef.current?.offsetHeight : 0,
         }}
-        className={className({
+        className={clsx({
           'absolute bg-white z-10 -left-1 top-[120%] -right-1 rounded-sm overflow-hidden transition-[height]':
             true,
         })}

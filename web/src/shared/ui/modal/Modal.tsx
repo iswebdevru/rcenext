@@ -1,4 +1,4 @@
-import { className } from '@/shared/lib/ui';
+import { clsx } from '@/shared/lib/ui';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -36,7 +36,7 @@ export function Modal({ state, onClose, children }: ModalProps) {
 
   return createPortal(
     <div
-      className={className({
+      className={clsx({
         'fixed z-20 top-0 left-0 w-full h-full flex transition p-4': true,
         'visible opacity-100': state,
         'invisible opacity-0': !state,

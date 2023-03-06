@@ -1,5 +1,5 @@
-import Header from '@/widgets/header';
 import { PropsWithChildren } from 'react';
+import Header from '@/widgets/Header';
 
 export function BaseLayout({ children }: PropsWithChildren) {
   return (

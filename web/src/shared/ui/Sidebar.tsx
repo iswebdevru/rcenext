@@ -1,4 +1,4 @@
-import { className } from '@/shared/lib/ui';
+import { clsx } from '@/shared/lib/ui';
 import { PropsWithChildren } from 'react';
 
 export type SidebarProps = {
@@ -8,7 +8,7 @@ export type SidebarProps = {
 export function Sidebar({ children, opened }: SidebarProps) {
   return (
     <div
-      className={className({
+      className={clsx({
         'fixed top-0 h-full right-0 transition lg:static': true,
         'translate-x-full lg:translate-x-0': !opened,
         'translate-x-0': opened,
