@@ -10,11 +10,11 @@ export type Id = string | number;
 
 export type TableProps = {
   onDelete: (ids: Id[]) => void;
-  children: ReactElement<TableRowProps>[];
   EditComponent: (props: TableEditRowProps) => JSX.Element;
-};
+} & PropsWithChildren;
 
 export function Table({ children, onDelete, EditComponent }: TableProps) {
+  children = children as ReactElement<TableRowProps>;
   const [selectedItems, setSelectedItems] = useState<Id[]>([]);
   const [editableRowsIds, setEditableRowsIds] = useState<Id[]>([]);
   const [newRowsIds, setNewRowsIds] = useState<number[]>([]);
