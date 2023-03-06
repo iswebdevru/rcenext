@@ -14,9 +14,9 @@ function AddTeacher({ id }: TableEditRowProps) {
       <Table.Data>
         <input type="text" />
       </Table.Data>
-      <Table.Data>
+      {/* <Table.Data>
         <input type="text" />
-      </Table.Data>
+      </Table.Data> */}
     </>
   );
 }
