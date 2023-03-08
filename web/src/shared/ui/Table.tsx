@@ -1,44 +1,100 @@
-import { faPenToSquare, faRotateBack } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheck,
+  faPenToSquare,
+  faRotateBack,
+  faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Children, PropsWithChildren, ReactElement, useState } from 'react';
+import {
+  Children,
+  createContext,
+  Dispatch,
+  PropsWithChildren,
+  ReactElement,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useState,
+} from 'react';
 import { compareArrays } from '../lib/common';
 import { clsx } from '../lib/ui';
 import { Button } from './button';
 import { Search } from './input';
 
 export type Id = string | number;
-
 export type TableProps = {
   onDelete: (ids: Id[]) => void;
-  EditComponent: (props: TableEditRowProps) => JSX.Element;
-} & PropsWithChildren;
+  onSave: (id?: number | string) => void;
+  header: ReactNode;
+  children: ReactElement<TableRowProps> | ReactElement<TableRowProps>[];
+  EditComponent: (props: TableEditableRowProps) => JSX.Element;
+};
 
-export function Table({ children, onDelete, EditComponent }: TableProps) {
-  children = children as ReactElement<TableRowProps>;
+type TableContext = {
+  selectedItems: Id[];
+  setSelectedItems: Dispatch<SetStateAction<Id[]>>;
+  allItems: Id[];
+};
+
+const TableContext = createContext<TableContext>(undefined as any);
+
+export function Table({
+  children,
+  onDelete,
+  onSave,
+  header,
+  EditComponent,
+}: TableProps) {
   const [selectedItems, setSelectedItems] = useState<Id[]>([]);
   const [editableRowsIds, setEditableRowsIds] = useState<Id[]>([]);
   const [newRowsIds, setNewRowsIds] = useState<number[]>([]);
 
-  const allItems = Children.map(children, child => child.props.id).filter(
-    id => id !== undefined
-  );
+  const addNewRow = (id: number) => setNewRowsIds(p => [...p, id]);
+  const delNewRow = (id: number) => setNewRowsIds(p => p.filter(v => v !== id));
 
-  const allSelectedItems = compareArrays(selectedItems, allItems);
+  const toggleEditableRow = (id: Id) => {
+    setEditableRowsIds(p => {
+      if (p.includes(id)) {
+        return p.filter(v => v !== id);
+      }
+      return [...p, id];
+    });
+  };
+  const delEditableRow = (id: Id) =>
+    setEditableRowsIds(p => p.filter(v => v !== id));
 
-  const newRows = newRowsIds.map(i => (
-    <tr key={i} className="bg-white border-b last:border-b-0">
+  const toggleSelectedItem = (id: Id) => {
+    setSelectedItems(p => {
+      if (p.includes(id)) {
+        return p.filter(v => v !== id);
+      }
+      return [...p, id];
+    });
+  };
+
+  const allItems = Children.map(children, child => child.props.id);
+
+  const newRows = newRowsIds.map(id => (
+    <tr key={id} className="bg-white border-b last:border-b-0">
       <Table.Data></Table.Data>
       <EditComponent />
       {
         <Table.Data>
+          <button className="flex items-center justify-center p-1 group">
+            <FontAwesomeIcon
+              icon={faCheck}
+              fixedWidth
+              className="text-xl text-neutral-600 group-hover:text-green-500 group-hover:scale-110"
+            ></FontAwesomeIcon>
+          </button>
           <button
-            className="p-1 group"
-            onClick={() => setNewRowsIds(p => p.filter(v => v !== i))}
+            className="flex items-center justify-center p-1 group"
+            onClick={() => delNewRow(id)}
           >
             <FontAwesomeIcon
-              icon={faRotateBack}
+              icon={faXmark}
               fixedWidth
-              className="text-xl text-neutral-600 group-hover:text-yellow-500 group-hover:scale-110"
+              className="text-xl text-neutral-600 group-hover:text-red-500 group-hover:scale-110"
             />
           </button>
         </Table.Data>
@@ -47,42 +103,25 @@ export function Table({ children, onDelete, EditComponent }: TableProps) {
   ));
 
   const rows = Children.map(children, row => {
-    if (row.props.head) {
-      return (
-        <>
-          <tr className="bg-white border-b last:border-b-0">
-            <Table.Head>
-              <input
-                type="checkbox"
-                checked={allSelectedItems}
-                onChange={() => {
-                  if (allSelectedItems) {
-                    return setSelectedItems([]);
-                  }
-                  setSelectedItems(allItems);
-                }}
-              />
-            </Table.Head>
-            {row.props.children}
-            <Table.Data></Table.Data>
-          </tr>
-          {newRows}
-        </>
-      );
-    }
-    const id = row.props.id;
-    const isSelected = selectedItems.includes(id);
+    const isSelected = selectedItems.includes(row.props.id);
 
-    if (editableRowsIds.includes(id)) {
+    if (editableRowsIds.includes(row.props.id)) {
       return (
         <tr className="bg-white border-b last:border-b-0">
           <Table.Data></Table.Data>
-          <EditComponent id={id} />
+          <EditComponent id={row.props.id} />
           {
             <Table.Data>
+              <button className="flex items-center justify-center p-1 group">
+                <FontAwesomeIcon
+                  icon={faCheck}
+                  fixedWidth
+                  className="text-xl text-neutral-600 group-hover:text-green-500 group-hover:scale-110"
+                ></FontAwesomeIcon>
+              </button>
               <button
                 className="flex items-center justify-center p-1 group"
-                onClick={() => setEditableRowsIds(p => p.filter(v => v !== id))}
+                onClick={() => delEditableRow(row.props.id)}
               >
                 <FontAwesomeIcon
                   icon={faRotateBack}
@@ -109,14 +148,7 @@ export function Table({ children, onDelete, EditComponent }: TableProps) {
             <input
               type="checkbox"
               checked={isSelected}
-              onChange={() =>
-                setSelectedItems(p => {
-                  if (p.includes(id)) {
-                    return p.filter(v => v !== id);
-                  }
-                  return [...p, id];
-                })
-              }
+              onChange={() => toggleSelectedItem(row.props.id)}
             />
           </Table.Data>
         }
@@ -125,9 +157,7 @@ export function Table({ children, onDelete, EditComponent }: TableProps) {
           <Table.Data>
             <button
               className="p-1 group"
-              onClick={() => {
-                setEditableRowsIds(p => [...p, id]);
-              }}
+              onClick={() => toggleEditableRow(row.props.id)}
             >
               <FontAwesomeIcon
                 icon={faPenToSquare}
@@ -142,47 +172,50 @@ export function Table({ children, onDelete, EditComponent }: TableProps) {
   });
 
   return (
-    <div>
-      <div className="flex gap-4 mb-4">
-        <Search />
-        <Button
-          type="button"
-          variant="danger-outline"
-          disabled={!selectedItems.length}
-          className="ml-auto"
-          onClick={() => onDelete(selectedItems)}
-        >
-          Удалить
-        </Button>
-        <Button
-          type="button"
-          variant="primary"
-          onClick={() => setNewRowsIds(p => [Date.now(), ...p])}
-        >
-          Добавить
-        </Button>
+    <TableContext.Provider
+      value={{ selectedItems, setSelectedItems, allItems }}
+    >
+      <div>
+        <div className="flex gap-4 mb-4">
+          <Search />
+          <Button
+            type="button"
+            variant="danger-outline"
+            disabled={!selectedItems.length}
+            className="ml-auto"
+            onClick={() => onDelete(selectedItems)}
+          >
+            Удалить
+          </Button>
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => addNewRow(Date.now())}
+          >
+            Добавить
+          </Button>
+        </div>
+        <div className="overflow-hidden border rounded-md">
+          <table className="w-full table-fixed">
+            <tbody>
+              <>
+                {header}
+                {newRows}
+                {rows}
+              </>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div className="overflow-hidden border rounded-md">
-        <table className="w-full">
-          <tbody>{rows}</tbody>
-        </table>
-      </div>
-    </div>
+    </TableContext.Provider>
   );
 }
 
-type TableRowHeadProps = {
-  head: true;
-  id?: undefined;
-} & PropsWithChildren;
-
-type TableRowContentProps = {
-  head?: false;
+export type TableRowProps = {
   id: Id;
-} & PropsWithChildren;
-
-export type TableRowProps = TableRowHeadProps | TableRowContentProps;
-export type TableEditRowProps = {
+  children?: ReactNode;
+};
+export type TableEditableRowProps = {
   id?: Id;
 };
 
@@ -190,9 +223,37 @@ Table.Row = function TableRow(_: TableRowProps) {
   return null;
 };
 
-export type TableDataProps = {} & PropsWithChildren;
+Table.HeaderRow = function TableHeaderRow({ children }: PropsWithChildren) {
+  const { selectedItems, setSelectedItems, allItems } =
+    useContext(TableContext);
 
-Table.Data = function TableData({ children }: TableDataProps) {
+  const areAllItemsSelected = compareArrays(selectedItems, allItems);
+
+  return (
+    <tr className="bg-white border-b last:border-b-0">
+      <Table.Head>
+        <input
+          type="checkbox"
+          checked={areAllItemsSelected}
+          onChange={() => {
+            if (areAllItemsSelected) {
+              return setSelectedItems([]);
+            }
+            setSelectedItems(allItems);
+          }}
+        />
+      </Table.Head>
+      {children}
+      <Table.Data>{/* actions */}</Table.Data>
+    </tr>
+  );
+};
+
+Table.EditRow = function TableEditRow({ children }: PropsWithChildren) {
+  return <tr className="bg-white border-b last:border-b-0">{children}</tr>;
+};
+
+Table.Data = function TableData({ children }: PropsWithChildren) {
   return (
     <td className="px-6 py-3 text-sm">
       <div className="flex items-center">{children}</div>
@@ -200,9 +261,7 @@ Table.Data = function TableData({ children }: TableDataProps) {
   );
 };
 
-export type TableHeadProps = {} & PropsWithChildren;
-
-Table.Head = function TableHead({ children }: TableHeadProps) {
+Table.Head = function TableHead({ children }: PropsWithChildren) {
   return (
     <th className="px-6 py-3 text-sm text-left">
       <div className="flex items-center">{children}</div>

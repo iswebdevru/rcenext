@@ -1,23 +1,21 @@
 import { DashboardLayout } from '@/layouts';
 import { useTeachers } from '@/shared/api';
-import { Table, TableEditRowProps } from '@/shared/ui/Table';
+import { InputText } from '@/shared/ui/input';
+import { Table, TableEditableRowProps } from '@/shared/ui/Table';
 
-function AddTeacher({ id }: TableEditRowProps) {
+function AddTeacher({ id }: TableEditableRowProps) {
   return (
-    <>
+    <Table.EditRow>
       <Table.Data>
-        <input type="text" />
+        <InputText required />
       </Table.Data>
       <Table.Data>
-        <input type="text" />
+        <InputText required />
       </Table.Data>
       <Table.Data>
-        <input type="text" />
+        <InputText required />
       </Table.Data>
-      {/* <Table.Data>
-        <input type="text" />
-      </Table.Data> */}
-    </>
+    </Table.EditRow>
   );
 }
 
@@ -27,13 +25,19 @@ export default function Teachers() {
   return (
     <DashboardLayout>
       <div className="h-full p-6">
-        <Table onDelete={ids => console.log(ids)} EditComponent={AddTeacher}>
-          <Table.Row head>
-            <Table.Head>Имя</Table.Head>
-            <Table.Head>Фамилия</Table.Head>
-            <Table.Head>Отчество</Table.Head>
-            {/* <Table.Head>Предметы</Table.Head> */}
-          </Table.Row>
+        <Table
+          onDelete={ids => console.log(ids)}
+          onSave={() => {}}
+          EditComponent={AddTeacher}
+          header={
+            <Table.HeaderRow>
+              <Table.Head>Имя</Table.Head>
+              <Table.Head>Фамилия</Table.Head>
+              <Table.Head>Отчество</Table.Head>
+              {/* <Table.Head>Предметы</Table.Head> */}
+            </Table.HeaderRow>
+          }
+        >
           {data ? (
             data.map(teacher => (
               <Table.Row key={teacher.id} id={teacher.id}>
