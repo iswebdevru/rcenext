@@ -7,6 +7,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   Children,
+  cloneElement,
   createContext,
   Dispatch,
   PropsWithChildren,
@@ -16,7 +17,7 @@ import {
   useContext,
   useState,
 } from 'react';
-import { compareArrays } from '../lib/common';
+import { arrayN, compareArrays } from '../lib/common';
 import { clsx } from '../lib/ui';
 import { Button } from './button';
 import { Search } from './input';
@@ -24,10 +25,10 @@ import { Search } from './input';
 export type Id = string | number;
 export type TableProps = {
   onDelete: (ids: Id[]) => void;
-  onSave: (id?: number | string) => void;
   header: ReactNode;
-  children: ReactElement<TableRowProps> | ReactElement<TableRowProps>[];
-  EditComponent: (props: TableEditableRowProps) => JSX.Element;
+  children: ReactElement<TableRowProps> | ReactElement<TableRowProps>[] | null;
+  manager: ReactElement;
+  cols: number;
 };
 
 type TableContext = {
@@ -38,29 +39,37 @@ type TableContext = {
 
 const TableContext = createContext<TableContext>(undefined as any);
 
+export type TableManagerContext = {
+  id: Id;
+  isNew: boolean;
+  closeManager: () => void;
+};
+
+const TableManagerContext = createContext<TableManagerContext>(
+  undefined as any
+);
+
+export function useTableManagerContext() {
+  return useContext(TableManagerContext);
+}
+
 export function Table({
   children,
   onDelete,
-  onSave,
   header,
-  EditComponent,
+  manager,
+  cols,
 }: TableProps) {
   const [selectedItems, setSelectedItems] = useState<Id[]>([]);
   const [editableRowsIds, setEditableRowsIds] = useState<Id[]>([]);
-  const [newRowsIds, setNewRowsIds] = useState<number[]>([]);
+  const [newRowsIds, setNewRowsIds] = useState<Id[]>([]);
 
-  const addNewRow = (id: number) => setNewRowsIds(p => [...p, id]);
-  const delNewRow = (id: number) => setNewRowsIds(p => p.filter(v => v !== id));
+  const addNewRow = (id: Id) => setNewRowsIds(p => [id, ...p]);
+  const closeNewRow = (id: Id) => setNewRowsIds(p => p.filter(v => v !== id));
 
-  const toggleEditableRow = (id: Id) => {
-    setEditableRowsIds(p => {
-      if (p.includes(id)) {
-        return p.filter(v => v !== id);
-      }
-      return [...p, id];
-    });
-  };
-  const delEditableRow = (id: Id) =>
+  const addEditableRow = (id: Id) => setEditableRowsIds(p => [...p, id]);
+
+  const closeEditableRow = (id: Id) =>
     setEditableRowsIds(p => p.filter(v => v !== id));
 
   const toggleSelectedItem = (id: Id) => {
@@ -72,108 +81,81 @@ export function Table({
     });
   };
 
-  const allItems = Children.map(children, child => child.props.id);
+  const allItems = children
+    ? Children.map(children, child => child.props.id)
+    : [];
 
   const newRows = newRowsIds.map(id => (
-    <tr key={id} className="bg-white border-b last:border-b-0">
-      <Table.Data></Table.Data>
-      <EditComponent />
-      {
-        <Table.Data>
-          <button className="flex items-center justify-center p-1 group">
-            <FontAwesomeIcon
-              icon={faCheck}
-              fixedWidth
-              className="text-xl text-neutral-600 group-hover:text-green-500 group-hover:scale-110"
-            ></FontAwesomeIcon>
-          </button>
-          <button
-            className="flex items-center justify-center p-1 group"
-            onClick={() => delNewRow(id)}
-          >
-            <FontAwesomeIcon
-              icon={faXmark}
-              fixedWidth
-              className="text-xl text-neutral-600 group-hover:text-red-500 group-hover:scale-110"
-            />
-          </button>
-        </Table.Data>
-      }
-    </tr>
+    <TableManagerContext.Provider
+      key={id}
+      value={{ id, isNew: true, closeManager: () => closeNewRow(id) }}
+    >
+      {cloneElement(manager)}
+    </TableManagerContext.Provider>
   ));
 
-  const rows = Children.map(children, row => {
-    const isSelected = selectedItems.includes(row.props.id);
+  const rows = children
+    ? Children.map(children, row => {
+        const isSelected = selectedItems.includes(row.props.id);
 
-    if (editableRowsIds.includes(row.props.id)) {
-      return (
-        <tr className="bg-white border-b last:border-b-0">
-          <Table.Data></Table.Data>
-          <EditComponent id={row.props.id} />
-          {
-            <Table.Data>
-              <button className="flex items-center justify-center p-1 group">
-                <FontAwesomeIcon
-                  icon={faCheck}
-                  fixedWidth
-                  className="text-xl text-neutral-600 group-hover:text-green-500 group-hover:scale-110"
-                ></FontAwesomeIcon>
-              </button>
-              <button
-                className="flex items-center justify-center p-1 group"
-                onClick={() => delEditableRow(row.props.id)}
-              >
-                <FontAwesomeIcon
-                  icon={faRotateBack}
-                  fixedWidth
-                  className="text-xl text-neutral-600 group-hover:text-yellow-500 group-hover:scale-110"
-                />
-              </button>
-            </Table.Data>
-          }
-        </tr>
-      );
-    }
-
-    return (
-      <tr
-        className={clsx({
-          'border-b last:border-b-0': true,
-          'bg-blue-50': isSelected,
-          'bg-white': !isSelected,
-        })}
-      >
-        {
-          <Table.Data>
-            <input
-              type="checkbox"
-              checked={isSelected}
-              onChange={() => toggleSelectedItem(row.props.id)}
-            />
-          </Table.Data>
-        }
-        {row.props.children}
-        {
-          <Table.Data>
-            <button
-              className="p-1 group"
-              onClick={() => toggleEditableRow(row.props.id)}
+        if (editableRowsIds.includes(row.props.id)) {
+          return (
+            <TableManagerContext.Provider
+              value={{
+                id: row.props.id,
+                isNew: false,
+                closeManager: () => closeEditableRow(row.props.id),
+              }}
             >
-              <FontAwesomeIcon
-                icon={faPenToSquare}
-                fixedWidth
-                className="text-lg text-blue-500 transition-colors group-hover:text-blue-900 group-hover:scale-110"
-              />
-            </button>
-          </Table.Data>
+              {cloneElement(manager)}
+            </TableManagerContext.Provider>
+          );
         }
-      </tr>
-    );
-  });
+
+        return (
+          <tr
+            className={clsx({
+              'border-b last:border-b-0': true,
+              'bg-blue-50': isSelected,
+              'bg-white': !isSelected,
+            })}
+          >
+            {
+              <Table.Data>
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => toggleSelectedItem(row.props.id)}
+                />
+              </Table.Data>
+            }
+            {row.props.children}
+            {
+              <Table.Data>
+                <button
+                  className="p-1 group"
+                  onClick={() => addEditableRow(row.props.id)}
+                >
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    fixedWidth
+                    className="text-lg text-blue-500 transition-colors group-hover:text-blue-900 group-hover:scale-110"
+                  />
+                </button>
+              </Table.Data>
+            }
+          </tr>
+        );
+      })
+    : children;
 
   return (
     <TableContext.Provider
-      value={{ selectedItems, setSelectedItems, allItems }}
+      value={{
+        selectedItems,
+        setSelectedItems,
+        allItems,
+      }}
     >
       <div>
         <div className="flex gap-4 mb-4">
@@ -198,10 +180,14 @@ export function Table({
         <div className="overflow-hidden border rounded-md">
           <table className="w-full table-fixed">
             <tbody>
+              <>{header}</>
+              <>{newRows}</>
               <>
-                {header}
-                {newRows}
-                {rows}
+                {children
+                  ? rows
+                  : arrayN(10).map(i => (
+                      <Table.PlaceholderRow key={i} cols={cols + 2} />
+                    ))}
               </>
             </tbody>
           </table>
@@ -214,9 +200,6 @@ export function Table({
 export type TableRowProps = {
   id: Id;
   children?: ReactNode;
-};
-export type TableEditableRowProps = {
-  id?: Id;
 };
 
 Table.Row = function TableRow(_: TableRowProps) {
@@ -249,8 +232,96 @@ Table.HeaderRow = function TableHeaderRow({ children }: PropsWithChildren) {
   );
 };
 
-Table.EditRow = function TableEditRow({ children }: PropsWithChildren) {
-  return <tr className="bg-white border-b last:border-b-0">{children}</tr>;
+export type TableEditRowProps = {
+  children?: ReactNode;
+  onCreate: () => void | Promise<void>;
+  onUpdate: () => void | Promise<void>;
+};
+
+Table.EditRow = function TableEditRow({
+  children,
+  onCreate,
+  onUpdate,
+}: TableEditRowProps) {
+  const { isNew, closeManager } = useTableManagerContext();
+
+  return (
+    <tr className="bg-white border-b last:border-b-0">
+      <Table.Data>{/* select action */}</Table.Data>
+      {children}
+      {isNew ? (
+        <Table.Data>
+          <button
+            className="flex items-center justify-center p-1 group"
+            onClick={() => {
+              onCreate();
+              closeManager();
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faCheck}
+              fixedWidth
+              className="text-xl text-neutral-600 group-hover:text-green-500 group-hover:scale-110"
+            ></FontAwesomeIcon>
+          </button>
+          <button
+            className="flex items-center justify-center p-1 group"
+            onClick={closeManager}
+          >
+            <FontAwesomeIcon
+              icon={faXmark}
+              fixedWidth
+              className="text-xl text-neutral-600 group-hover:text-red-500 group-hover:scale-110"
+            />
+          </button>
+        </Table.Data>
+      ) : (
+        <Table.Data>
+          <button
+            className="flex items-center justify-center p-1 group"
+            onClick={() => {
+              onUpdate();
+              closeManager();
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faCheck}
+              fixedWidth
+              className="text-xl text-neutral-600 group-hover:text-green-500 group-hover:scale-110"
+            ></FontAwesomeIcon>
+          </button>
+          <button
+            className="flex items-center justify-center p-1 group"
+            onClick={closeManager}
+          >
+            <FontAwesomeIcon
+              icon={faRotateBack}
+              fixedWidth
+              className="text-xl text-neutral-600 group-hover:text-yellow-500 group-hover:scale-110"
+            />
+          </button>
+        </Table.Data>
+      )}
+    </tr>
+  );
+};
+
+export type TablePlaceholderRowProps = {
+  cols: number;
+};
+
+Table.PlaceholderRow = function TablePlaceholderRow({
+  cols,
+}: TablePlaceholderRowProps) {
+  return (
+    <tr className="bg-white border-b last:border-b-0">
+      {arrayN(cols).map(i => (
+        <Table.Data key={i}>
+          <div></div>
+        </Table.Data>
+      ))}
+    </tr>
+  );
 };
 
 Table.Data = function TableData({ children }: PropsWithChildren) {

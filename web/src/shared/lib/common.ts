@@ -5,10 +5,10 @@ export function compareArrays<T>(a1: T[], a2: T[]) {
   return a1.every(v => a2.includes(v));
 }
 
-// export function arrayN(n: number) {
-//   const a: number[] = [];
-//   for (let i = 0; i < n; i++) {
-//     a.push(i);
-//   }
-//   return a;
-// }
+export function arrayN(n: number) {
+  const a: number[] = [];
+  for (let i = 0; i < n; i++) {
+    a.push(i);
+  }
+  return a;
+}

@@ -1,19 +1,53 @@
 import { DashboardLayout } from '@/layouts';
-import { useTeachers } from '@/shared/api';
+import { useTeacher, useTeachers } from '@/shared/api';
 import { InputText } from '@/shared/ui/input';
-import { Table, TableEditableRowProps } from '@/shared/ui/Table';
+import { Table, useTableManagerContext } from '@/shared/ui/Table';
+import { useState } from 'react';
 
-function AddTeacher({ id }: TableEditableRowProps) {
+function ManageTeacher() {
+  const { id, isNew } = useTableManagerContext();
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [patronymic, setPatronymic] = useState('');
+
+  useTeacher(isNew ? undefined : (id as number), {
+    onSuccess: data => {
+      setFirstName(data.first_name);
+      setLastName(data.last_name);
+      setPatronymic(data.patronymic);
+    },
+  });
+
   return (
-    <Table.EditRow>
+    <Table.EditRow
+      onCreate={() => {
+        console.log('created');
+      }}
+      onUpdate={() => {
+        console.log('updated');
+      }}
+    >
       <Table.Data>
-        <InputText required />
+        <InputText
+          value={firstName}
+          onChange={e => setFirstName(e.target.value)}
+          required
+        />
       </Table.Data>
       <Table.Data>
-        <InputText required />
+        <InputText
+          value={lastName}
+          onChange={e => setLastName(e.target.value)}
+          required
+        />
       </Table.Data>
       <Table.Data>
-        <InputText required />
+        <InputText
+          value={patronymic}
+          onChange={e => setPatronymic(e.target.value)}
+          required
+        />
       </Table.Data>
     </Table.EditRow>
   );
@@ -26,31 +60,26 @@ export default function Teachers() {
     <DashboardLayout>
       <div className="h-full p-6">
         <Table
-          onDelete={ids => console.log(ids)}
-          onSave={() => {}}
-          EditComponent={AddTeacher}
+          onDelete={() => console.log('deleted')}
+          manager={<ManageTeacher />}
+          cols={3}
           header={
             <Table.HeaderRow>
               <Table.Head>Имя</Table.Head>
               <Table.Head>Фамилия</Table.Head>
               <Table.Head>Отчество</Table.Head>
-              {/* <Table.Head>Предметы</Table.Head> */}
             </Table.HeaderRow>
           }
         >
-          {data ? (
-            data.map(teacher => (
-              <Table.Row key={teacher.id} id={teacher.id}>
-                <Table.Data>{teacher.first_name}</Table.Data>
-                <Table.Data>{teacher.last_name}</Table.Data>
-                <Table.Data>{teacher.patronymic}</Table.Data>
-              </Table.Row>
-            ))
-          ) : (
-            <Table.Row id={123}>
-              <Table.Data>f</Table.Data>
-            </Table.Row>
-          )}
+          {data
+            ? data.map(teacher => (
+                <Table.Row key={teacher.id} id={teacher.id}>
+                  <Table.Data>{teacher.first_name}</Table.Data>
+                  <Table.Data>{teacher.last_name}</Table.Data>
+                  <Table.Data>{teacher.patronymic}</Table.Data>
+                </Table.Row>
+              ))
+            : null}
         </Table>
       </div>
     </DashboardLayout>
