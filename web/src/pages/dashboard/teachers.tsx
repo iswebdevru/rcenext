@@ -1,11 +1,12 @@
 import { DashboardLayout } from '@/layouts';
-import { useTeacher, useTeachers } from '@/shared/api';
+import { useTeacher, useTeacherCreate, useTeachers } from '@/shared/api';
 import { InputText } from '@/shared/ui/input';
 import { Table, useTableManagerContext } from '@/shared/ui/Table';
 import { useState } from 'react';
 
 function ManageTeacher() {
   const { id, isNew } = useTableManagerContext();
+  const { trigger } = useTeacherCreate();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -22,7 +23,13 @@ function ManageTeacher() {
   return (
     <Table.EditRow
       onCreate={() => {
-        console.log('created');
+        const payload = {
+          first_name: firstName,
+          last_name: lastName,
+          patronymic: patronymic,
+          subjects: [],
+        };
+        return trigger(payload);
       }}
       onUpdate={() => {
         console.log('updated');
