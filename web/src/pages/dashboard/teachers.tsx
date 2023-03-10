@@ -1,7 +1,7 @@
 import { DashboardLayout } from '@/layouts';
 import { useTeacherDelete, useTeachers } from '@/shared/api';
 import { Id, Table } from '@/shared/ui/Table';
-import { TeachersTableManager } from '@/features/teachers';
+import { TeachersTableManager, TeacherSubjects } from '@/features/teachers';
 
 export default function Teachers() {
   const { data, mutate: refetchTeachers } = useTeachers();
@@ -25,6 +25,7 @@ export default function Teachers() {
               <Table.Head>Имя</Table.Head>
               <Table.Head>Фамилия</Table.Head>
               <Table.Head>Отчество</Table.Head>
+              <Table.Head>Предметы</Table.Head>
             </Table.HeaderRow>
           }
           cols={3}
@@ -35,6 +36,9 @@ export default function Teachers() {
                   <Table.Data>{teacher.first_name}</Table.Data>
                   <Table.Data>{teacher.last_name}</Table.Data>
                   <Table.Data>{teacher.patronymic}</Table.Data>
+                  <Table.Data>
+                    <TeacherSubjects url={teacher.subjects_url} />
+                  </Table.Data>
                 </Table.Row>
               ))
             : null}

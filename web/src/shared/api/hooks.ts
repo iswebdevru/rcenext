@@ -1,6 +1,6 @@
 import useSWR, { SWRConfiguration } from 'swr';
 import useSWRMutation from 'swr/mutation';
-import { API, Teacher, TeacherAdd, TeacherUpdate } from './contracts';
+import { API, Subject, Teacher, TeacherAdd, TeacherUpdate } from './contracts';
 import { fetcher } from './fetch';
 
 export function useTeachers() {
@@ -53,4 +53,8 @@ export function useTeacherUpdate() {
       }) as any;
     }
   );
+}
+
+export function useTeacherSubjects(url: string) {
+  return useSWR<Subject[]>(url, fetcher);
 }
