@@ -1,6 +1,6 @@
 import useSWR, { SWRConfiguration } from 'swr';
 import useSWRMutation from 'swr/mutation';
-import { API, Teacher, TeacherAdd } from './contracts';
+import { API, Teacher, TeacherAdd, TeacherUpdate } from './contracts';
 import { fetcher } from './fetch';
 
 export function useTeachers() {
@@ -9,9 +9,9 @@ export function useTeachers() {
 
 export function useTeacher(id?: number, config?: SWRConfiguration<Teacher>) {
   return useSWR(
-    id ? [`${API}/teachers`, id] : null,
+    id ? [`${API}/teachers/`, id] : null,
     ([url, id]) => {
-      return fetcher(`${url}/${id}/`) as Promise<Teacher>;
+      return fetcher(`${url}${id}/`) as Promise<Teacher>;
     },
     config
   );
@@ -32,9 +32,25 @@ export function useTeacherCreate() {
   );
 }
 
-// export async function updateTeacher(id: number, body: TeacherUpdate) {
-//   return fetcher(`${API}/teachers/${id}`, {
-//     method: 'PATCH',
-//     body: JSON.stringify(body),
-//   });
-// }
+export function useTeacherDelete() {
+  return useSWRMutation(`${API}/teachers/`, (url, { arg }: { arg: number }) => {
+    return fetch(`${url}${arg}/`, {
+      method: 'DELETE',
+    });
+  });
+}
+
+export function useTeacherUpdate() {
+  return useSWRMutation(
+    `${API}/teachers/`,
+    (url, { arg }: { arg: { id: number; body: TeacherUpdate } }) => {
+      return fetcher(`${url}${arg.id}/`, {
+        method: 'PATCH',
+        body: JSON.stringify(arg.body),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }) as any;
+    }
+  );
+}

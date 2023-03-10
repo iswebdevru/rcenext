@@ -1,75 +1,25 @@
 import { DashboardLayout } from '@/layouts';
-import { useTeacher, useTeacherCreate, useTeachers } from '@/shared/api';
-import { InputText } from '@/shared/ui/input';
-import { Table, useTableManagerContext } from '@/shared/ui/Table';
-import { useState } from 'react';
-
-function ManageTeacher() {
-  const { id, isNew } = useTableManagerContext();
-  const { trigger } = useTeacherCreate();
-
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [patronymic, setPatronymic] = useState('');
-
-  useTeacher(isNew ? undefined : (id as number), {
-    onSuccess: data => {
-      setFirstName(data.first_name);
-      setLastName(data.last_name);
-      setPatronymic(data.patronymic);
-    },
-  });
-
-  return (
-    <Table.EditRow
-      onCreate={() => {
-        const payload = {
-          first_name: firstName,
-          last_name: lastName,
-          patronymic: patronymic,
-          subjects: [],
-        };
-        return trigger(payload);
-      }}
-      onUpdate={() => {
-        console.log('updated');
-      }}
-    >
-      <Table.Data>
-        <InputText
-          value={firstName}
-          onChange={e => setFirstName(e.target.value)}
-          required
-        />
-      </Table.Data>
-      <Table.Data>
-        <InputText
-          value={lastName}
-          onChange={e => setLastName(e.target.value)}
-          required
-        />
-      </Table.Data>
-      <Table.Data>
-        <InputText
-          value={patronymic}
-          onChange={e => setPatronymic(e.target.value)}
-          required
-        />
-      </Table.Data>
-    </Table.EditRow>
-  );
-}
+import { useTeacherDelete, useTeachers } from '@/shared/api';
+import { Id, Table } from '@/shared/ui/Table';
+import { TeachersTableManager } from '@/features/teachers';
 
 export default function Teachers() {
-  const { data } = useTeachers();
+  const { data, mutate: refetchTeachers } = useTeachers();
+  const { trigger: deleteTeacher } = useTeacherDelete();
+
+  const deleteTeachers = async (ids: Id[]) => {
+    await Promise.all(
+      ids.map(id => deleteTeacher(id as number, { revalidate: false }))
+    );
+    refetchTeachers();
+  };
 
   return (
     <DashboardLayout>
       <div className="h-full p-6">
         <Table
-          onDelete={() => console.log('deleted')}
-          manager={<ManageTeacher />}
-          cols={3}
+          onDelete={deleteTeachers}
+          manager={<TeachersTableManager />}
           header={
             <Table.HeaderRow>
               <Table.Head>Имя</Table.Head>
@@ -77,6 +27,7 @@ export default function Teachers() {
               <Table.Head>Отчество</Table.Head>
             </Table.HeaderRow>
           }
+          cols={3}
         >
           {data
             ? data.map(teacher => (

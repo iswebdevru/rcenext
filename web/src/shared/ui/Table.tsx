@@ -24,7 +24,7 @@ import { Search } from './input';
 
 export type Id = string | number;
 export type TableProps = {
-  onDelete: (ids: Id[]) => void;
+  onDelete: (ids: Id[]) => Promise<void> | void;
   header: ReactNode;
   children: ReactElement<TableRowProps> | ReactElement<TableRowProps>[] | null;
   manager: ReactElement;
@@ -165,7 +165,10 @@ export function Table({
             variant="danger-outline"
             disabled={!selectedItems.length}
             className="ml-auto"
-            onClick={() => onDelete(selectedItems)}
+            onClick={async () => {
+              await onDelete(selectedItems);
+              setSelectedItems([]);
+            }}
           >
             Удалить
           </Button>
@@ -232,17 +235,17 @@ Table.HeaderRow = function TableHeaderRow({ children }: PropsWithChildren) {
   );
 };
 
-export type TableEditRowProps = {
+export type TableManagerRowProps = {
   children?: ReactNode;
   onCreate: () => void | Promise<void>;
   onUpdate: () => void | Promise<void>;
 };
 
-Table.EditRow = function TableEditRow({
+Table.ManagerRow = function TableManagerRow({
   children,
   onCreate,
   onUpdate,
-}: TableEditRowProps) {
+}: TableManagerRowProps) {
   const { isNew, closeManager } = useTableManagerContext();
 
   return (
@@ -253,8 +256,8 @@ Table.EditRow = function TableEditRow({
         <Table.Data>
           <button
             className="flex items-center justify-center p-1 group"
-            onClick={() => {
-              onCreate();
+            onClick={async () => {
+              await onCreate();
               closeManager();
             }}
           >
@@ -279,8 +282,8 @@ Table.EditRow = function TableEditRow({
         <Table.Data>
           <button
             className="flex items-center justify-center p-1 group"
-            onClick={() => {
-              onUpdate();
+            onClick={async () => {
+              await onUpdate();
               closeManager();
             }}
           >
@@ -317,7 +320,7 @@ Table.PlaceholderRow = function TablePlaceholderRow({
     <tr className="bg-white border-b last:border-b-0">
       {arrayN(cols).map(i => (
         <Table.Data key={i}>
-          <div></div>
+          <div className="w-full h-8 rounded-md bg-neutral-200 animate-pulse"></div>
         </Table.Data>
       ))}
     </tr>
