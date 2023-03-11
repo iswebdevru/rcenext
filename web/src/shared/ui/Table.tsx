@@ -6,19 +6,15 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  Children,
   ComponentPropsWithRef,
   createContext,
   Dispatch,
   forwardRef,
-  MutableRefObject,
   PropsWithChildren,
   ReactElement,
   ReactNode,
   SetStateAction,
   useContext,
-  useEffect,
-  useRef,
   useState,
 } from 'react';
 import { compareArrays } from '../lib/common';
@@ -31,22 +27,22 @@ export type Id = string | number;
 export type TableProps = {
   header: ReactNode;
   children: ReactNode;
+  allItems: Id[];
   updater: (id: Id) => ReactElement;
   creator: () => ReactElement;
+  onDelete: (ids: Id[]) => Promise<unknown> | unknown;
 };
 
 type AsyncAction = () => Promise<unknown> | unknown;
 
 type TableContext = {
+  allItems: Id[];
   selectedItems: Id[];
   setSelectedItems: Dispatch<SetStateAction<Id[]>>;
   toggleSelectedItem: (id: Id) => void;
   editingItems: Id[];
   addEditingItem: (id: Id) => void;
   removeEditingItem: (id: Id) => void;
-  allItems: Id[];
-  setAllItems: Dispatch<SetStateAction<Id[]>>;
-  deleteTriggersMapRef: MutableRefObject<Map<Id, AsyncAction>>;
   updater: (id: Id) => ReactElement;
 };
 
@@ -60,15 +56,20 @@ const TableRowManageContext = createContext<TableRowManageContext>(
   undefined as any
 );
 
-export function Table({ children, header, updater, creator }: TableProps) {
+export function Table({
+  children,
+  allItems,
+  header,
+  updater,
+  creator,
+  onDelete,
+}: TableProps) {
   const [selectedItems, setSelectedItems] = useState<Id[]>([]);
   const [editingItems, setEditingItems] = useState<Id[]>([]);
-  const [newRowsIds, setNewRowsIds] = useState<Id[]>([]);
-  const deleteTriggersMapRef = useRef<Map<Id, AsyncAction>>(new Map());
-  const [allItems, setAllItems] = useState<Id[]>([]);
+  const [newItems, setNewItems] = useState<Id[]>([]);
 
-  const addNewRow = (id: Id) => setNewRowsIds(p => [id, ...p]);
-  const closeNewRow = (id: Id) => setNewRowsIds(p => p.filter(v => v !== id));
+  const addNewItem = (id: Id) => setNewItems(p => [id, ...p]);
+  const removeNewItem = (id: Id) => setNewItems(p => p.filter(v => v !== id));
 
   const addEditingItem = (id: Id) => setEditingItems(p => [...p, id]);
 
@@ -84,16 +85,14 @@ export function Table({ children, header, updater, creator }: TableProps) {
     });
   };
 
-  const newRows = newRowsIds.map(id => (
+  const newRows = newItems.map(id => (
     <TableRowManageContext.Provider
       key={id}
-      value={{ close: () => closeNewRow(id) }}
+      value={{ close: () => removeNewItem(id) }}
     >
       {creator()}
     </TableRowManageContext.Provider>
   ));
-  console.log('root rerender');
-  console.log(children);
 
   return (
     <TableContext.Provider
@@ -104,9 +103,7 @@ export function Table({ children, header, updater, creator }: TableProps) {
         editingItems,
         addEditingItem,
         removeEditingItem,
-        deleteTriggersMapRef,
         allItems,
-        setAllItems,
         updater,
       }}
     >
@@ -119,14 +116,7 @@ export function Table({ children, header, updater, creator }: TableProps) {
             disabled={!selectedItems.length}
             className="ml-auto"
             onClick={async () => {
-              const promises = selectedItems.map(id => {
-                const trigger = deleteTriggersMapRef.current.get(id);
-                if (!trigger) {
-                  return Promise.resolve();
-                }
-                return trigger();
-              });
-              await Promise.all(promises);
+              await onDelete(selectedItems);
               setSelectedItems([]);
             }}
           >
@@ -135,7 +125,7 @@ export function Table({ children, header, updater, creator }: TableProps) {
           <Button
             type="button"
             variant="primary"
-            onClick={() => addNewRow(Date.now())}
+            onClick={() => addNewItem(Date.now())}
           >
             Добавить
           </Button>
@@ -154,51 +144,20 @@ export function Table({ children, header, updater, creator }: TableProps) {
   );
 }
 
-Table.RowPlain = forwardRef<HTMLTableRowElement, ComponentPropsWithRef<'tr'>>(
-  function TableRowPlain({ className, ...props }, ref) {
-    return (
-      <tr
-        {...props}
-        ref={ref}
-        className={classNameWithDefaults('border-b last:border-b-0', className)}
-      />
-    );
-  }
-);
-
 export type TableRowProps = {
   id: Id;
-  onDelete: AsyncAction;
   children?: ReactNode;
 };
 
-Table.Row = function TableRow({ id, onDelete, children }: TableRowProps) {
+Table.Row = function TableRow({ id, children }: TableRowProps) {
   const {
     editingItems,
     addEditingItem,
     removeEditingItem,
     selectedItems,
     toggleSelectedItem,
-    deleteTriggersMapRef,
-    setAllItems,
     updater,
   } = useContext(TableContext);
-
-  useEffect(() => {
-    const deleteTriggers = deleteTriggersMapRef.current;
-    deleteTriggers.set(id, onDelete);
-
-    setAllItems(p => {
-      if (!p.includes(id)) {
-        setAllItems(p => [...p, id]);
-      }
-      return p;
-    });
-    return () => {
-      setAllItems(p => p.filter(v => v !== id));
-      deleteTriggers.delete(id);
-    };
-  }, [id, deleteTriggersMapRef, setAllItems, onDelete]);
 
   const isEditing = editingItems.includes(id);
 
@@ -265,83 +224,92 @@ Table.HeaderRow = function TableHeaderRow({ children }: PropsWithChildren) {
   );
 };
 
-export type TableManagerRowProps = {
+export type TableRowCreateProps = {
   children?: ReactNode;
-  onCreate: () => void | Promise<void>;
-  onUpdate: () => void | Promise<void>;
+  onCreate: AsyncAction;
 };
 
-Table.ManagerRow = function TableManagerRow({
+Table.RowCreate = function TableRowCreate({
   children,
   onCreate,
-  onUpdate,
-}: TableManagerRowProps) {
+}: TableRowCreateProps) {
   const { close } = useContext(TableRowManageContext);
-  const isNew = true;
 
   return (
     <Table.RowPlain className="bg-white">
-      <Table.Data>{/* select action */}</Table.Data>
+      <Table.Data>{/* select */}</Table.Data>
       {children}
-      {isNew ? (
-        <Table.Data>
-          <button
-            className="flex items-center justify-center p-1 group"
-            onClick={async () => {
-              await onCreate();
-              close();
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faCheck}
-              fixedWidth
-              className="text-xl text-neutral-600 group-hover:text-green-500 group-hover:scale-110"
-            ></FontAwesomeIcon>
-          </button>
-          <button
-            className="flex items-center justify-center p-1 group"
-            onClick={close}
-          >
-            <FontAwesomeIcon
-              icon={faXmark}
-              fixedWidth
-              className="text-xl text-neutral-600 group-hover:text-red-500 group-hover:scale-110"
-            />
-          </button>
-        </Table.Data>
-      ) : (
-        <Table.Data>
-          <button
-            className="flex items-center justify-center p-1 group"
-            onClick={async () => {
-              await onUpdate();
-              close();
-            }}
-          >
-            <FontAwesomeIcon
-              icon={faCheck}
-              fixedWidth
-              className="text-xl text-neutral-600 group-hover:text-green-500 group-hover:scale-110"
-            ></FontAwesomeIcon>
-          </button>
-          <button
-            className="flex items-center justify-center p-1 group"
-            onClick={close}
-          >
-            <FontAwesomeIcon
-              icon={faRotateBack}
-              fixedWidth
-              className="text-xl text-neutral-600 group-hover:text-yellow-500 group-hover:scale-110"
-            />
-          </button>
-        </Table.Data>
-      )}
+      <Table.Data>
+        <button
+          className="flex items-center justify-center p-1 group"
+          onClick={async () => {
+            await onCreate();
+            close();
+          }}
+        >
+          <FontAwesomeIcon
+            icon={faCheck}
+            fixedWidth
+            className="text-xl text-neutral-600 group-hover:text-green-500 group-hover:scale-110"
+          ></FontAwesomeIcon>
+        </button>
+        <button
+          className="flex items-center justify-center p-1 group"
+          onClick={close}
+        >
+          <FontAwesomeIcon
+            icon={faXmark}
+            fixedWidth
+            className="text-xl text-neutral-600 group-hover:text-red-500 group-hover:scale-110"
+          />
+        </button>
+      </Table.Data>
     </Table.RowPlain>
   );
 };
 
-Table.RowCreator = function TableRowCreator() {
-  return <Table.RowPlain className="bg-white"></Table.RowPlain>;
+export type TableRowUpdateProps = {
+  children?: ReactNode;
+  onUpdate: AsyncAction;
+};
+
+Table.RowUpdate = function TableRowUpdate({
+  children,
+  onUpdate,
+}: TableRowUpdateProps) {
+  const { close } = useContext(TableRowManageContext);
+
+  return (
+    <Table.RowPlain className="bg-white">
+      <Table.Data>{/* select */}</Table.Data>
+      {children}
+      <Table.Data>
+        <button
+          className="flex items-center justify-center p-1 group"
+          onClick={async () => {
+            await onUpdate();
+            close();
+          }}
+        >
+          <FontAwesomeIcon
+            icon={faCheck}
+            fixedWidth
+            className="text-xl text-neutral-600 group-hover:text-green-500 group-hover:scale-110"
+          ></FontAwesomeIcon>
+        </button>
+        <button
+          className="flex items-center justify-center p-1 group"
+          onClick={close}
+        >
+          <FontAwesomeIcon
+            icon={faRotateBack}
+            fixedWidth
+            className="text-xl text-neutral-600 group-hover:text-yellow-500 group-hover:scale-110"
+          />
+        </button>
+      </Table.Data>
+    </Table.RowPlain>
+  );
 };
 
 Table.DataPlaceholder = function TableDataPlaceholder() {
@@ -351,6 +319,18 @@ Table.DataPlaceholder = function TableDataPlaceholder() {
     </Table.Data>
   );
 };
+
+Table.RowPlain = forwardRef<HTMLTableRowElement, ComponentPropsWithRef<'tr'>>(
+  function TableRowPlain({ className, ...props }, ref) {
+    return (
+      <tr
+        {...props}
+        ref={ref}
+        className={classNameWithDefaults('border-b last:border-b-0', className)}
+      />
+    );
+  }
+);
 
 Table.Data = function TableData({ children }: PropsWithChildren) {
   return (

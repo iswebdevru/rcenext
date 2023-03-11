@@ -1,21 +1,34 @@
 import { DashboardLayout } from '@/layouts';
-import { Teacher, useTeacherDelete, useTeachers } from '@/shared/api';
-import { Table } from '@/shared/ui/Table';
+import { useTeacherDelete, useTeachers } from '@/shared/api';
+import { Id, Table } from '@/shared/ui/Table';
 import {
-  TeachersTableManager,
+  TeachersTableRow,
+  TeachersTableRowCreate,
   TeachersTableRowPlaceholder,
-  TeacherSubjects,
+  TeachersTableRowUpdate,
 } from '@/features/teachers';
 
 export default function Teachers() {
-  const { data } = useTeachers();
+  const { data, mutate: refreshTeachers } = useTeachers();
+  const { trigger: deleteTeacher } = useTeacherDelete();
+
+  const deleteTeachers = async (ids: Id[]) => {
+    await Promise.all(
+      ids.map(id => deleteTeacher(id as number, { revalidate: false }))
+    );
+    refreshTeachers();
+  };
+
+  const allItems = data ? data.map(t => t.id) : [];
 
   return (
     <DashboardLayout>
       <div className="h-full p-6">
         <Table
-          creator={() => <TeachersTableManager />}
-          updater={id => <TeachersTableManager />}
+          allItems={allItems}
+          onDelete={deleteTeachers}
+          creator={() => <TeachersTableRowCreate />}
+          updater={id => <TeachersTableRowUpdate id={id as number} />}
           header={
             <Table.HeaderRow>
               <Table.Head>Имя</Table.Head>
@@ -26,30 +39,23 @@ export default function Teachers() {
           }
         >
           {data ? (
-            data.map(teacher => <TeacherRow key={teacher.id} data={teacher} />)
+            data.map(teacher => (
+              <TeachersTableRow key={teacher.id} data={teacher} />
+            ))
           ) : (
-            <TeachersTableRowPlaceholder />
+            <>
+              <TeachersTableRowPlaceholder />
+              <TeachersTableRowPlaceholder />
+              <TeachersTableRowPlaceholder />
+              <TeachersTableRowPlaceholder />
+              <TeachersTableRowPlaceholder />
+              <TeachersTableRowPlaceholder />
+              <TeachersTableRowPlaceholder />
+              <TeachersTableRowPlaceholder />
+            </>
           )}
         </Table>
       </div>
     </DashboardLayout>
-  );
-}
-
-type TeacherRowProps = {
-  data: Teacher;
-};
-
-function TeacherRow({ data }: TeacherRowProps) {
-  const { trigger } = useTeacherDelete(data.id);
-  return (
-    <Table.Row id={data.id} onDelete={trigger}>
-      <Table.Data>{data.first_name}</Table.Data>
-      <Table.Data>{data.last_name}</Table.Data>
-      <Table.Data>{data.patronymic}</Table.Data>
-      <Table.Data>
-        <TeacherSubjects url={data.subjects_url} />
-      </Table.Data>
-    </Table.Row>
   );
 }

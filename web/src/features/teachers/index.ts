@@ -1,3 +1,4 @@
 export * from './TeachersTableRowPlaceholder';
-export * from './TeachersTableManager';
-export * from './TeacherSubjects';
+export * from './TeachersTableRow';
+export * from './TeachersTableRowUpdate';
+export * from './TeachersTableRowCreate';

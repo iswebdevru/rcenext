@@ -1,45 +1,53 @@
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import useSWRMutation from 'swr/mutation';
-import { API, Subject, TeacherAdd, TeacherUpdate } from './contracts';
+import { Subject, TeacherAdd, TeacherUpdate } from './contracts';
 import { fetcher } from './fetch';
 import {
   getTeachers,
   getTeacher,
   deleteTeacher,
   createTeacher,
+  updateTeacher,
 } from './requests';
 
+export const teachersKey = 'api/teachers/';
+
 export function useTeachers() {
-  return useSWR(`api/teachers/`, getTeachers);
+  return useSWR(teachersKey, getTeachers);
 }
 
 export function useTeacher(id: number) {
-  return useSWR(['api/teachers/', id], ([_, id]) => getTeacher(id));
+  return useSWR([teachersKey, id], ([_, id]) => getTeacher(id));
 }
 
 export function useTeacherCreate() {
-  return useSWRMutation(`api/teachers/`, (_, { arg }: { arg: TeacherAdd }) =>
+  return useSWRMutation(teachersKey, (_, { arg }: { arg: TeacherAdd }) =>
     createTeacher(arg)
   );
 }
 
-export function useTeacherDelete(id: number) {
-  return useSWRMutation('api/teachers/', () => deleteTeacher(id));
+export function useTeacherDelete() {
+  return useSWRMutation(teachersKey, (_, { arg }: { arg: number }) =>
+    deleteTeacher(arg)
+  );
 }
 
 export function useTeacherUpdate() {
-  return useSWRMutation(
-    `${API}/teachers/`,
-    (url, { arg }: { arg: { id: number; body: TeacherUpdate } }) => {
-      return fetcher(`${url}${arg.id}/`, {
-        method: 'PATCH',
-        body: JSON.stringify(arg.body),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }) as any;
-    }
-  );
+  const { mutate } = useSWRConfig();
+  return async (id: number, payload: TeacherUpdate) => {
+    return mutate(
+      key => {
+        return (
+          key === teachersKey ||
+          (Array.isArray(key) && `${key[0]}${key[1]}` === `${teachersKey}${id}`)
+        );
+      },
+      () => updateTeacher(id, payload),
+      {
+        populateCache: false,
+      }
+    );
+  };
 }
 
 export function useTeacherSubjects(url: string) {
