@@ -7,70 +7,73 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   Children,
-  cloneElement,
+  ComponentPropsWithRef,
   createContext,
   Dispatch,
+  forwardRef,
+  MutableRefObject,
   PropsWithChildren,
   ReactElement,
   ReactNode,
   SetStateAction,
   useContext,
+  useEffect,
+  useRef,
   useState,
 } from 'react';
-import { arrayN, compareArrays } from '../lib/common';
-import { clsx } from '../lib/ui';
+import { compareArrays } from '../lib/common';
+import { classNameWithDefaults, clsx } from '../lib/ui';
 import { Button } from './button';
 import { Search } from './input';
 
 export type Id = string | number;
+
 export type TableProps = {
-  onDelete: (ids: Id[]) => Promise<void> | void;
   header: ReactNode;
-  children: ReactElement<TableRowProps> | ReactElement<TableRowProps>[] | null;
-  manager: ReactElement;
-  cols: number;
+  children: ReactNode;
+  updater: (id: Id) => ReactElement;
+  creator: () => ReactElement;
 };
+
+type AsyncAction = () => Promise<unknown> | unknown;
 
 type TableContext = {
   selectedItems: Id[];
   setSelectedItems: Dispatch<SetStateAction<Id[]>>;
+  toggleSelectedItem: (id: Id) => void;
+  editingItems: Id[];
+  addEditingItem: (id: Id) => void;
+  removeEditingItem: (id: Id) => void;
   allItems: Id[];
+  setAllItems: Dispatch<SetStateAction<Id[]>>;
+  deleteTriggersMapRef: MutableRefObject<Map<Id, AsyncAction>>;
+  updater: (id: Id) => ReactElement;
 };
 
 const TableContext = createContext<TableContext>(undefined as any);
 
-export type TableManagerContext = {
-  id: Id;
-  isNew: boolean;
-  closeManager: () => void;
+type TableRowManageContext = {
+  close: () => void;
 };
 
-const TableManagerContext = createContext<TableManagerContext>(
+const TableRowManageContext = createContext<TableRowManageContext>(
   undefined as any
 );
 
-export function useTableManagerContext() {
-  return useContext(TableManagerContext);
-}
-
-export function Table({
-  children,
-  onDelete,
-  header,
-  manager,
-  cols,
-}: TableProps) {
+export function Table({ children, header, updater, creator }: TableProps) {
   const [selectedItems, setSelectedItems] = useState<Id[]>([]);
-  const [editableRowsIds, setEditableRowsIds] = useState<Id[]>([]);
+  const [editingItems, setEditingItems] = useState<Id[]>([]);
   const [newRowsIds, setNewRowsIds] = useState<Id[]>([]);
+  const deleteTriggersMapRef = useRef<Map<Id, AsyncAction>>(new Map());
+  const [allItems, setAllItems] = useState<Id[]>([]);
 
   const addNewRow = (id: Id) => setNewRowsIds(p => [id, ...p]);
   const closeNewRow = (id: Id) => setNewRowsIds(p => p.filter(v => v !== id));
 
-  const addEditableRow = (id: Id) => setEditableRowsIds(p => [...p, id]);
+  const addEditingItem = (id: Id) => setEditingItems(p => [...p, id]);
 
-  const closeEditableRow = (id: Id) =>
-    setEditableRowsIds(p => p.filter(v => v !== id));
+  const removeEditingItem = (id: Id) =>
+    setEditingItems(p => p.filter(v => v !== id));
 
   const toggleSelectedItem = (id: Id) => {
     setSelectedItems(p => {
@@ -81,80 +84,30 @@ export function Table({
     });
   };
 
-  const allItems = children
-    ? Children.map(children, child => child.props.id)
-    : [];
-
   const newRows = newRowsIds.map(id => (
-    <TableManagerContext.Provider
+    <TableRowManageContext.Provider
       key={id}
-      value={{ id, isNew: true, closeManager: () => closeNewRow(id) }}
+      value={{ close: () => closeNewRow(id) }}
     >
-      {cloneElement(manager)}
-    </TableManagerContext.Provider>
+      {creator()}
+    </TableRowManageContext.Provider>
   ));
-
-  const rows = children
-    ? Children.map(children, row => {
-        const isSelected = selectedItems.includes(row.props.id);
-
-        if (editableRowsIds.includes(row.props.id)) {
-          return (
-            <TableManagerContext.Provider
-              value={{
-                id: row.props.id,
-                isNew: false,
-                closeManager: () => closeEditableRow(row.props.id),
-              }}
-            >
-              {cloneElement(manager)}
-            </TableManagerContext.Provider>
-          );
-        }
-
-        return (
-          <tr
-            className={clsx({
-              'border-b last:border-b-0': true,
-              'bg-blue-50': isSelected,
-              'bg-white': !isSelected,
-            })}
-          >
-            {
-              <Table.Data>
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => toggleSelectedItem(row.props.id)}
-                />
-              </Table.Data>
-            }
-            {row.props.children}
-            {
-              <Table.Data>
-                <button
-                  className="p-1 group"
-                  onClick={() => addEditableRow(row.props.id)}
-                >
-                  <FontAwesomeIcon
-                    icon={faPenToSquare}
-                    fixedWidth
-                    className="text-lg text-blue-500 transition-colors group-hover:text-blue-900 group-hover:scale-110"
-                  />
-                </button>
-              </Table.Data>
-            }
-          </tr>
-        );
-      })
-    : children;
+  console.log('root rerender');
+  console.log(children);
 
   return (
     <TableContext.Provider
       value={{
         selectedItems,
         setSelectedItems,
+        toggleSelectedItem,
+        editingItems,
+        addEditingItem,
+        removeEditingItem,
+        deleteTriggersMapRef,
         allItems,
+        setAllItems,
+        updater,
       }}
     >
       <div>
@@ -166,7 +119,14 @@ export function Table({
             disabled={!selectedItems.length}
             className="ml-auto"
             onClick={async () => {
-              await onDelete(selectedItems);
+              const promises = selectedItems.map(id => {
+                const trigger = deleteTriggersMapRef.current.get(id);
+                if (!trigger) {
+                  return Promise.resolve();
+                }
+                return trigger();
+              });
+              await Promise.all(promises);
               setSelectedItems([]);
             }}
           >
@@ -185,13 +145,7 @@ export function Table({
             <tbody>
               <>{header}</>
               <>{newRows}</>
-              <>
-                {children
-                  ? rows
-                  : arrayN(10).map(i => (
-                      <Table.PlaceholderRow key={i} cols={cols + 2} />
-                    ))}
-              </>
+              <>{children}</>
             </tbody>
           </table>
         </div>
@@ -200,13 +154,89 @@ export function Table({
   );
 }
 
+Table.RowPlain = forwardRef<HTMLTableRowElement, ComponentPropsWithRef<'tr'>>(
+  function TableRowPlain({ className, ...props }, ref) {
+    return (
+      <tr
+        {...props}
+        ref={ref}
+        className={classNameWithDefaults('border-b last:border-b-0', className)}
+      />
+    );
+  }
+);
+
 export type TableRowProps = {
   id: Id;
+  onDelete: AsyncAction;
   children?: ReactNode;
 };
 
-Table.Row = function TableRow(_: TableRowProps) {
-  return null;
+Table.Row = function TableRow({ id, onDelete, children }: TableRowProps) {
+  const {
+    editingItems,
+    addEditingItem,
+    removeEditingItem,
+    selectedItems,
+    toggleSelectedItem,
+    deleteTriggersMapRef,
+    setAllItems,
+    updater,
+  } = useContext(TableContext);
+
+  useEffect(() => {
+    const deleteTriggers = deleteTriggersMapRef.current;
+    deleteTriggers.set(id, onDelete);
+
+    setAllItems(p => {
+      if (!p.includes(id)) {
+        setAllItems(p => [...p, id]);
+      }
+      return p;
+    });
+    return () => {
+      setAllItems(p => p.filter(v => v !== id));
+      deleteTriggers.delete(id);
+    };
+  }, [id, deleteTriggersMapRef, setAllItems, onDelete]);
+
+  const isEditing = editingItems.includes(id);
+
+  if (isEditing) {
+    return (
+      <TableRowManageContext.Provider
+        value={{ close: () => removeEditingItem(id) }}
+      >
+        {updater(id)}
+      </TableRowManageContext.Provider>
+    );
+  }
+
+  const isSelected = selectedItems.includes(id);
+
+  return (
+    <Table.RowPlain
+      className={clsx({ 'bg-blue-50': isSelected, 'bg-white': !isSelected })}
+    >
+      <Table.Data>
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={() => toggleSelectedItem(id)}
+        />
+      </Table.Data>
+      {children}
+      <Table.Data>
+        <button className="p-1 group" onClick={() => addEditingItem(id)}>
+          <FontAwesomeIcon
+            icon={faPenToSquare}
+            fixedWidth
+            className="text-lg text-blue-500 transition-colors group-hover:text-blue-900 group-hover:scale-110"
+          />
+        </button>
+      </Table.Data>
+    </Table.RowPlain>
+  );
 };
 
 Table.HeaderRow = function TableHeaderRow({ children }: PropsWithChildren) {
@@ -216,7 +246,7 @@ Table.HeaderRow = function TableHeaderRow({ children }: PropsWithChildren) {
   const areAllItemsSelected = compareArrays(selectedItems, allItems);
 
   return (
-    <tr className="bg-white border-b last:border-b-0">
+    <Table.RowPlain className="bg-white">
       <Table.Head>
         <input
           type="checkbox"
@@ -231,7 +261,7 @@ Table.HeaderRow = function TableHeaderRow({ children }: PropsWithChildren) {
       </Table.Head>
       {children}
       <Table.Data>{/* actions */}</Table.Data>
-    </tr>
+    </Table.RowPlain>
   );
 };
 
@@ -246,10 +276,11 @@ Table.ManagerRow = function TableManagerRow({
   onCreate,
   onUpdate,
 }: TableManagerRowProps) {
-  const { isNew, closeManager } = useTableManagerContext();
+  const { close } = useContext(TableRowManageContext);
+  const isNew = true;
 
   return (
-    <tr className="bg-white border-b last:border-b-0">
+    <Table.RowPlain className="bg-white">
       <Table.Data>{/* select action */}</Table.Data>
       {children}
       {isNew ? (
@@ -258,7 +289,7 @@ Table.ManagerRow = function TableManagerRow({
             className="flex items-center justify-center p-1 group"
             onClick={async () => {
               await onCreate();
-              closeManager();
+              close();
             }}
           >
             <FontAwesomeIcon
@@ -269,7 +300,7 @@ Table.ManagerRow = function TableManagerRow({
           </button>
           <button
             className="flex items-center justify-center p-1 group"
-            onClick={closeManager}
+            onClick={close}
           >
             <FontAwesomeIcon
               icon={faXmark}
@@ -284,7 +315,7 @@ Table.ManagerRow = function TableManagerRow({
             className="flex items-center justify-center p-1 group"
             onClick={async () => {
               await onUpdate();
-              closeManager();
+              close();
             }}
           >
             <FontAwesomeIcon
@@ -295,7 +326,7 @@ Table.ManagerRow = function TableManagerRow({
           </button>
           <button
             className="flex items-center justify-center p-1 group"
-            onClick={closeManager}
+            onClick={close}
           >
             <FontAwesomeIcon
               icon={faRotateBack}
@@ -305,25 +336,19 @@ Table.ManagerRow = function TableManagerRow({
           </button>
         </Table.Data>
       )}
-    </tr>
+    </Table.RowPlain>
   );
 };
 
-export type TablePlaceholderRowProps = {
-  cols: number;
+Table.RowCreator = function TableRowCreator() {
+  return <Table.RowPlain className="bg-white"></Table.RowPlain>;
 };
 
-Table.PlaceholderRow = function TablePlaceholderRow({
-  cols,
-}: TablePlaceholderRowProps) {
+Table.DataPlaceholder = function TableDataPlaceholder() {
   return (
-    <tr className="bg-white border-b last:border-b-0">
-      {arrayN(cols).map(i => (
-        <Table.Data key={i}>
-          <div className="w-full h-8 rounded-md bg-neutral-200 animate-pulse"></div>
-        </Table.Data>
-      ))}
-    </tr>
+    <Table.Data>
+      <div className="w-full h-8 rounded-md bg-neutral-200 animate-pulse"></div>
+    </Table.Data>
   );
 };
 

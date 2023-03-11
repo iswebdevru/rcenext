@@ -12,7 +12,7 @@ import {
 type CommonSelectProps<T extends string | number> = {
   searchString?: string;
   onSearchStringChange?: EventHandler<ChangeEvent>;
-  children?: ReactElement<OptionProps<T>>[];
+  children?: ReactElement<OptionProps<T>> | ReactElement<OptionProps<T>>[];
   placeholder?: string;
   required?: boolean;
 };
