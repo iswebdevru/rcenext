@@ -26,29 +26,29 @@ export default function Teachers() {
           creator={() => <TeachersTableRowCreate />}
           updater={id => <TeachersTableRowUpdate id={id as number} />}
           header={
-            <Table.RowPlain>
+            <Table.Row>
               <Table.HeaderSelectCheckbox />
               <Table.Head>Имя</Table.Head>
               <Table.Head>Фамилия</Table.Head>
               <Table.Head>Отчество</Table.Head>
               <Table.Head>Предметы</Table.Head>
               <Table.Head></Table.Head>
-            </Table.RowPlain>
+            </Table.Row>
           }
           placeholder={
-            <Table.RowPlain>
+            <Table.Row>
               <Table.DataPlaceholder />
               <Table.DataPlaceholder />
               <Table.DataPlaceholder />
               <Table.DataPlaceholder />
               <Table.DataPlaceholder />
               <Table.DataPlaceholder />
-            </Table.RowPlain>
+            </Table.Row>
           }
         >
           {data?.map(teacher => (
-            <Table.Row key={teacher.id} id={teacher.id}>
-              {/* <Table.RowSelectCheckbox /> */}
+            <Table.RowContent key={teacher.id} id={teacher.id}>
+              <Table.RowSelectCheckbox />
               <Table.Data>{teacher.first_name}</Table.Data>
               <Table.Data>{teacher.last_name}</Table.Data>
               <Table.Data>{teacher.patronymic}</Table.Data>
@@ -56,7 +56,7 @@ export default function Teachers() {
                 <TeacherSubjects url={teacher.subjects_url} />
               </Table.Data>
               {/* <Table.RowEditButton /> */}
-            </Table.Row>
+            </Table.RowContent>
           ))}
         </Table>
       </div>
