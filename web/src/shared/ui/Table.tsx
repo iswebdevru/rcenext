@@ -6,6 +6,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  Children,
   ComponentPropsWithRef,
   createContext,
   Dispatch,
@@ -14,6 +15,7 @@ import {
   ReactElement,
   ReactNode,
   SetStateAction,
+  useCallback,
   useContext,
   useState,
 } from 'react';
@@ -26,8 +28,8 @@ export type Id = string | number;
 
 export type TableProps = {
   header: ReactNode;
-  children: ReactNode;
-  allItems: Id[];
+  placeholder: ReactNode;
+  children?: ReactElement<TableRowProps> | ReactElement<TableRowProps>[] | null;
   updater: (id: Id) => ReactElement;
   creator: () => ReactElement;
   onDelete: (ids: Id[]) => Promise<unknown> | unknown;
@@ -35,7 +37,11 @@ export type TableProps = {
 
 type AsyncAction = () => Promise<unknown> | unknown;
 
+type ItemsMapValue = { isEditing?: boolean; isSelected?: boolean };
+type ItemsMap = Map<Id, ItemsMapValue>;
+
 type TableContext = {
+  itemsMap: ItemsMap;
   allItems: Id[];
   selectedItems: Id[];
   setSelectedItems: Dispatch<SetStateAction<Id[]>>;
@@ -56,91 +62,147 @@ const TableRowManageContext = createContext<TableRowManageContext>(
   undefined as any
 );
 
+type TableHeaderContext = {
+  areAllItemsSelected: boolean;
+  selectAllItems: () => void;
+  deselectAllItems: () => void;
+};
+
+const TableHeaderContext = createContext<TableHeaderContext>(undefined as any);
+const TableRowWithIdContext = createContext(undefined as any);
+// const TableRowWithIdContext = createContext(undefined as any);
+
 export function Table({
   children,
-  allItems,
   header,
+  placeholder,
   updater,
   creator,
   onDelete,
 }: TableProps) {
-  const [selectedItems, setSelectedItems] = useState<Id[]>([]);
-  const [editingItems, setEditingItems] = useState<Id[]>([]);
+  const allItems = children
+    ? Children.map(children, child => child.props.id)
+    : [];
+
+  const [itemsMap, setItemsMap] = useState<ItemsMap>(new Map());
   const [newItems, setNewItems] = useState<Id[]>([]);
 
-  const addNewItem = (id: Id) => setNewItems(p => [id, ...p]);
-  const removeNewItem = (id: Id) => setNewItems(p => p.filter(v => v !== id));
+  const addNewItem = useCallback(
+    () => setNewItems(p => [Date.now(), ...p]),
+    []
+  );
 
-  const addEditingItem = (id: Id) => setEditingItems(p => [...p, id]);
-
-  const removeEditingItem = (id: Id) =>
-    setEditingItems(p => p.filter(v => v !== id));
-
-  const toggleSelectedItem = (id: Id) => {
-    setSelectedItems(p => {
-      if (p.includes(id)) {
-        return p.filter(v => v !== id);
-      }
-      return [...p, id];
+  const updateItemById = (id: Id, data: ItemsMapValue) => {
+    setItemsMap(prev => {
+      const prevValue = prev.get(id);
+      return new Map(
+        prev.set(id, prevValue ? { ...prevValue, ...data } : data)
+      );
     });
   };
+  const updateManyItems = (data: ItemsMapValue) => {
+    setItemsMap(prev => {
+      [...prev.keys()].map(id => {
+        const prevValue = prev.get(id);
+        prev.set(id, prevValue ? { ...prevValue, ...data } : data);
+      });
+      return new Map(prev);
+    });
+  };
+  const selectAllItems = () => {
+    setItemsMap(prev => {
+      allItems.forEach(id => {
+        const prevValue = prev.get(id);
+        const newValue = { isSelected: true };
+        prev.set(id, prevValue ? { ...prevValue, ...newValue } : newValue);
+      });
+      return new Map(prev);
+    });
+  };
+  const deselectAllItems = () => updateManyItems({ isSelected: false });
+  const toggleSelectItem = (id: Id) =>
+    setItemsMap(prev => {
+      const prevValue = prev.get(id);
+      const newValue = {
+        isSelected: !prevValue?.isSelected,
+      };
+      return new Map(
+        prev.set(id, prevValue ? { ...prevValue, newValue } : newValue)
+      );
+    });
 
-  const newRows = newItems.map(id => (
-    <TableRowManageContext.Provider
-      key={id}
-      value={{ close: () => removeNewItem(id) }}
-    >
-      {creator()}
-    </TableRowManageContext.Provider>
-  ));
+  const selectedItems = [...itemsMap.entries()]
+    .filter(([_, info]) => info.isSelected)
+    .map(([id]) => id);
+
+  const areAllItemsSelected = compareArrays(selectedItems, allItems);
 
   return (
-    <TableContext.Provider
-      value={{
-        selectedItems,
-        setSelectedItems,
-        toggleSelectedItem,
-        editingItems,
-        addEditingItem,
-        removeEditingItem,
-        allItems,
-        updater,
-      }}
-    >
-      <div>
-        <div className="flex gap-4 mb-4">
-          <Search />
-          <Button
-            type="button"
-            variant="danger-outline"
-            disabled={!selectedItems.length}
-            className="ml-auto"
-            onClick={async () => {
-              await onDelete(selectedItems);
-              setSelectedItems([]);
-            }}
-          >
-            Удалить
-          </Button>
-          <Button
-            type="button"
-            variant="primary"
-            onClick={() => addNewItem(Date.now())}
-          >
-            Добавить
-          </Button>
-        </div>
-        <div className="overflow-hidden border rounded-md">
-          <table className="w-full table-fixed">
-            <tbody>
-              <>{header}</>
-              <>{newRows}</>
-              <>{children}</>
-            </tbody>
-          </table>
-        </div>
+    <div>
+      <div className="flex gap-4 mb-4">
+        <Search />
+        <Button
+          type="button"
+          variant="danger-outline"
+          disabled={!selectedItems.length}
+          className="ml-auto"
+          onClick={async () => {
+            await onDelete(selectedItems);
+            deselectAllItems();
+          }}
+        >
+          Удалить
+        </Button>
+        <Button type="button" variant="primary" onClick={addNewItem}>
+          Добавить
+        </Button>
       </div>
-    </TableContext.Provider>
+      <div className="overflow-hidden border rounded-md">
+        <table className="w-full table-fixed">
+          <tbody>
+            <TableHeaderContext.Provider
+              value={{ areAllItemsSelected, selectAllItems, deselectAllItems }}
+            >
+              {header}
+            </TableHeaderContext.Provider>
+            <>
+              {newItems.map(id => (
+                <TableRowManageContext.Provider
+                  key={id}
+                  value={{
+                    close: () => setNewItems(p => p.filter(v => v !== id)),
+                  }}
+                >
+                  {creator()}
+                </TableRowManageContext.Provider>
+              ))}
+            </>
+            <>
+              {children
+                ? Children.map(children, child => {
+                    const rowInfo = itemsMap.get(child.props.id);
+                    if (rowInfo?.isEditing) {
+                      return (
+                        <TableRowManageContext.Provider
+                          value={{
+                            close: () =>
+                              updateItemById(child.props.id, {
+                                isEditing: false,
+                              }),
+                          }}
+                        >
+                          {updater(child.props.id)}
+                        </TableRowManageContext.Provider>
+                      );
+                    }
+                    return child;
+                  })
+                : placeholder}
+            </>
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
 
@@ -151,25 +213,12 @@ export type TableRowProps = {
 
 Table.Row = function TableRow({ id, children }: TableRowProps) {
   const {
-    editingItems,
     addEditingItem,
     removeEditingItem,
     selectedItems,
     toggleSelectedItem,
     updater,
   } = useContext(TableContext);
-
-  const isEditing = editingItems.includes(id);
-
-  if (isEditing) {
-    return (
-      <TableRowManageContext.Provider
-        value={{ close: () => removeEditingItem(id) }}
-      >
-        {updater(id)}
-      </TableRowManageContext.Provider>
-    );
-  }
 
   const isSelected = selectedItems.includes(id);
 
@@ -198,29 +247,23 @@ Table.Row = function TableRow({ id, children }: TableRowProps) {
   );
 };
 
-Table.HeaderRow = function TableHeaderRow({ children }: PropsWithChildren) {
-  const { selectedItems, setSelectedItems, allItems } =
-    useContext(TableContext);
-
-  const areAllItemsSelected = compareArrays(selectedItems, allItems);
+Table.HeaderSelectCheckbox = function TableHeaderSelectCheckbox() {
+  const { areAllItemsSelected, selectAllItems, deselectAllItems } =
+    useContext(TableHeaderContext);
 
   return (
-    <Table.RowPlain className="bg-white">
-      <Table.Head>
-        <input
-          type="checkbox"
-          checked={areAllItemsSelected}
-          onChange={() => {
-            if (areAllItemsSelected) {
-              return setSelectedItems([]);
-            }
-            setSelectedItems(allItems);
-          }}
-        />
-      </Table.Head>
-      {children}
-      <Table.Data>{/* actions */}</Table.Data>
-    </Table.RowPlain>
+    <Table.Head>
+      <input
+        type="checkbox"
+        checked={areAllItemsSelected}
+        onChange={() => {
+          if (areAllItemsSelected) {
+            return deselectAllItems();
+          }
+          selectAllItems();
+        }}
+      />
+    </Table.Head>
   );
 };
 

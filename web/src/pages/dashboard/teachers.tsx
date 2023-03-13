@@ -2,10 +2,9 @@ import { DashboardLayout } from '@/layouts';
 import { useTeacherDelete, useTeachers } from '@/shared/api';
 import { Id, Table } from '@/shared/ui/Table';
 import {
-  TeachersTableRow,
   TeachersTableRowCreate,
-  TeachersTableRowPlaceholder,
   TeachersTableRowUpdate,
+  TeacherSubjects,
 } from '@/features/teachers';
 
 export default function Teachers() {
@@ -19,41 +18,46 @@ export default function Teachers() {
     refreshTeachers();
   };
 
-  const allItems = data ? data.map(t => t.id) : [];
-
   return (
     <DashboardLayout>
       <div className="h-full p-6">
         <Table
-          allItems={allItems}
           onDelete={deleteTeachers}
           creator={() => <TeachersTableRowCreate />}
           updater={id => <TeachersTableRowUpdate id={id as number} />}
           header={
-            <Table.HeaderRow>
+            <Table.RowPlain>
+              <Table.HeaderSelectCheckbox />
               <Table.Head>Имя</Table.Head>
               <Table.Head>Фамилия</Table.Head>
               <Table.Head>Отчество</Table.Head>
               <Table.Head>Предметы</Table.Head>
-            </Table.HeaderRow>
+              <Table.Head></Table.Head>
+            </Table.RowPlain>
+          }
+          placeholder={
+            <Table.RowPlain>
+              <Table.DataPlaceholder />
+              <Table.DataPlaceholder />
+              <Table.DataPlaceholder />
+              <Table.DataPlaceholder />
+              <Table.DataPlaceholder />
+              <Table.DataPlaceholder />
+            </Table.RowPlain>
           }
         >
-          {data ? (
-            data.map(teacher => (
-              <TeachersTableRow key={teacher.id} data={teacher} />
-            ))
-          ) : (
-            <>
-              <TeachersTableRowPlaceholder />
-              <TeachersTableRowPlaceholder />
-              <TeachersTableRowPlaceholder />
-              <TeachersTableRowPlaceholder />
-              <TeachersTableRowPlaceholder />
-              <TeachersTableRowPlaceholder />
-              <TeachersTableRowPlaceholder />
-              <TeachersTableRowPlaceholder />
-            </>
-          )}
+          {data?.map(teacher => (
+            <Table.Row key={teacher.id} id={teacher.id}>
+              {/* <Table.RowSelectCheckbox /> */}
+              <Table.Data>{teacher.first_name}</Table.Data>
+              <Table.Data>{teacher.last_name}</Table.Data>
+              <Table.Data>{teacher.patronymic}</Table.Data>
+              <Table.Data>
+                <TeacherSubjects url={teacher.subjects_url} />
+              </Table.Data>
+              {/* <Table.RowEditButton /> */}
+            </Table.Row>
+          ))}
         </Table>
       </div>
     </DashboardLayout>
