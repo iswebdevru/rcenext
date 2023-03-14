@@ -1,10 +1,10 @@
-import { useTeacher, useTeacherUpdate } from '@/shared/api';
+import { useRef } from 'react';
 import { InputText } from '@/shared/ui/input';
 import { Table } from '@/shared/ui/Table';
-import { useRef } from 'react';
 import { TeachersTableRowPlaceholder } from './TeachersTableRowPlaceholder';
+import { useTeacher, useTeacherUpdate } from '@/entities/teachers';
 
-export function TeachersTableRowUpdate({ id }: { id: number }) {
+export function TeachersTableRowUpdater({ id }: { id: number }) {
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const patronymicRef = useRef<HTMLInputElement>(null);
@@ -17,15 +17,8 @@ export function TeachersTableRowUpdate({ id }: { id: number }) {
   }
 
   return (
-    <Table.RowUpdate
-      onUpdate={() =>
-        updateTeacher(id, {
-          first_name: firstNameRef.current?.value,
-          last_name: lastNameRef.current?.value,
-          patronymic: patronymicRef.current?.value,
-        })
-      }
-    >
+    <Table.Row>
+      <Table.Data />
       <Table.Data>
         <InputText
           defaultValue={teacher ? teacher.first_name : ''}
@@ -45,6 +38,15 @@ export function TeachersTableRowUpdate({ id }: { id: number }) {
         />
       </Table.Data>
       <Table.Data></Table.Data>
-    </Table.RowUpdate>
+      <Table.RowEditorActions
+        onSave={() =>
+          updateTeacher(id, {
+            first_name: firstNameRef.current?.value,
+            last_name: lastNameRef.current?.value,
+            patronymic: patronymicRef.current?.value,
+          })
+        }
+      />
+    </Table.Row>
   );
 }

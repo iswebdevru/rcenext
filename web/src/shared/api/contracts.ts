@@ -1,5 +1,3 @@
-export const API = 'http://localhost:8000';
-
 export type Teacher = {
   id: number;
   first_name: string;

@@ -1,4 +1,4 @@
-import { useTeacherSubjects } from '@/shared/api';
+import { useTeacherSubjects } from '@/entities/teachers';
 
 export type TeacherSubjectProps = {
   url: string;

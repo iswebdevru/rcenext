@@ -1,16 +1,23 @@
-import useSWR, { useSWRConfig } from 'swr';
-import useSWRMutation from 'swr/mutation';
-import { Subject, TeacherAdd, TeacherUpdate } from './contracts';
-import { fetcher } from './fetch';
 import {
-  getTeachers,
-  getTeacher,
-  deleteTeacher,
   createTeacher,
+  deleteTeacher,
+  fetcher,
+  getTeacher,
+  getTeachers,
+  Subject,
+  TeacherAdd,
+  teachersKey,
+  TeacherUpdate,
   updateTeacher,
-} from './requests';
+} from '@/shared/api';
+import useSWRMutation from 'swr/mutation';
+import useSWR, { useSWRConfig } from 'swr';
 
-export const teachersKey = 'api/teachers/';
+export function useTeacherDeleteMany() {
+  return useSWRMutation(teachersKey, async (_, { arg }: { arg: number[] }) => {
+    return Promise.all(arg.map(id => deleteTeacher(id)));
+  });
+}
 
 export function useTeachers() {
   return useSWR(teachersKey, getTeachers);

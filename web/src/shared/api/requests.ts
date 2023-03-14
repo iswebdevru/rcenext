@@ -1,5 +1,7 @@
-import { API, Teacher, TeacherAdd, TeacherUpdate } from './contracts';
-import { fetcher } from './fetch';
+import { Teacher, TeacherAdd, TeacherUpdate } from './contracts';
+import { fetcher } from './fetcher';
+
+const API = 'http://localhost:8000';
 
 export async function getTeachers() {
   return fetcher<Teacher[]>(`${API}/teachers/`);
