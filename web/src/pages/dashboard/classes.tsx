@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ClassesTimetable, Timetable } from '@/entities/classes';
 import { Button } from '@/shared/ui/button';
 import { Calendar } from '@/shared/ui/calendar';
-import { Search } from '@/shared/ui/input';
+import { InputSearch } from '@/shared/ui/Input';
 import { Modal } from '@/shared/ui/modal';
 import { Select } from '@/shared/ui/select';
 import { Toggles } from '@/shared/ui/toggles';
@@ -319,7 +319,7 @@ export default function Edit() {
         </div>
         <div className="shrink-0 w-80">
           <div className="mb-2">
-            <Search placeholder="Группа" />
+            <InputSearch placeholder="Группа" />
           </div>
           <div className="mb-2">
             <Toggles value={selectedTimetableType} setValue={setTimetableType}>

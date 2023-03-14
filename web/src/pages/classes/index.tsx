@@ -1,7 +1,7 @@
 import { ClassesTimetable, Timetable } from '@/entities/classes';
 import { BaseLayout } from '@/layouts';
 import { Calendar } from '@/shared/ui/calendar';
-import { Search } from '@/shared/ui/input';
+import { InputSearch } from '@/shared/ui/Input';
 import { Sidebar } from '@/shared/ui/Sidebar';
 import { Toggles } from '@/shared/ui/toggles';
 import { useState } from 'react';
@@ -318,7 +318,7 @@ export default function Classes() {
                   <Toggles.Variant value={true}>С изменениями</Toggles.Variant>
                 </Toggles>
               </div>
-              <Search placeholder="Группа" />
+              <InputSearch placeholder="Группа" />
             </div>
           </Sidebar>
         </div>

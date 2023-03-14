@@ -75,7 +75,7 @@ export function Select<T extends string | number | (string | number)[]>({
         <button
           type="button"
           className={clsx({
-            'px-2 py-1 border-b group-last:border-b-0 w-full text-left': true,
+            'px-3 py-2 border-b group-last:border-b-0 w-full text-left': true,
             'bg-slate-200': multiple
               ? value.includes(child.props.value)
               : value === child.props.value,
@@ -100,14 +100,15 @@ export function Select<T extends string | number | (string | number)[]>({
   });
 
   return (
-    <div className="relative" ref={componentRef}>
+    <div className="relative flex items-center h-8" ref={componentRef}>
       <button
         type="button"
         onClick={() => setIsOpened(p => !p)}
         className={clsx({
-          'w-full transition-[outline] p-2 text-left text-sm outline outline-1 outline-neutral-300 rounded-sm':
+          'w-full transition-[border,outline] outline-blue-200 h-full border rounded-md px-3 text-left text-sm outline outline-0 focus:outline-4 focus:border-blue-500':
             true,
-          'outline-slate-400': isOpened,
+          'border-blue-500 outline-4': isOpened,
+          'border-neutral-200': !isOpened,
           'outline-green-600': !!required && !isOpened && isSelected,
           'outline-red-800': !!required && !isOpened && !isSelected,
         })}
@@ -121,7 +122,7 @@ export function Select<T extends string | number | (string | number)[]>({
           height: isOpened ? dropDownRef.current?.offsetHeight : 0,
         }}
         className={clsx({
-          'absolute bg-white z-10 -left-1 top-[120%] -right-1 rounded-sm overflow-hidden transition-[height]':
+          'absolute bg-white z-10 -left-1 top-[130%] -right-1 rounded-sm overflow-hidden transition-[height]':
             true,
         })}
       >

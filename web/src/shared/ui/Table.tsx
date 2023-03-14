@@ -21,7 +21,7 @@ import {
 import { compareArrays } from '../lib/common';
 import { classNameWithDefaults, clsx } from '../lib/ui';
 import { Button } from './button';
-import { Search } from './input';
+import { InputSearch } from './Input';
 
 export type Id = string | number;
 
@@ -124,7 +124,7 @@ export function Table<T extends Id>({
   return (
     <div>
       <div className="flex gap-4 mb-4">
-        <Search />
+        <InputSearch />
         <Button
           type="button"
           variant="danger-outline"
@@ -145,7 +145,7 @@ export function Table<T extends Id>({
           Добавить
         </Button>
       </div>
-      <div className="overflow-hidden border rounded-md">
+      <div className="overflow-hidden border rounded-md border-neutral-200">
         <table className="w-full table-fixed">
           <tbody>
             <TableHeaderContext.Provider

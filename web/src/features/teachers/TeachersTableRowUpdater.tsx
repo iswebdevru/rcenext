@@ -1,8 +1,8 @@
 import { useRef } from 'react';
-import { InputText } from '@/shared/ui/input';
+import { InputText } from '@/shared/ui/Input';
 import { Table } from '@/shared/ui/Table';
-import { TeachersTableRowPlaceholder } from './TeachersTableRowPlaceholder';
 import { useTeacher, useTeacherUpdate } from '@/entities/teachers';
+import { TeachersTableRowPlaceholder } from './TeachersTableRowPlaceholder';
 
 export function TeachersTableRowUpdater({ id }: { id: number }) {
   const firstNameRef = useRef<HTMLInputElement>(null);

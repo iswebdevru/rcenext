@@ -23,3 +23,19 @@ export const InputText = forwardRef<
     />
   );
 });
+
+export const InputSearch = forwardRef<
+  HTMLInputElement,
+  ComponentPropsWithRef<'input'>
+>(function InputSearch({ className, ...props }, ref) {
+  return (
+    <input
+      {...props}
+      ref={ref}
+      className={classNameWithDefaults(
+        'transition-[border,outline] border outline outline-0 outline-blue-200 border-neutral-200 rounded-md w-full pl-8 pr-2 py-1 focus:outline-4 focus:border-blue-500',
+        className
+      )}
+    />
+  );
+});

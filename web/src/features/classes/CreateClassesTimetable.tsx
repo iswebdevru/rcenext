@@ -1,5 +1,5 @@
 import { Button } from '@/shared/ui/button';
-import { InputText } from '@/shared/ui/input';
+import { InputText } from '@/shared/ui/Input';
 import { Select } from '@/shared/ui/select';
 
 export function CreateClassesTimetable() {

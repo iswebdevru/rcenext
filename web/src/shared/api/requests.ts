@@ -1,4 +1,4 @@
-import { Teacher, TeacherAdd, TeacherUpdate } from './contracts';
+import { Subject, Teacher, TeacherAdd, TeacherUpdate } from './contracts';
 import { fetcher } from './fetcher';
 
 const API = 'http://localhost:8000';
@@ -35,4 +35,8 @@ export async function updateTeacher(id: number, body: TeacherUpdate) {
       'Content-Type': 'application/json',
     },
   });
+}
+
+export async function getSubjects() {
+  return fetcher<Subject[]>(`${API}/subjects/`);
 }
