@@ -76,7 +76,7 @@ export function Select<T extends string | number | (string | number)[]>({
           type="button"
           className={clsx({
             'px-3 py-2 border-b group-last:border-b-0 w-full text-left': true,
-            'bg-slate-200': multiple
+            'bg-blue-50': multiple
               ? value.includes(child.props.value)
               : value === child.props.value,
           })}
@@ -100,7 +100,7 @@ export function Select<T extends string | number | (string | number)[]>({
   });
 
   return (
-    <div className="relative flex items-center h-8" ref={componentRef}>
+    <div className="relative flex items-center w-full h-8" ref={componentRef}>
       <button
         type="button"
         onClick={() => setIsOpened(p => !p)}
@@ -113,9 +113,17 @@ export function Select<T extends string | number | (string | number)[]>({
           'outline-red-800': !!required && !isOpened && !isSelected,
         })}
       >
-        {Array.isArray(displayValue)
-          ? displayValue.map(displayV => <>{displayV}</>)
-          : displayValue}
+        {Array.isArray(displayValue) ? (
+          <div className="flex flex-wrap gap-2">
+            {displayValue.map((displayV, i) => (
+              <span key={i} className="block px-1 rounded-md bg-neutral-200">
+                {displayV}
+              </span>
+            ))}
+          </div>
+        ) : (
+          displayValue
+        )}
       </button>
       <div
         style={{

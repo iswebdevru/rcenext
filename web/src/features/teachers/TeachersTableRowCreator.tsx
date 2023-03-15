@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { InputText } from '@/shared/ui/Input';
 import { Table } from '@/shared/ui/Table';
 import { useTeacherCreate } from '@/entities/teachers';
-import { SelectSubjects } from '../subjects';
+import { SelectSubjects } from './SelectSubjects';
 
 export function TeachersTableRowCreator() {
   const { trigger: createTeacher } = useTeacherCreate();

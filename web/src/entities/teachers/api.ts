@@ -57,6 +57,6 @@ export function useTeacherUpdate() {
   };
 }
 
-export function useTeacherSubjects(url: string) {
+export function useTeacherSubjects(url?: string) {
   return useSWR<Subject[]>(url, fetcher);
 }
