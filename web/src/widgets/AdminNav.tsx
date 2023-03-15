@@ -5,6 +5,7 @@ import {
   faBuildingUser,
   faCalendarDays,
   faHouse,
+  faLinesLeaning,
   faUserGroup,
   faUserTie,
 } from '@fortawesome/free-solid-svg-icons';
@@ -20,6 +21,7 @@ const links = [
   { href: '/dashboard/groups', text: 'Группы', icon: faUserGroup },
   { href: '/dashboard/bells', text: 'Звонки', icon: faBell },
   { href: '/dashboard/calendar', text: 'Календарь', icon: faCalendarDays },
+  { href: '/dashboard/subjects', text: 'Предметы', icon: faLinesLeaning },
 ] as const;
 
 export default function AdminNav() {

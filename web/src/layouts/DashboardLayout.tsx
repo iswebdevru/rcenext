@@ -4,7 +4,7 @@ import { BaseLayout } from './BaseLayout';
 
 export function DashboardLayout({ children }: PropsWithChildren) {
   return (
-    <BaseLayout>
+    <BaseLayout wide>
       <div className="flex h-full">
         <div className="flex-shrink-0">
           <AdminNav />

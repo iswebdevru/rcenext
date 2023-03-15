@@ -145,7 +145,7 @@ export function Table<T extends Id>({
           Добавить
         </Button>
       </div>
-      <div className="border rounded-md border-neutral-200">
+      <div className="overflow-hidden border rounded-md border-neutral-200">
         <table className="w-full table-fixed">
           <tbody>
             <TableHeaderContext.Provider

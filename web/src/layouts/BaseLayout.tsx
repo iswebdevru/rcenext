@@ -1,11 +1,13 @@
 import { PropsWithChildren } from 'react';
-import Header from '@/widgets/Header';
+import Header, { HeaderProps } from '@/widgets/Header';
 
-export function BaseLayout({ children }: PropsWithChildren) {
+export type BaseLayout = HeaderProps & PropsWithChildren;
+
+export function BaseLayout({ children, wide }: BaseLayout) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-shrink-0">
-        <Header />
+        <Header wide={wide} />
       </div>
       <div className="grow">{children}</div>
     </div>

@@ -1,9 +1,20 @@
+import { clsx } from '@/shared/lib/ui';
 import Link from 'next/link';
 
-export default function Header() {
+export type HeaderProps = {
+  wide?: boolean;
+};
+
+export default function Header({ wide }: HeaderProps) {
   return (
     <header className="relative z-10 bg-white border-b shadow-sm h-14 border-neutral-200">
-      <div className="container flex items-center justify-between h-full">
+      <div
+        className={clsx({
+          'flex items-center justify-between h-full': true,
+          container: !wide,
+          'px-6': !!wide,
+        })}
+      >
         <Link href="/">rcenext</Link>
         <ul className="flex gap-4">
           <li>
