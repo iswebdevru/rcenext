@@ -100,7 +100,7 @@ export function Select<T extends string | number | (string | number)[]>({
   });
 
   return (
-    <div className="relative flex items-center h-8" ref={componentRef}>
+    <div className="relative flex items-center w-full h-8" ref={componentRef}>
       <button
         type="button"
         onClick={() => setIsOpened(p => !p)}

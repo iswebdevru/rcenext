@@ -145,7 +145,7 @@ export function Table<T extends Id>({
           Добавить
         </Button>
       </div>
-      <div className="overflow-hidden border rounded-md border-neutral-200">
+      <div className="bg-white border rounded-md border-neutral-200">
         <table className="w-full table-fixed">
           <tbody>
             <TableHeaderContext.Provider
@@ -225,11 +225,11 @@ Table.EditRowButton = function TableEditRowButton() {
   const { markEdited } = useContext(TableRowWithIdContext);
   return (
     <Table.Data>
-      <button className="p-1 group" onClick={markEdited}>
+      <button className="p-1 group/edit-btn" onClick={markEdited}>
         <FontAwesomeIcon
           icon={faPenToSquare}
           fixedWidth
-          className="text-lg text-blue-500 transition-colors group-hover:text-blue-900 group-hover:scale-110"
+          className="text-lg text-blue-500 transition-colors group-hover/edit-btn:text-blue-900 group-hover/edit-btn:scale-110"
         />
       </button>
     </Table.Data>
@@ -267,7 +267,7 @@ Table.EditorActions = function TableRowEditorActions({
   return (
     <Table.Data>
       <button
-        className="flex items-center justify-center p-1 group"
+        className="flex items-center justify-center p-1 m-1 group/editor-save shrink-0"
         onClick={async () => {
           await onSave();
           close();
@@ -276,29 +276,29 @@ Table.EditorActions = function TableRowEditorActions({
         <FontAwesomeIcon
           icon={faCheck}
           fixedWidth
-          className="text-xl text-neutral-600 group-hover:text-green-500 group-hover:scale-110"
+          className="text-xl text-neutral-600 group-hover/editor-save:text-green-500 group-hover/editor-save:scale-110"
         ></FontAwesomeIcon>
       </button>
       {isExisting ? (
         <button
-          className="flex items-center justify-center p-1 group"
+          className="flex items-center justify-center p-1 group/editor-del shrink-0"
           onClick={close}
         >
           <FontAwesomeIcon
             icon={faXmark}
             fixedWidth
-            className="text-xl text-neutral-600 group-hover:text-red-500 group-hover:scale-110"
+            className="text-xl text-neutral-600 group-hover/editor-del:text-red-500 group-hover/editor-del:scale-110"
           />
         </button>
       ) : (
         <button
-          className="flex items-center justify-center p-1 group"
+          className="flex items-center justify-center p-1 group/editor-cancel"
           onClick={close}
         >
           <FontAwesomeIcon
             icon={faRotateBack}
             fixedWidth
-            className="text-xl text-neutral-600 group-hover:text-yellow-500 group-hover:scale-110"
+            className="text-xl text-neutral-600 group-hover/editor-cancel:text-yellow-500 group-hover/editor-cancel:scale-110"
           />
         </button>
       )}
@@ -316,9 +316,7 @@ Table.RowWithId = function TableRowContent<T extends Id>({
 }: TableRowWithIdProps<T>) {
   const { isSelected } = useContext(TableRowWithIdContext);
   return (
-    <Table.Row
-      className={clsx({ 'bg-white': !isSelected, 'bg-blue-50': isSelected })}
-    >
+    <Table.Row className={clsx({ '[&>td]:bg-blue-50': isSelected })}>
       {children}
     </Table.Row>
   );
@@ -331,8 +329,8 @@ Table.Row = forwardRef<HTMLTableRowElement, ComponentPropsWithRef<'tr'>>(
         {...props}
         ref={ref}
         className={classNameWithDefaults(
-          'border-b last:border-b-0 transition-[background]',
-          className ? className : 'bg-white'
+          'border-b group/row last:border-b-0 rounded-md transition-[background]',
+          className
         )}
       />
     );
@@ -347,17 +345,25 @@ Table.DataPlaceholder = function TableDataPlaceholder() {
   );
 };
 
-Table.Data = function TableData({ children }: PropsWithChildren) {
-  return (
-    <td className="px-6 py-3 text-sm">
-      <div className="flex items-center">{children}</div>
-    </td>
-  );
-};
+Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
+  function TableData({ className, children, ...props }, ref) {
+    return (
+      <td
+        className={classNameWithDefaults(
+          'px-6 py-3 text-sm group-last/row:first:rounded-bl-md group-last:last:rounded-br-md',
+          className
+        )}
+        {...props}
+      >
+        <div className="flex items-center">{children}</div>
+      </td>
+    );
+  }
+);
 
 Table.Head = function TableHead({ children }: PropsWithChildren) {
   return (
-    <th className="px-6 py-3 text-sm text-left">
+    <th className="px-6 py-3 text-sm text-left first:w-[61px] last:w-[114px]">
       <div className="flex items-center">{children}</div>
     </th>
   );
