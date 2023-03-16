@@ -5,7 +5,7 @@ import {
   getTeacher,
   getTeachers,
   Subject,
-  TeacherAdd,
+  TeacherCreate,
   teachersKey,
   TeacherUpdate,
   updateTeacher,
@@ -13,10 +13,10 @@ import {
 import useSWRMutation from 'swr/mutation';
 import useSWR, { useSWRConfig } from 'swr';
 
-export function useTeacherDeleteMany() {
-  return useSWRMutation(teachersKey, async (_, { arg }: { arg: number[] }) => {
-    return Promise.all(arg.map(id => deleteTeacher(id)));
-  });
+export function useTeacherCreate() {
+  return useSWRMutation(teachersKey, (_, { arg }: { arg: TeacherCreate }) =>
+    createTeacher(arg)
+  );
 }
 
 export function useTeachers() {
@@ -27,18 +27,6 @@ export function useTeacher(id: number) {
   return useSWR([teachersKey, id], ([_, id]) => getTeacher(id));
 }
 
-export function useTeacherCreate() {
-  return useSWRMutation(teachersKey, (_, { arg }: { arg: TeacherAdd }) =>
-    createTeacher(arg)
-  );
-}
-
-export function useTeacherDelete() {
-  return useSWRMutation(teachersKey, (_, { arg }: { arg: number }) =>
-    deleteTeacher(arg)
-  );
-}
-
 export function useTeacherUpdate() {
   const { mutate } = useSWRConfig();
   return async (id: number, payload: TeacherUpdate) => {
@@ -46,7 +34,7 @@ export function useTeacherUpdate() {
       key => {
         return (
           key === teachersKey ||
-          (Array.isArray(key) && `${key[0]}${key[1]}` === `${teachersKey}${id}`)
+          (Array.isArray(key) && key[0] === teachersKey && key[1] === id)
         );
       },
       () => updateTeacher(id, payload),
@@ -55,6 +43,12 @@ export function useTeacherUpdate() {
       }
     );
   };
+}
+
+export function useTeacherDeleteMany() {
+  return useSWRMutation(teachersKey, async (_, { arg }: { arg: number[] }) => {
+    return Promise.all(arg.map(id => deleteTeacher(id)));
+  });
 }
 
 export function useTeacherSubjects(url?: string) {

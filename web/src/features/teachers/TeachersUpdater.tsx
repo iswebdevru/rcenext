@@ -5,7 +5,7 @@ import { useTeacher, useTeacherUpdate } from '@/entities/teachers';
 import { TeachersTableRowPlaceholder } from './TeachersTableRowPlaceholder';
 import { SelectSubjects } from './SelectSubjects';
 
-export function TeachersTableRowUpdater({ id }: { id: number }) {
+export function TeachersUpdater({ id }: { id: number }) {
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const patronymicRef = useRef<HTMLInputElement>(null);
@@ -46,7 +46,7 @@ export function TeachersTableRowUpdater({ id }: { id: number }) {
           url={teacher.subjects_url}
         />
       </Table.Data>
-      <Table.RowEditorActions
+      <Table.EditorActions
         onSave={() =>
           updateTeacher(id, {
             first_name: firstNameRef.current?.value,

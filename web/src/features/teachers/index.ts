@@ -1,4 +1,4 @@
 export * from './TeachersTableRowPlaceholder';
-export * from './TeachersTableRowUpdater';
-export * from './TeachersTableRowCreator';
+export * from './TeachersUpdater';
+export * from './TeachersCreator';
 export * from './TeacherSubjects';

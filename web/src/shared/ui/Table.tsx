@@ -260,7 +260,7 @@ export type TableRowEditorActionsProps = {
   onSave: AsyncAction;
 };
 
-Table.RowEditorActions = function TableRowEditorActions({
+Table.EditorActions = function TableRowEditorActions({
   onSave,
 }: TableRowEditorActionsProps) {
   const { close, isExisting } = useContext(TableRowEditorContext);

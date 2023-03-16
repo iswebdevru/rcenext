@@ -1,31 +1,31 @@
-import { useSubjects } from '@/entities/subjects';
+import { useSubjectDeleteMany, useSubjects } from '@/entities/subjects';
+import {
+  SubjectsCreator,
+  SubjectsTableRowPlaceholder,
+  SubjectsUpdater,
+} from '@/features/subjects';
 import { DashboardLayout } from '@/layouts';
 import { Table } from '@/shared/ui/Table';
 
 export default function Subjects() {
   const { data: subjects } = useSubjects();
+  const { trigger: deleteSubjects } = useSubjectDeleteMany();
 
   return (
     <DashboardLayout>
       <div className="h-full p-6">
-        <Table
-          creator={() => <></>}
-          updater={() => <></>}
+        <Table<number>
+          creator={() => <SubjectsCreator />}
+          updater={id => <SubjectsUpdater id={id} />}
           header={
             <Table.Row>
               <Table.SelectAllRowsCheckbox />
-              <Table.Head>Группа</Table.Head>
+              <Table.Head>Предмет</Table.Head>
               <Table.Head />
             </Table.Row>
           }
-          placeholder={
-            <Table.Row>
-              <Table.DataPlaceholder />
-              <Table.DataPlaceholder />
-              <Table.DataPlaceholder />
-            </Table.Row>
-          }
-          onDelete={() => {}}
+          placeholder={<SubjectsTableRowPlaceholder />}
+          onDelete={ids => deleteSubjects(ids)}
         >
           {subjects?.map(subject => (
             <Table.RowWithId key={subject.id} id={subject.id}>

@@ -8,14 +8,14 @@ export type Teacher = {
   updated_at: string;
 };
 
-export type TeacherAdd = {
+export type TeacherCreate = {
   first_name: string;
   last_name: string;
   patronymic: string;
   subjects: number[];
 };
 
-export type TeacherUpdate = Partial<TeacherAdd>;
+export type TeacherUpdate = Partial<TeacherCreate>;
 
 export type Subject = {
   id: number;
@@ -23,3 +23,9 @@ export type Subject = {
   created_at: string;
   updated_at: string;
 };
+
+export type SubjectCreate = {
+  name: string;
+};
+
+export type SubjectUpdate = Partial<SubjectCreate>;

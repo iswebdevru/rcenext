@@ -4,7 +4,7 @@ import { Table } from '@/shared/ui/Table';
 import { useTeacherCreate } from '@/entities/teachers';
 import { SelectSubjects } from './SelectSubjects';
 
-export function TeachersTableRowCreator() {
+export function TeachersCreator() {
   const { trigger: createTeacher } = useTeacherCreate();
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
@@ -26,7 +26,7 @@ export function TeachersTableRowCreator() {
       <Table.Data>
         <SelectSubjects value={subjects} onChange={setSubjects} />
       </Table.Data>
-      <Table.RowEditorActions
+      <Table.EditorActions
         onSave={() => {
           return createTeacher({
             first_name: firstNameRef.current!.value,

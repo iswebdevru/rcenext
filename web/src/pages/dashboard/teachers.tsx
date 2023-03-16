@@ -2,9 +2,9 @@ import { DashboardLayout } from '@/layouts';
 import { Table } from '@/shared/ui/Table';
 import { useTeacherDeleteMany, useTeachers } from '@/entities/teachers';
 import {
-  TeachersTableRowCreator,
+  TeachersCreator,
   TeachersTableRowPlaceholder,
-  TeachersTableRowUpdater,
+  TeachersUpdater,
   TeacherSubjects,
 } from '@/features/teachers';
 
@@ -17,8 +17,8 @@ export default function Teachers() {
       <div className="h-full p-6">
         <Table<number>
           onDelete={deleteTeachers}
-          creator={() => <TeachersTableRowCreator />}
-          updater={id => <TeachersTableRowUpdater id={id} />}
+          creator={() => <TeachersCreator />}
+          updater={id => <TeachersUpdater id={id} />}
           header={
             <Table.Row>
               <Table.SelectAllRowsCheckbox />
