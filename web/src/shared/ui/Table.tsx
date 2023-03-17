@@ -27,7 +27,7 @@ export type Id = string | number;
 
 export type TableProps<T extends Id> = {
   header: ReactNode;
-  placeholder: ReactNode;
+  loader: ReactNode;
   children?:
     | ReactElement<TableRowWithIdProps<T>>
     | ReactElement<TableRowWithIdProps<T>>[]
@@ -71,7 +71,7 @@ const TableRowWithIdContext = createContext<TableRowWithIdContext>(
 export function Table<T extends Id>({
   children,
   header,
-  placeholder,
+  loader,
   updater,
   creator,
   onDelete,
@@ -203,7 +203,7 @@ export function Table<T extends Id>({
                       </TableRowWithIdContext.Provider>
                     );
                   })
-                : placeholder}
+                : loader}
             </>
           </tbody>
         </table>
@@ -281,17 +281,6 @@ Table.EditorActions = function TableRowEditorActions({
       </button>
       {isExisting ? (
         <button
-          className="flex items-center justify-center p-1 group/editor-del shrink-0"
-          onClick={close}
-        >
-          <FontAwesomeIcon
-            icon={faXmark}
-            fixedWidth
-            className="text-xl text-neutral-600 group-hover/editor-del:text-red-500 group-hover/editor-del:scale-110"
-          />
-        </button>
-      ) : (
-        <button
           className="flex items-center justify-center p-1 group/editor-cancel"
           onClick={close}
         >
@@ -299,6 +288,17 @@ Table.EditorActions = function TableRowEditorActions({
             icon={faRotateBack}
             fixedWidth
             className="text-xl text-neutral-600 group-hover/editor-cancel:text-yellow-500 group-hover/editor-cancel:scale-110"
+          />
+        </button>
+      ) : (
+        <button
+          className="flex items-center justify-center p-1 group/editor-del shrink-0"
+          onClick={close}
+        >
+          <FontAwesomeIcon
+            icon={faXmark}
+            fixedWidth
+            className="text-xl text-neutral-600 group-hover/editor-del:text-red-500 group-hover/editor-del:scale-110"
           />
         </button>
       )}
@@ -337,7 +337,7 @@ Table.Row = forwardRef<HTMLTableRowElement, ComponentPropsWithRef<'tr'>>(
   }
 );
 
-Table.DataPlaceholder = function TableDataPlaceholder() {
+Table.DataLoader = function TableDataPlaceholder() {
   return (
     <Table.Data>
       <div className="w-full h-8 rounded-md bg-neutral-200 animate-pulse"></div>

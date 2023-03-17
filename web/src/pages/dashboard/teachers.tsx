@@ -29,7 +29,7 @@ export default function Teachers() {
               <Table.Head />
             </Table.Row>
           }
-          placeholder={<TeachersTableRowPlaceholder />}
+          loader={<TeachersTableRowPlaceholder />}
         >
           {data?.map(teacher => (
             <Table.RowWithId key={teacher.id} id={teacher.id}>

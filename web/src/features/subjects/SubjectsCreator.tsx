@@ -3,8 +3,6 @@ import { InputText } from '@/shared/ui/Input';
 import { Table } from '@/shared/ui/Table';
 import { useRef } from 'react';
 
-// [А-ЯA-Z]+к?-[1-4]\d{2,}
-
 export function SubjectsCreator() {
   const nameRef = useRef<HTMLInputElement>(null);
   const { trigger: createSubject } = useSubjectCreate();

@@ -24,7 +24,7 @@ export default function Subjects() {
               <Table.Head />
             </Table.Row>
           }
-          placeholder={<SubjectsTableRowPlaceholder />}
+          loader={<SubjectsTableRowPlaceholder />}
           onDelete={ids => deleteSubjects(ids)}
         >
           {subjects?.map(subject => (

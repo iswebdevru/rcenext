@@ -29,3 +29,24 @@ export type SubjectCreate = {
 };
 
 export type SubjectUpdate = Partial<SubjectCreate>;
+
+export type Group = {
+  slug: string;
+  specialization: string;
+  course: number;
+  index: number;
+  main_block: number;
+  is_commercial: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type GroupCreate = {
+  specialization: string;
+  course: number;
+  index: number;
+  main_block: number;
+  is_commercial: boolean;
+};
+
+export type GroupUpdate = Partial<GroupCreate>;

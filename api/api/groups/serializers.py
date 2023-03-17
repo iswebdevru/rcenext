@@ -31,14 +31,15 @@ class GroupSerializer(serializers.ModelSerializer):
             index=validated_data['index'],
             is_commercial=validated_data['is_commercial']
         )
-        print(repr(validated_data))
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
         validated_data['slug'] = create_group_slug(
-            specialization=validated_data['specialization'],
-            course=validated_data['course'],
-            index=validated_data['index'],
-            is_commercial=validated_data['is_commercial']
+            specialization=validated_data.get(
+                'specialization', instance.specialization),
+            course=validated_data.get('course', instance.course),
+            index=validated_data.get('index', instance.index),
+            is_commercial=validated_data.get(
+                'is_commercial', instance.is_commercial),
         )
         return super().update(instance, validated_data)

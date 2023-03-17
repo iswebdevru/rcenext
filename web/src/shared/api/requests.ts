@@ -1,4 +1,7 @@
 import {
+  Group,
+  GroupCreate,
+  GroupUpdate,
   Subject,
   SubjectCreate,
   SubjectUpdate,
@@ -74,6 +77,40 @@ export async function updateSubject(id: number, body: SubjectUpdate) {
 
 export async function deleteSubject(id: number) {
   return fetch(`${API}/subjects/${id}/`, {
+    method: 'DELETE',
+  });
+}
+
+export async function createGroup(body: GroupCreate) {
+  return fetcher(`${API}/groups/`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+export async function getGroups() {
+  return fetcher<Group[]>(`${API}/groups/`);
+}
+
+export async function getGroup(slug: string) {
+  return fetcher<Group>(`${API}/groups/${slug}/`);
+}
+
+export async function updateGroup(slug: string, body: GroupUpdate) {
+  return fetcher<Group>(`${API}/groups/${slug}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+export async function deleteGroup(slug: string) {
+  return fetch(`${API}/groups/${slug}/`, {
     method: 'DELETE',
   });
 }
