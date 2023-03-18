@@ -9,11 +9,11 @@ import { Table } from '@/shared/ui/Table';
 import { useRef } from 'react';
 import { GroupsLoader } from './GroupsLoader';
 
-export default function GroupsUpdater({ slug }: { slug: string }) {
+export default function GroupsUpdater({ id }: { id: number }) {
   const groupNameRef = useRef<HTMLInputElement>(null);
   const mainBlock = useRef<HTMLInputElement>(null);
 
-  const { data: group } = useGroup(slug);
+  const { data: group } = useGroup(id);
   const updateGroup = useGroupUpdate();
 
   if (!group) {
@@ -39,7 +39,7 @@ export default function GroupsUpdater({ slug }: { slug: string }) {
       </Table.Data>
       <Table.EditorActions
         onSave={() => {
-          return updateGroup(slug, {
+          return updateGroup(id, {
             ...parseGroupName(groupNameRef.current!.value),
             main_block: parseInt(mainBlock.current!.value),
           });

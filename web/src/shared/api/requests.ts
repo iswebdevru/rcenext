@@ -95,12 +95,12 @@ export async function getGroups() {
   return fetcher<Group[]>(`${API}/groups/`);
 }
 
-export async function getGroup(slug: string) {
-  return fetcher<Group>(`${API}/groups/${slug}/`);
+export async function getGroup(id: number) {
+  return fetcher<Group>(`${API}/groups/${id}/`);
 }
 
-export async function updateGroup(slug: string, body: GroupUpdate) {
-  return fetcher<Group>(`${API}/groups/${slug}/`, {
+export async function updateGroup(id: number, body: GroupUpdate) {
+  return fetcher<Group>(`${API}/groups/${id}/`, {
     method: 'PATCH',
     body: JSON.stringify(body),
     headers: {
@@ -109,8 +109,8 @@ export async function updateGroup(slug: string, body: GroupUpdate) {
   });
 }
 
-export async function deleteGroup(slug: string) {
-  return fetch(`${API}/groups/${slug}/`, {
+export async function deleteGroup(id: number) {
+  return fetch(`${API}/groups/${id}/`, {
     method: 'DELETE',
   });
 }

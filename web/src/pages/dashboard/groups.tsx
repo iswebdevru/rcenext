@@ -15,9 +15,9 @@ export default function Groups() {
   return (
     <DashboardLayout>
       <div className="h-full p-6">
-        <Table<string>
+        <Table<number>
           creator={() => <GroupsCreator />}
-          updater={slug => <GroupsUpdater slug={slug} />}
+          updater={id => <GroupsUpdater id={id} />}
           header={
             <Table.Row>
               <Table.SelectAllRowsCheckbox />
@@ -26,11 +26,11 @@ export default function Groups() {
               <Table.Head />
             </Table.Row>
           }
-          onDelete={slugs => deleteGroups(slugs)}
+          onDelete={ids => deleteGroups(ids)}
           loader={<GroupsLoader />}
         >
           {groups?.map(group => (
-            <Table.RowWithId key={group.slug} id={group.slug}>
+            <Table.RowWithId key={group.id} id={group.id}>
               <Table.SelectRowCheckbox />
               <Table.Data>{displayGroupName(group)}</Table.Data>
               <Table.Data>{group.main_block}</Table.Data>

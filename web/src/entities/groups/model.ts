@@ -21,18 +21,18 @@ export function useGroups() {
   return useSWR(groupsKey, getGroups);
 }
 
-export function useGroup(slug: string) {
-  return useSWR([groupsKey, slug], ([_, id]) => getGroup(id));
+export function useGroup(id: number) {
+  return useSWR([groupsKey, id], ([_, id]) => getGroup(id));
 }
 
 export function useGroupUpdate() {
   const { mutate } = useSWRConfig();
-  return async (slug: string, body: GroupUpdate) => {
+  return async (id: number, body: GroupUpdate) => {
     return mutate(
       key =>
         key === groupsKey ||
-        (Array.isArray(key) && key[0] === groupsKey && key[1] === slug),
-      () => updateGroup(slug, body),
+        (Array.isArray(key) && key[0] === groupsKey && key[1] === id),
+      () => updateGroup(id, body),
       {
         populateCache: false,
       }
@@ -41,7 +41,7 @@ export function useGroupUpdate() {
 }
 
 export function useGroupDeleteMany() {
-  return useSWRMutation(groupsKey, (_, { arg }: { arg: string[] }) =>
-    Promise.all(arg.map(slug => deleteGroup(slug)))
+  return useSWRMutation(groupsKey, (_, { arg }: { arg: number[] }) =>
+    Promise.all(arg.map(id => deleteGroup(id)))
   );
 }

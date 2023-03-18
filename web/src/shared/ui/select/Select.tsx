@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { InputText } from '../Input';
 
 type CommonSelectProps<T extends string | number> = {
   searchString?: string;
@@ -49,6 +50,8 @@ export function Select<T extends string | number | (string | number)[]>({
   const [isOpened, setIsOpened] = useState(false);
   const dropDownRef = useRef<HTMLDivElement>(null);
   const componentRef = useRef<HTMLDivElement>(null);
+  const [wasFocused, setWasFocused] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   useClickOutside(componentRef, () => setIsOpened(false));
 
@@ -61,7 +64,7 @@ export function Select<T extends string | number | (string | number)[]>({
       : ''
     : placeholder ?? 'Не выбрано';
 
-  const items = Children.map(children, child => {
+  const items = Children.map(children, (child, i) => {
     if (!child) {
       return null;
     }
@@ -80,7 +83,7 @@ export function Select<T extends string | number | (string | number)[]>({
               ? value.includes(child.props.value)
               : value === child.props.value,
           })}
-          onClick={() => {
+          onClick={e => {
             if (multiple) {
               if (value.includes(child.props.value)) {
                 onChange(value.filter(v => v !== child.props.value));
@@ -100,17 +103,30 @@ export function Select<T extends string | number | (string | number)[]>({
   });
 
   return (
-    <div className="relative flex items-center w-full h-8" ref={componentRef}>
+    <div
+      className="relative flex items-center w-full h-8"
+      ref={componentRef}
+      onFocus={() => {
+        setIsOpened(true);
+        setWasFocused(true);
+        setIsFocused(true);
+      }}
+      onBlur={() => {
+        setIsOpened(false);
+        setIsFocused(false);
+      }}
+    >
       <button
         type="button"
-        onClick={() => setIsOpened(p => !p)}
+        onMouseDown={() => setIsOpened(p => !p)}
         className={clsx({
-          'w-full transition-[border,outline] outline-blue-200 h-full border rounded-md px-3 text-left text-sm outline outline-0 focus:outline-4 focus:border-blue-500':
+          'w-full transition-[border,outline] outline-blue-200 h-full border rounded-md px-3 text-left text-sm outline outline-0':
             true,
           'border-blue-500 outline-4': isOpened,
           'border-neutral-200': !isOpened,
           'outline-green-600': !!required && !isOpened && isSelected,
-          'outline-red-800': !!required && !isOpened && !isSelected,
+          'border-red-500':
+            wasFocused && !isFocused && !!required && !isOpened && !isSelected,
         })}
       >
         {Array.isArray(displayValue) ? (
@@ -136,8 +152,8 @@ export function Select<T extends string | number | (string | number)[]>({
       >
         <div ref={dropDownRef} className="border">
           {searchString && onSearchStringChange ? (
-            <div className="p-2 border-b">
-              <input type="text" className="w-full px-1 border" />
+            <div className="px-4 py-3 border-b">
+              <InputText />
             </div>
           ) : null}
           <ul className="flex flex-col">{items}</ul>

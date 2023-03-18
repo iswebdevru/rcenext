@@ -31,7 +31,7 @@ export type SubjectCreate = {
 export type SubjectUpdate = Partial<SubjectCreate>;
 
 export type Group = {
-  slug: string;
+  id: number;
   specialization: string;
   course: number;
   index: number;
