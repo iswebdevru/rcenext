@@ -3,7 +3,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator, RegexVa
 
 
 class Group(models.Model):
-    slug = models.SlugField(max_length=255, primary_key=True)
     specialization = models.CharField(max_length=55, validators=[
         RegexValidator(regex=r'[а-яА-Я]+',
                        message="Разрешены только буквы кириллицы")
