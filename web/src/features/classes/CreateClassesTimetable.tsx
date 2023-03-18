@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { InputText } from '@/shared/ui/Input';
-import { Select, SelectProps } from '@/shared/ui/select';
+import { Select } from '@/shared/ui/select';
 import { displayGroupName, useGroups } from '@/entities/groups';
 import { useSubjects } from '@/entities/subjects';
+import { useTeachers } from '@/entities/teachers';
 
 type SelectGroupProps = {
   value?: number;
@@ -44,9 +45,92 @@ function SelectSubject(props: SelectSubjectProps) {
   );
 }
 
+type SelectTeachersProps = {
+  onChange: (ids: number[]) => void;
+  value: number[];
+  required: boolean;
+};
+
+function SelectTeachers(props: SelectTeachersProps) {
+  const { data: teachers } = useTeachers();
+
+  return (
+    <Select multiple {...props}>
+      {teachers?.map(teacher => (
+        <Select.Option key={teacher.id} value={teacher.id}>
+          {`${teacher.first_name[0]}. ${teacher.patronymic[0]}. ${teacher.last_name}`}
+        </Select.Option>
+      ))}
+    </Select>
+  );
+}
+
+type ClassInfo = {
+  subjectId?: number;
+  teachersIds: number[];
+  cabinet: string;
+  note: string;
+};
+
+const defaultClassesTimetable: ClassInfo[] = [
+  {
+    cabinet: '',
+    note: '',
+    teachersIds: [],
+  },
+  {
+    cabinet: '',
+    note: '',
+    teachersIds: [],
+  },
+  {
+    cabinet: '',
+    note: '',
+    teachersIds: [],
+  },
+  {
+    cabinet: '',
+    note: '',
+    teachersIds: [],
+  },
+  {
+    cabinet: '',
+    note: '',
+    teachersIds: [],
+  },
+  {
+    cabinet: '',
+    note: '',
+    teachersIds: [],
+  },
+  {
+    cabinet: '',
+    note: '',
+    teachersIds: [],
+  },
+  {
+    cabinet: '',
+    note: '',
+    teachersIds: [],
+  },
+];
+
 export function CreateClassesTimetable() {
   const [selectedGroup, setSelectedGroup] = useState<number | undefined>();
-  const [selectedSubject, setSelectedSubject] = useState<number | undefined>();
+  const [classesTimetable, setClassesTimetable] = useState(
+    defaultClassesTimetable
+  );
+
+  const updateTimetable = (i: number, info: Partial<ClassInfo>) => {
+    setClassesTimetable(p => {
+      const copy = [...p];
+      copy[i] = {
+        ...copy[i],
+        ...info,
+      };
+      return copy;
+    });
+  };
 
   return (
     <div className="p-6 bg-white rounded-md shadow-lg">
@@ -76,29 +160,44 @@ export function CreateClassesTimetable() {
                 Примечание
               </th>
             </tr>
-            {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
-              <tr key={i} className="opacity-50 focus-within:opacity-100">
+            {classesTimetable.map((info, i) => (
+              <tr key={i} className="">
                 <td className="px-2 py-2 text-center w-[6%]">{i}</td>
                 <td className="px-2 py-2 w-[32%]">
                   <SelectSubject
-                    value={selectedSubject}
-                    onChange={setSelectedSubject}
+                    value={info.subjectId}
+                    onChange={subjectId => updateTimetable(i, { subjectId })}
                     required
                   />
                 </td>
                 <td className="px-2 py-2 w-[32%]">
-                  <Select
+                  <SelectTeachers
                     required
-                    searchString="asdf"
-                    onSearchStringChange={() => {}}
-                    onChange={() => {}}
-                  ></Select>
+                    value={info.teachersIds}
+                    onChange={teachersIds =>
+                      updateTimetable(i, {
+                        teachersIds,
+                      })
+                    }
+                  />
                 </td>
                 <td className="w-[15%] px-2 py-2 ">
-                  <InputText placeholder="Кабинет" />
+                  <InputText
+                    placeholder="Кабинет"
+                    value={info.cabinet}
+                    onChange={e =>
+                      updateTimetable(i, { cabinet: e.currentTarget.value })
+                    }
+                  />
                 </td>
                 <td className="w-[15%] px-2 py-2 ">
-                  <InputText placeholder="Примечание" />
+                  <InputText
+                    placeholder="Примечание"
+                    value={info.note}
+                    onChange={e => {
+                      updateTimetable(i, { note: e.currentTarget.value });
+                    }}
+                  />
                 </td>
               </tr>
             ))}
