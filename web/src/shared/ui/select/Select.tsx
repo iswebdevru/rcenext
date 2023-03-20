@@ -3,14 +3,18 @@ import { clsx } from '@/shared/lib/ui';
 import {
   ChangeEvent,
   Children,
+  createContext,
   EventHandler,
   ReactElement,
+  useContext,
   useRef,
   useState,
 } from 'react';
 import { InputText } from '../Input';
 
-type CommonSelectProps<T extends string | number> = {
+type Id = string | number;
+
+type CommonSelectProps<T extends Id> = {
   searchString?: string;
   onSearchStringChange?: EventHandler<ChangeEvent>;
   children?: ReactElement<OptionProps<T>> | ReactElement<OptionProps<T>>[];
@@ -18,26 +22,29 @@ type CommonSelectProps<T extends string | number> = {
   required?: boolean;
 };
 
-type SingleSelectProps<T extends string | number> = {
+type SingleSelectProps<T extends Id> = {
   multiple?: false;
   value?: T;
   onChange: (value: T) => void;
 } & CommonSelectProps<T>;
 
-type MultipleSelectProps<T extends string | number> = {
+type MultipleSelectProps<T extends Id> = {
   multiple: true;
   value: T[];
   onChange: (value: T[]) => void;
 } & CommonSelectProps<T>;
 
-export type SelectProps<T extends string | number | (string | number)[]> =
-  T extends Array<infer K extends string | number>
-    ? MultipleSelectProps<K>
-    : T extends string | number
-    ? SingleSelectProps<T>
-    : never;
+export type SelectProps<T extends Id> =
+  | SingleSelectProps<T>
+  | MultipleSelectProps<T>;
 
-export function Select<T extends string | number | (string | number)[]>({
+type OptionContext = {
+  isSelected: boolean;
+  triggerSelect: () => void;
+};
+const OptionContext = createContext<OptionContext>(undefined as any);
+
+export function Select<T extends string | number>({
   children,
   value,
   onChange,
@@ -47,58 +54,55 @@ export function Select<T extends string | number | (string | number)[]>({
   placeholder,
   required,
 }: SelectProps<T>) {
-  const [isOpened, setIsOpened] = useState(false);
-  const dropDownRef = useRef<HTMLDivElement>(null);
   const componentRef = useRef<HTMLDivElement>(null);
+  const dropDownRef = useRef<HTMLDivElement>(null);
+  const [isOpened, setIsOpened] = useState(false);
   const [wasFocused, setWasFocused] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
 
   useClickOutside(componentRef, () => setIsOpened(false));
 
-  const isSelected =
+  const hasSelected =
     value !== undefined && !(Array.isArray(value) && value.length === 0);
 
-  let displayValue: string[] | string = isSelected
+  let displayValue: string[] | string = hasSelected
     ? multiple
       ? []
       : ''
     : placeholder ?? 'Не выбрано';
 
-  const items = Children.map(children, (child, i) => {
-    if (!child) {
+  const items = Children.map(children, option => {
+    if (!option) {
       return null;
     }
-    if (multiple && value.includes(child.props.value)) {
-      (displayValue as string[]).push(child.props.children.toString());
-    } else if (!multiple && value === child.props.value) {
-      displayValue = child.props.children.toString();
+    if (multiple && value.includes(option.props.value)) {
+      (displayValue as string[]).push(option.props.children.toString());
+    } else if (!multiple && value === option.props.value) {
+      displayValue = option.props.children.toString();
     }
     return (
-      <li className="group">
-        <button
-          type="button"
-          className={clsx({
-            'px-3 py-2 border-b group-last:border-b-0 w-full text-left': true,
-            'bg-blue-50': multiple
-              ? value.includes(child.props.value)
-              : value === child.props.value,
-          })}
-          onClick={e => {
+      <OptionContext.Provider
+        key={option.props.value}
+        value={{
+          isSelected: multiple
+            ? value.includes(option.props.value)
+            : value === option.props.value,
+          triggerSelect: () => {
             if (multiple) {
-              if (value.includes(child.props.value)) {
-                onChange(value.filter(v => v !== child.props.value));
+              if (value.includes(option.props.value)) {
+                onChange(value.filter(v => v !== option.props.value));
               } else {
-                onChange([...value, child.props.value]);
+                onChange([...value, option.props.value]);
               }
             } else {
               setIsOpened(false);
-              onChange(child.props.value as never);
+              onChange(option.props.value);
             }
-          }}
-        >
-          {child.props.children}
-        </button>
-      </li>
+          },
+        }}
+      >
+        {option}
+      </OptionContext.Provider>
     );
   });
 
@@ -124,9 +128,9 @@ export function Select<T extends string | number | (string | number)[]>({
             true,
           'border-blue-500 outline-4': isOpened,
           'border-neutral-200': !isOpened,
-          'outline-green-600': !!required && !isOpened && isSelected,
+          'border-green-600': !!required && !isOpened && hasSelected,
           'border-red-500':
-            wasFocused && !isFocused && !!required && !isOpened && !isSelected,
+            wasFocused && !isFocused && !!required && !isOpened && !hasSelected,
         })}
       >
         {Array.isArray(displayValue) ? (
@@ -168,8 +172,22 @@ export type OptionProps<T> = {
   children: string | number;
 };
 
-Select.Option = function Option<T>(_: OptionProps<T>) {
-  return null;
+Select.Option = function Option<T>({ value, children }: OptionProps<T>) {
+  const { isSelected, triggerSelect } = useContext(OptionContext);
+  return (
+    <li className="group">
+      <button
+        type="button"
+        className={clsx({
+          'px-3 py-2 border-b group-last:border-b-0 w-full text-left': true,
+          'bg-blue-50': isSelected,
+        })}
+        onClick={triggerSelect}
+      >
+        {children}
+      </button>
+    </li>
+  );
 };
 
 /*
