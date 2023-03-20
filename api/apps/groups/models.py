@@ -5,7 +5,7 @@ from apps.core.models import TimestampModel
 
 class Group(TimestampModel):
     specialization = models.CharField(max_length=55, validators=[
-        RegexValidator(regex=r'[а-яА-Я]+',
+        RegexValidator(regex=r'[А-Я]+',
                        message="Разрешены только буквы кириллицы")
     ])
     course = models.PositiveSmallIntegerField(

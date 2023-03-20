@@ -6,14 +6,15 @@ from apps.core.models import TimestampModel
 
 
 class Timetable(TimestampModel):
-    group_slug = models.ForeignKey(Group, on_delete=models.CASCADE)
+    group_id = models.ForeignKey(Group, on_delete=models.CASCADE)
     date = models.DateField()
     is_main = models.BooleanField()
+    note = models.CharField(max_length=400, null=True, blank=True)
 
     class Meta:
         constraints = [
             models.constraints.UniqueConstraint(
-                'group_slug',
+                'group_id',
                 'date',
                 name="Группа может иметь только одно расписание на один день"
             ),
@@ -22,10 +23,10 @@ class Timetable(TimestampModel):
 
 class TimetablePeriod(TimestampModel):
     timetable_id = models.ForeignKey(Timetable, on_delete=models.CASCADE)
+    index = models.PositiveSmallIntegerField()
     subject_id = models.ForeignKey(Subject, on_delete=models.CASCADE)
     teachers = models.ManyToManyField(Teacher)
     cabinet = models.CharField(max_length=55)
-    index = models.PositiveSmallIntegerField()
 
     class Meta:
         constraints = [
