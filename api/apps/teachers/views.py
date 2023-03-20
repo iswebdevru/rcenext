@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from .models import Teacher
 from .serializers import TeacherSerializer
-from api.subjects.serializers import SubjectSerializer
+from apps.subjects.serializers import SubjectSerializer
 
 
 class TeacherViewSet(viewsets.ModelViewSet):

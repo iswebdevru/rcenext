@@ -1,10 +1,11 @@
 from django.db import models
-from api.groups.models import Group
-from api.subjects.models import Subject
-from api.teachers.models import Teacher
+from apps.groups.models import Group
+from apps.subjects.models import Subject
+from apps.teachers.models import Teacher
+from apps.core.models import TimestampModel
 
 
-class Timetable(models.Model):
+class Timetable(TimestampModel):
     group_slug = models.ForeignKey(Group, on_delete=models.CASCADE)
     date = models.DateField()
     is_main = models.BooleanField()
@@ -19,7 +20,7 @@ class Timetable(models.Model):
         ]
 
 
-class TimetablePeriod(models.Model):
+class TimetablePeriod(TimestampModel):
     timetable_id = models.ForeignKey(Timetable, on_delete=models.CASCADE)
     subject_id = models.ForeignKey(Subject, on_delete=models.CASCADE)
     teachers = models.ManyToManyField(Teacher)

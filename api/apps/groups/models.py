@@ -1,8 +1,9 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
+from apps.core.models import TimestampModel
 
 
-class Group(models.Model):
+class Group(TimestampModel):
     specialization = models.CharField(max_length=55, validators=[
         RegexValidator(regex=r'[а-яА-Я]+',
                        message="Разрешены только буквы кириллицы")
@@ -16,8 +17,6 @@ class Group(models.Model):
     index = models.PositiveSmallIntegerField()
     main_block = models.PositiveBigIntegerField()
     is_commercial = models.BooleanField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [

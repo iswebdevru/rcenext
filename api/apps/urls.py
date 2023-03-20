@@ -1,8 +1,8 @@
 from rest_framework.routers import DefaultRouter
-from api.teachers.views import TeacherViewSet
-from api.subjects.views import SubjectViewSet
-from api.groups.views import GroupViewSet
-from api.timetables.views import TimetableViewSet
+from apps.teachers.views import TeacherViewSet
+from apps.subjects.views import SubjectViewSet
+from apps.groups.views import GroupViewSet
+from apps.timetables.views import TimetableViewSet
 
 router = DefaultRouter()
 router.register('teachers', TeacherViewSet, basename='teacher')

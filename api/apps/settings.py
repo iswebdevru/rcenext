@@ -39,10 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'api.teachers',
-    'api.subjects',
-    'api.groups',
-    'api.timetables',
+    'apps.core',
+    'apps.teachers',
+    'apps.subjects',
+    'apps.groups',
+    'apps.timetables',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +57,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'api.urls'
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.ApiPagination',
+    'PAGE_SIZE': 2
+}
+
+ROOT_URLCONF = 'apps.urls'
 
 TEMPLATES = [
     {
@@ -74,7 +80,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'api.wsgi.application'
+WSGI_APPLICATION = 'apps.wsgi.application'
 
 
 # Database
