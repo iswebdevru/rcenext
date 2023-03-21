@@ -9,7 +9,7 @@ class MainTimetablePeriodSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'index',
-            'subject_id',
+            'subject',
             'teachers',
             'cabinet',
         ]
@@ -18,8 +18,10 @@ class MainTimetablePeriodSerializer(serializers.ModelSerializer):
 class MainTimetableSerializer(serializers.ModelSerializer):
     periods = MainTimetablePeriodSerializer(many=True)
     week_day = serializers.ChoiceField(
-        ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'])
-    week_type = serializers.ChoiceField(['ЧИСЛ', 'ЗНАМ'])
+        ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'],
+        write_only=True
+    )
+    week_type = serializers.ChoiceField(['ЧИСЛ', 'ЗНАМ'], write_only=True)
 
     def create(self, validated_data):
         periods = validated_data.pop('periods')
@@ -29,23 +31,23 @@ class MainTimetableSerializer(serializers.ModelSerializer):
         timetable = Timetable.objects.create(
             **validated_data, is_main=True, date=date
         )
-
         for period in periods:
-            teachers_ids = period.pop('teachers')
+            teachers = period.pop('teachers')
             period_record = TimetablePeriod.objects.create(
-                **period, timetable_id=timetable
+                **period, timetable=timetable
             )
-            period_record.teachers.add(*teachers_ids)
+            period_record.teachers.add(*teachers)
         return timetable
 
     def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
+        pass
 
     class Meta:
         model = Timetable
         fields = [
             'id',
-            'group_id',
+            'group',
+            'date',
             'periods',
             'note',
             'week_day',

@@ -6,7 +6,7 @@ from apps.core.models import TimestampModel
 
 
 class Timetable(TimestampModel):
-    group_id = models.ForeignKey(Group, on_delete=models.CASCADE)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
     date = models.DateField()
     is_main = models.BooleanField()
     note = models.CharField(max_length=400, null=True, blank=True)
@@ -14,7 +14,7 @@ class Timetable(TimestampModel):
     class Meta:
         constraints = [
             models.constraints.UniqueConstraint(
-                'group_id',
+                'group',
                 'date',
                 name="Группа может иметь только одно расписание на один день"
             ),
@@ -22,16 +22,17 @@ class Timetable(TimestampModel):
 
 
 class TimetablePeriod(TimestampModel):
-    timetable_id = models.ForeignKey(Timetable, on_delete=models.CASCADE)
+    timetable = models.ForeignKey(
+        Timetable, on_delete=models.CASCADE, related_name='periods')
     index = models.PositiveSmallIntegerField()
-    subject_id = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     teachers = models.ManyToManyField(Teacher)
     cabinet = models.CharField(max_length=55)
 
     class Meta:
         constraints = [
             models.constraints.UniqueConstraint(
-                'timetable_id',
+                'timetable',
                 'index',
                 name="Номер пары должен быть уникальным",
             ),

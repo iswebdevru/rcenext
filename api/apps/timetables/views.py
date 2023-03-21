@@ -1,14 +1,16 @@
-from rest_framework import viewsets, mixins, response
+from rest_framework import viewsets, filters
 from .models import Timetable
 from .serializers import MainTimetableSerializer
-from .service import convert_db_date
+
+# TODO: СДЕЛАТЬ ФИЛЬТРЫ ПО ТИПУ НЕДЕЛИ И ДНЮ НЕДЕЛИ
 
 
-class TimetableViewSet(mixins.CreateModelMixin,
-                       mixins.ListModelMixin,
-                       mixins.RetrieveModelMixin,
-                       mixins.DestroyModelMixin,
-                       viewsets.GenericViewSet):
-
+class MainTimetableViewSet(viewsets.ModelViewSet):
     queryset = Timetable.objects.all()
     serializer_class = MainTimetableSerializer
+    # filter_backends = [filters.SearchFilter]
+    # search_fields = [
+    #     'first_name',
+    #     'last_name',
+    #     'patronymic',
+    # ]
