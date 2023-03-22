@@ -3,7 +3,7 @@ from .models import Timetable, TimetablePeriod
 from .service import db_dates_map
 
 
-class MainTimetablePeriodSerializer(serializers.ModelSerializer):
+class MainTimetablePeriodSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TimetablePeriod
         fields = [
@@ -15,7 +15,7 @@ class MainTimetablePeriodSerializer(serializers.ModelSerializer):
         ]
 
 
-class MainTimetableSerializer(serializers.ModelSerializer):
+class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
     periods = MainTimetablePeriodSerializer(many=True)
     week_day = serializers.ChoiceField(
         ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'],
@@ -40,16 +40,31 @@ class MainTimetableSerializer(serializers.ModelSerializer):
         return timetable
 
     def update(self, instance, validated_data):
-        pass
+        instance.group = validated_data.pop('group', instance.group)
+        instance.note = validated_data.pop('note', instance.note)
+        week_day = validated_data.pop('week_day')
+        week_type = validated_data.pop('week_type')
+        instance.date = db_dates_map[week_type][week_day]
+        periods = validated_data.pop('periods', [])
+        instance.periods.all().delete()
+        for period in periods:
+            teachers = period.pop('teachers', [])
+            period_record = TimetablePeriod.objects.create(
+                **period, timetable=instance
+            )
+            period_record.teachers.add(*teachers)
+        instance.save()
+        return instance
 
     class Meta:
         model = Timetable
         fields = [
-            'id',
+            'url',
             'group',
-            'date',
             'periods',
             'note',
             'week_day',
-            'week_type'
+            'week_type',
+            'created_at',
+            'updated_at',
         ]

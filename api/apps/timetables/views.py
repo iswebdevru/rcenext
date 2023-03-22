@@ -1,16 +1,16 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, status
+from rest_framework.response import Response
 from .models import Timetable
 from .serializers import MainTimetableSerializer
+from .filters import DateFilterBackend
+from apps.core.views import RelativeHyperlinkedModelViewSetMixin
 
-# TODO: СДЕЛАТЬ ФИЛЬТРЫ ПО ТИПУ НЕДЕЛИ И ДНЮ НЕДЕЛИ
 
-
-class MainTimetableViewSet(viewsets.ModelViewSet):
+class MainTimetableViewSet(RelativeHyperlinkedModelViewSetMixin, viewsets.ModelViewSet):
     queryset = Timetable.objects.all()
     serializer_class = MainTimetableSerializer
-    # filter_backends = [filters.SearchFilter]
-    # search_fields = [
-    #     'first_name',
-    #     'last_name',
-    #     'patronymic',
-    # ]
+    filter_backends = [DateFilterBackend]
+
+    def partial_update(self, request, pk=None):
+        response = {'message': 'Update function is not offered in this path.'}
+        return Response(response, status=status.HTTP_403_FORBIDDEN)

@@ -2,11 +2,11 @@ from rest_framework import serializers, validators
 from .models import Group
 
 
-class GroupSerializer(serializers.ModelSerializer):
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
         fields = [
-            'id',
+            'url',
             'specialization',
             'course',
             'index',

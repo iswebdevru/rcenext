@@ -1,5 +1,5 @@
 import datetime
-from typing import Literal, Tuple
+from typing import List, Literal, Tuple
 
 WeekType = Literal['ЧИСЛ', 'ЗНАМ']
 WeekDay = Literal[
@@ -11,6 +11,15 @@ WeekDay = Literal[
     'СБ',
     'ВС'
 ]
+
+week_types: List[WeekType] = ['ЧИСЛ', 'ЗНАМ']
+week_days: List[WeekDay] = ['ПН',
+                            'ВТ',
+                            'СР',
+                            'ЧТ',
+                            'ПТ',
+                            'СБ',
+                            'ВС']
 
 # День, от которого будет вычисляться тип недели (числитель/знаменатель)
 base_timestamp = datetime.date(2000, 1, 3)
