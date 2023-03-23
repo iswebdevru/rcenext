@@ -37,3 +37,4 @@ class TimetablePeriod(TimestampModel):
                 name="Номер пары должен быть уникальным",
             ),
         ]
+        ordering = ['index']

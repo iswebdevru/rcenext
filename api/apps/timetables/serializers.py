@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from .models import Timetable, TimetablePeriod
-from .service import db_dates_map
+from .service import db_dates_map, create_periods
 
 
-class MainTimetablePeriodSerializer(serializers.HyperlinkedModelSerializer):
+class TimetablePeriodSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TimetablePeriod
         fields = [
@@ -16,7 +16,7 @@ class MainTimetablePeriodSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
-    periods = MainTimetablePeriodSerializer(many=True)
+    periods = TimetablePeriodSerializer(many=True)
     week_day = serializers.ChoiceField(
         ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'],
         write_only=True
@@ -31,12 +31,7 @@ class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
         timetable = Timetable.objects.create(
             **validated_data, is_main=True, date=date
         )
-        for period in periods:
-            teachers = period.pop('teachers')
-            period_record = TimetablePeriod.objects.create(
-                **period, timetable=timetable
-            )
-            period_record.teachers.add(*teachers)
+        create_periods(periods, timetable)
         return timetable
 
     def update(self, instance, validated_data):
@@ -45,14 +40,9 @@ class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
         week_day = validated_data.pop('week_day')
         week_type = validated_data.pop('week_type')
         instance.date = db_dates_map[week_type][week_day]
-        periods = validated_data.pop('periods', [])
+        periods = validated_data.pop('periods')
         instance.periods.all().delete()
-        for period in periods:
-            teachers = period.pop('teachers', [])
-            period_record = TimetablePeriod.objects.create(
-                **period, timetable=instance
-            )
-            period_record.teachers.add(*teachers)
+        create_periods(periods, instance)
         instance.save()
         return instance
 
@@ -68,3 +58,61 @@ class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
             'created_at',
             'updated_at',
         ]
+        extra_kwargs = {
+            'url': {'view_name': 'timetable-main-detail'}
+        }
+
+
+class ChangesTimetableSerializer(serializers.HyperlinkedModelSerializer):
+    periods = TimetablePeriodSerializer(many=True)
+
+    def create(self, validated_data):
+        periods = validated_data.pop('periods')
+        timetable = Timetable.objects.create(**validated_data, is_main=False)
+        create_periods(periods, timetable)
+        return timetable
+
+    def update(self, instance, validated_data):
+        instance.group = validated_data.pop('group', instance.group)
+        instance.date = validated_data.pop('date', instance.date)
+        instance.note = validated_data.pop('note', instance.note)
+        instance.date = validated_data.pop('date', instance.date)
+        periods = validated_data.pop('periods')
+        instance.periods.all().delete()
+        create_periods(periods, instance)
+        instance.save()
+        return instance
+
+    class Meta:
+        model = Timetable
+        fields = [
+            'url',
+            'group',
+            'periods',
+            'date',
+            'note',
+            'created_at',
+            'updated_at',
+        ]
+        extra_kwargs = {
+            'url': {'view_name': 'timetable-changes-detail'}
+        }
+
+
+class MixedTimetableSerializer(serializers.HyperlinkedModelSerializer):
+    periods = TimetablePeriodSerializer(many=True)
+
+    class Meta:
+        model = Timetable
+        fields = [
+            'url',
+            'group',
+            'is_main',
+            'periods',
+            'note',
+            'created_at',
+            'updated_at',
+        ]
+        extra_kwargs = {
+            'url': {'view_name': 'timetable-mixed-detail'}
+        }
