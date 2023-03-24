@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from .models import Timetable
 from .serializers import MainTimetableSerializer, ChangesTimetableSerializer, MixedTimetableSerializer
 from .filters import WeekDayFilterBackend, DateFilterBackend
-from .service import get_week_type_and_day, db_dates_map
+from .service import get_day_info, main_dates_map
 
 
 class MainTimetableViewSet(viewsets.ModelViewSet):
@@ -36,6 +36,6 @@ class MixedTimetableViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         date_str = self.request.query_params.get('date')
         changes_date = datetime.date.fromisoformat(date_str)
-        week_type, week_day = get_week_type_and_day(changes_date)
-        main_date = db_dates_map[week_type][week_day]
+        week_type, week_day = get_day_info(changes_date)
+        main_date = main_dates_map[week_type][week_day]
         return Timetable.objects.exclude(Q(date=main_date) & Exists(Timetable.objects.filter(group=OuterRef('group'))))

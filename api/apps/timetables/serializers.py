@@ -1,6 +1,19 @@
 from rest_framework import serializers
 from .models import Timetable, TimetablePeriod
-from .service import db_dates_map, create_periods, week_days, week_types, get_week_type_and_day
+from .service import main_dates_map, week_days, week_types, get_day_info
+
+
+def create_period(period_data, timetable):
+    teachers = period_data.pop('teachers')
+    period_record = TimetablePeriod.objects.create(
+        **period_data, timetable=timetable
+    )
+    period_record.teachers.add(*teachers)
+
+
+def create_periods(periods_data, timetable):
+    for period_data in periods_data:
+        create_period(period_data, timetable)
 
 
 class TimetablePeriodSerializer(serializers.HyperlinkedModelSerializer):
@@ -17,18 +30,18 @@ class TimetablePeriodSerializer(serializers.HyperlinkedModelSerializer):
 class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
     periods = TimetablePeriodSerializer(many=True)
     week_type = serializers.ChoiceField(week_types, write_only=True)
-    week_day = serializers.ChoiceField(week_types, write_only=True)
+    week_day = serializers.ChoiceField(week_days, write_only=True)
 
     def to_internal_value(self, data):
         native_value = super().to_internal_value(data)
         week_type = native_value.pop('week_type')
         week_day = native_value.pop('week_day')
-        native_value['date'] = db_dates_map[week_type][week_day]
+        native_value['date'] = main_dates_map[week_type][week_day]
         return native_value
 
     def to_representation(self, instance):
         primitive_value = super().to_representation(instance)
-        week_type, week_day = get_week_type_and_day(instance.date)
+        week_type, week_day = get_day_info(instance.date)
         primitive_value['week_type'] = week_type
         primitive_value['week_day'] = week_day
         return primitive_value
@@ -116,7 +129,7 @@ class MixedTimetableSerializer(serializers.HyperlinkedModelSerializer):
         if not instance.is_main:
             return primitive_value
         primitive_value.pop('date')
-        week_type, week_day = get_week_type_and_day(instance.date)
+        week_type, week_day = get_day_info(instance.date)
         primitive_value['week_type'] = week_type
         primitive_value['week_day'] = week_day
         return primitive_value
