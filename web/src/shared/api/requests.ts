@@ -11,50 +11,22 @@ import {
 } from './contracts';
 import { fetcher } from './fetcher';
 
-const API = 'http://localhost:8000';
+export const API = 'http://localhost:8000';
 
 export async function getTeachers() {
   return fetcher<Teacher[]>(`${API}/teachers/`);
 }
 
-export async function getTeacher(id: number) {
-  return fetcher<Teacher>(`${API}/teachers/${id}/`);
-}
-
-export async function deleteTeacher(id: number) {
-  return fetch(`${API}/teachers/${id}/`, {
-    method: 'DELETE',
-  });
-}
-
 export function createTeacher(body: TeacherCreate) {
-  return fetcher(`${API}/teachers/`, {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  return fetcher.post(`${API}/teachers/`, body);
 }
 
 export async function updateTeacher(id: number, body: TeacherUpdate) {
-  return fetcher(`${API}/teachers/${id}/`, {
-    method: 'PATCH',
-    body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  return fetcher.patch(`${API}/teachers/${id}/`, body);
 }
 
 export async function createSubject(body: SubjectCreate) {
-  return fetcher<Subject>(`${API}/subjects/`, {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  return fetcher.post(`${API}/subjects/`, body);
 }
 
 export async function getSubjects() {

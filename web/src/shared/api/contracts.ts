@@ -1,9 +1,17 @@
+export type Paginated<T> = {
+  prev: null | string;
+  next: null | string;
+  results: T[];
+};
+
+export type Hyperlink = string;
+
 export type Teacher = {
-  id: number;
+  url: Hyperlink;
   first_name: string;
   last_name: string;
   patronymic: string;
-  subjects_url: string;
+  subjects: Hyperlink[];
   created_at: string;
   updated_at: string;
 };
@@ -12,13 +20,13 @@ export type TeacherCreate = {
   first_name: string;
   last_name: string;
   patronymic: string;
-  subjects: number[];
+  subjects: Hyperlink[];
 };
 
 export type TeacherUpdate = Partial<TeacherCreate>;
 
 export type Subject = {
-  id: number;
+  url: Hyperlink;
   name: string;
   created_at: string;
   updated_at: string;
@@ -31,7 +39,7 @@ export type SubjectCreate = {
 export type SubjectUpdate = Partial<SubjectCreate>;
 
 export type Group = {
-  id: number;
+  url: Hyperlink;
   specialization: string;
   course: number;
   index: number;
@@ -50,3 +58,32 @@ export type GroupCreate = {
 };
 
 export type GroupUpdate = Partial<GroupCreate>;
+
+export type TimetablePeriod = {
+  index: number;
+  subject: Hyperlink;
+  teachers: Hyperlink[];
+  cabinet: string;
+};
+
+type CommonTimetableData = {
+  url: Hyperlink;
+  group: Hyperlink;
+  periods: TimetablePeriod[];
+  note: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type MainTimetable = {
+  is_main: true;
+  week_type: string;
+  week_day: string;
+} & CommonTimetableData;
+
+export type ChangesTimetable = {
+  is_main: false;
+  date: string;
+} & CommonTimetableData;
+
+export type MixedTimetable = MainTimetable | ChangesTimetable;
