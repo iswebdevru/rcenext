@@ -39,4 +39,4 @@ class MixedTimetableViewSet(RelativeHyperlinkedModelViewSetMixin, viewsets.ReadO
         changes_date = datetime.date.fromisoformat(date_str)
         week_type, week_day = get_week_type_and_day(changes_date)
         main_date = db_dates_map[week_type][week_day]
-        return Timetable.objects.filter(Q(date=changes_date) | Q(date=main_date) & ~Exists(Timetable.objects.filter(group=OuterRef('group'))))
+        return Timetable.objects.exclude(Q(date=main_date) & Exists(Timetable.objects.filter(group=OuterRef('group'))))

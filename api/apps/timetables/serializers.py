@@ -1,13 +1,12 @@
 from rest_framework import serializers
 from .models import Timetable, TimetablePeriod
-from .service import db_dates_map, create_periods
+from .service import db_dates_map, create_periods, week_days, week_types, get_week_type_and_day
 
 
 class TimetablePeriodSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TimetablePeriod
         fields = [
-            'id',
             'index',
             'subject',
             'teachers',
@@ -17,19 +16,27 @@ class TimetablePeriodSerializer(serializers.HyperlinkedModelSerializer):
 
 class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
     periods = TimetablePeriodSerializer(many=True)
-    week_day = serializers.ChoiceField(
-        ['ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'],
-        write_only=True
-    )
-    week_type = serializers.ChoiceField(['ЧИСЛ', 'ЗНАМ'], write_only=True)
+    week_type = serializers.ChoiceField(week_types, write_only=True)
+    week_day = serializers.ChoiceField(week_types, write_only=True)
+
+    def to_internal_value(self, data):
+        native_value = super().to_internal_value(data)
+        week_type = native_value.pop('week_type')
+        week_day = native_value.pop('week_day')
+        native_value['date'] = db_dates_map[week_type][week_day]
+        return native_value
+
+    def to_representation(self, instance):
+        primitive_value = super().to_representation(instance)
+        week_type, week_day = get_week_type_and_day(instance.date)
+        primitive_value['week_type'] = week_type
+        primitive_value['week_day'] = week_day
+        return primitive_value
 
     def create(self, validated_data):
         periods = validated_data.pop('periods')
-        week_day = validated_data.pop('week_day')
-        week_type = validated_data.pop('week_type')
-        date = db_dates_map[week_type][week_day]
         timetable = Timetable.objects.create(
-            **validated_data, is_main=True, date=date
+            **validated_data, is_main=True
         )
         create_periods(periods, timetable)
         return timetable
@@ -37,9 +44,7 @@ class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
     def update(self, instance, validated_data):
         instance.group = validated_data.pop('group', instance.group)
         instance.note = validated_data.pop('note', instance.note)
-        week_day = validated_data.pop('week_day')
-        week_type = validated_data.pop('week_type')
-        instance.date = db_dates_map[week_type][week_day]
+        instance.date = validated_data.pop('date', instance.date)
         periods = validated_data.pop('periods')
         instance.periods.all().delete()
         create_periods(periods, instance)
@@ -51,13 +56,15 @@ class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
         fields = [
             'url',
             'group',
-            'periods',
+            'is_main',
             'note',
+            'periods',
             'week_day',
             'week_type',
             'created_at',
             'updated_at',
         ]
+        read_only_fields = ('is_main',)
         extra_kwargs = {
             'url': {'view_name': 'timetable-main-detail'}
         }
@@ -88,12 +95,14 @@ class ChangesTimetableSerializer(serializers.HyperlinkedModelSerializer):
         fields = [
             'url',
             'group',
+            'is_main',
             'periods',
             'date',
             'note',
             'created_at',
             'updated_at',
         ]
+        read_only_fields = ('is_main',)
         extra_kwargs = {
             'url': {'view_name': 'timetable-changes-detail'}
         }
@@ -101,6 +110,16 @@ class ChangesTimetableSerializer(serializers.HyperlinkedModelSerializer):
 
 class MixedTimetableSerializer(serializers.HyperlinkedModelSerializer):
     periods = TimetablePeriodSerializer(many=True)
+
+    def to_representation(self, instance):
+        primitive_value = super().to_representation(instance)
+        if not instance.is_main:
+            return primitive_value
+        primitive_value.pop('date')
+        week_type, week_day = get_week_type_and_day(instance.date)
+        primitive_value['week_type'] = week_type
+        primitive_value['week_day'] = week_day
+        return primitive_value
 
     class Meta:
         model = Timetable
@@ -110,6 +129,7 @@ class MixedTimetableSerializer(serializers.HyperlinkedModelSerializer):
             'is_main',
             'periods',
             'note',
+            'date',
             'created_at',
             'updated_at',
         ]
