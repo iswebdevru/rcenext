@@ -2,14 +2,13 @@ import datetime
 from django.db.models import Q, Exists, OuterRef
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from apps.core.views import RelativeHyperlinkedModelViewSetMixin
 from .models import Timetable
 from .serializers import MainTimetableSerializer, ChangesTimetableSerializer, MixedTimetableSerializer
 from .filters import WeekDayFilterBackend, DateFilterBackend
 from .service import get_week_type_and_day, db_dates_map
 
 
-class MainTimetableViewSet(RelativeHyperlinkedModelViewSetMixin, viewsets.ModelViewSet):
+class MainTimetableViewSet(viewsets.ModelViewSet):
     queryset = Timetable.objects.filter(is_main=True)
     serializer_class = MainTimetableSerializer
     filter_backends = [WeekDayFilterBackend]
@@ -20,7 +19,7 @@ class MainTimetableViewSet(RelativeHyperlinkedModelViewSetMixin, viewsets.ModelV
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
 
-class ChangesTimetableViewSet(RelativeHyperlinkedModelViewSetMixin, viewsets.ModelViewSet):
+class ChangesTimetableViewSet(viewsets.ModelViewSet):
     queryset = Timetable.objects.filter(is_main=False)
     serializer_class = ChangesTimetableSerializer
     filter_backends = [DateFilterBackend]
@@ -31,7 +30,7 @@ class ChangesTimetableViewSet(RelativeHyperlinkedModelViewSetMixin, viewsets.Mod
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
 
-class MixedTimetableViewSet(RelativeHyperlinkedModelViewSetMixin, viewsets.ReadOnlyModelViewSet):
+class MixedTimetableViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = MixedTimetableSerializer
 
     def get_queryset(self):
