@@ -1,4 +1,4 @@
-import { Group, GroupCreate } from '@/shared/api';
+import { Group } from '@/shared/api';
 
 const groupRegExp = /^([А-ЯA-Z]+)(к)?-([1-4])(\d{2,})$/;
 
@@ -8,7 +8,9 @@ export function displayGroupName(group: Group) {
   }${group.index < 10 ? 0 : ''}${group.index}`;
 }
 
-export function parseGroupName(group: string): Omit<GroupCreate, 'main_block'> {
+export function parseGroupName(
+  group: string
+): Omit<Group, 'main_block' | 'url' | 'created_at' | 'updated_at'> {
   const parsed = group.match(groupRegExp);
   if (!parsed) {
     throw new Error('Неверное название группы');

@@ -1,13 +1,12 @@
-import { parseGroupName, useGroupCreate } from '@/entities/groups';
+import { parseGroupName } from '@/entities/groups';
+import { API_GROUPS, fetcher } from '@/shared/api';
 import { InputText } from '@/shared/ui/Input';
-import { Table } from '@/shared/ui/Table';
+import { Table, TableCreatorComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 
-export function GroupsCreator() {
+export function GroupsCreator({ refresh }: TableCreatorComponentProps) {
   const groupNameRef = useRef<HTMLInputElement>(null);
   const mainBlock = useRef<HTMLInputElement>(null);
-
-  const { trigger: createGroup } = useGroupCreate();
 
   return (
     <Table.Row>
@@ -24,11 +23,12 @@ export function GroupsCreator() {
       </Table.Data>
       <Table.Data></Table.Data>
       <Table.EditorActions
-        onSave={() => {
-          return createGroup({
+        onSave={async () => {
+          await fetcher.post(API_GROUPS, {
             ...parseGroupName(groupNameRef.current!.value),
             main_block: parseInt(mainBlock.current!.value),
           });
+          refresh();
         }}
       />
     </Table.Row>

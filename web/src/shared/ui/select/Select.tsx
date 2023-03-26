@@ -5,6 +5,7 @@ import {
   Children,
   createContext,
   EventHandler,
+  forwardRef,
   ReactElement,
   useContext,
   useRef,
@@ -22,13 +23,13 @@ type CommonSelectProps<T extends Id> = {
   required?: boolean;
 };
 
-type SingleSelectProps<T extends Id> = {
+export type SingleSelectProps<T extends Id> = {
   multiple?: false;
   value?: T;
   onChange: (value: T) => void;
 } & CommonSelectProps<T>;
 
-type MultipleSelectProps<T extends Id> = {
+export type MultipleSelectProps<T extends Id> = {
   multiple: true;
   value: T[];
   onChange: (value: T[]) => void;
@@ -44,7 +45,7 @@ type OptionContext = {
 };
 const OptionContext = createContext<OptionContext>(undefined as any);
 
-export function Select<T extends string | number>({
+export function Select<T extends Id>({
   children,
   value,
   onChange,
@@ -167,15 +168,18 @@ export function Select<T extends string | number>({
   );
 }
 
-export type OptionProps<T> = {
+export type OptionProps<T extends Id = Id> = {
   value: T;
   children: string | number;
 };
 
-Select.Option = function Option<T>({ value, children }: OptionProps<T>) {
+Select.Option = forwardRef<HTMLLIElement, OptionProps>(function Option(
+  { children },
+  ref
+) {
   const { isSelected, triggerSelect } = useContext(OptionContext);
   return (
-    <li className="group">
+    <li className="group" ref={ref}>
       <button
         type="button"
         className={clsx({
@@ -188,7 +192,7 @@ Select.Option = function Option<T>({ value, children }: OptionProps<T>) {
       </button>
     </li>
   );
-};
+});
 
 /*
 Usage:

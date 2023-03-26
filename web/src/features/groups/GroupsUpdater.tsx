@@ -1,20 +1,18 @@
-import {
-  displayGroupName,
-  parseGroupName,
-  useGroup,
-  useGroupUpdate,
-} from '@/entities/groups';
+import useSWR from 'swr';
+import { displayGroupName, parseGroupName } from '@/entities/groups';
+import { fetcher, Group } from '@/shared/api';
 import { InputText } from '@/shared/ui/Input';
-import { Table } from '@/shared/ui/Table';
+import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 import { GroupsLoader } from './GroupsLoader';
 
-export default function GroupsUpdater({ id }: { id: number }) {
+export default function GroupsUpdater({
+  id: url,
+  refresh,
+}: TableUpdaterComponentProps<string>) {
   const groupNameRef = useRef<HTMLInputElement>(null);
   const mainBlock = useRef<HTMLInputElement>(null);
-
-  const { data: group } = useGroup(id);
-  const updateGroup = useGroupUpdate();
+  const { data: group } = useSWR<Group>(url, fetcher);
 
   if (!group) {
     return <GroupsLoader />;
@@ -38,11 +36,12 @@ export default function GroupsUpdater({ id }: { id: number }) {
         />
       </Table.Data>
       <Table.EditorActions
-        onSave={() => {
-          return updateGroup(id, {
+        onSave={async () => {
+          await fetcher.patch(url, {
             ...parseGroupName(groupNameRef.current!.value),
             main_block: parseInt(mainBlock.current!.value),
           });
+          refresh();
         }}
       />
     </Table.Row>

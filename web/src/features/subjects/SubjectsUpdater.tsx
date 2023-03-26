@@ -1,14 +1,16 @@
-import { useSubject, useSubjectUpdate } from '@/entities/subjects';
+import useSWR from 'swr';
 import { InputText } from '@/shared/ui/Input';
-import { Table } from '@/shared/ui/Table';
+import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 import { SubjectsTableRowPlaceholder } from './SubjectsTableRowPlaceholder';
+import { fetcher } from '@/shared/api';
 
-export function SubjectsUpdater({ id }: { id: number }) {
+export function SubjectsUpdater({
+  id: url,
+  refresh,
+}: TableUpdaterComponentProps<string>) {
   const nameRef = useRef<HTMLInputElement>(null);
-
-  const { data: subject } = useSubject(id);
-  const updateSubject = useSubjectUpdate();
+  const { data: subject } = useSWR(url);
 
   if (!subject) {
     return <SubjectsTableRowPlaceholder />;
@@ -21,11 +23,12 @@ export function SubjectsUpdater({ id }: { id: number }) {
         <InputText ref={nameRef} defaultValue={subject.name} />
       </Table.Data>
       <Table.EditorActions
-        onSave={() =>
-          updateSubject(id, {
+        onSave={async () => {
+          await fetcher.patch(url, {
             name: nameRef.current?.value,
-          })
-        }
+          });
+          refresh();
+        }}
       />
     </Table.Row>
   );

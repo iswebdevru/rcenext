@@ -1,22 +1,28 @@
-import { useSubjectDeleteMany, useSubjects } from '@/entities/subjects';
 import {
   SubjectsCreator,
   SubjectsTableRowPlaceholder,
   SubjectsUpdater,
 } from '@/features/subjects';
 import { DashboardLayout } from '@/layouts';
+import { API_SUBJECTS, fetcher, Subject } from '@/shared/api';
+import { usePaginatedFetch } from '@/shared/hooks';
 import { Table } from '@/shared/ui/Table';
 
 export default function Subjects() {
-  const { data: subjects } = useSubjects();
-  const { trigger: deleteSubjects } = useSubjectDeleteMany();
+  const { data, lastElementRef, mutate } =
+    usePaginatedFetch<Subject>(API_SUBJECTS);
+
+  const deleteSubjects = async (urls: string[]) => {
+    await Promise.all(urls.map(url => fetcher.delete(url)));
+    mutate();
+  };
 
   return (
     <DashboardLayout>
       <div className="h-full p-6">
-        <Table<number>
-          creator={() => <SubjectsCreator />}
-          updater={id => <SubjectsUpdater id={id} />}
+        <Table<string>
+          creator={() => <SubjectsCreator refresh={mutate} />}
+          updater={url => <SubjectsUpdater refresh={mutate} id={url} />}
           header={
             <Table.Row>
               <Table.SelectAllRowsCheckbox />
@@ -25,15 +31,22 @@ export default function Subjects() {
             </Table.Row>
           }
           loader={<SubjectsTableRowPlaceholder />}
-          onDelete={ids => deleteSubjects(ids)}
+          onDelete={deleteSubjects}
         >
-          {subjects?.map(subject => (
-            <Table.RowWithId key={subject.id} id={subject.id}>
-              <Table.SelectRowCheckbox />
-              <Table.Data>{subject.name}</Table.Data>
-              <Table.EditRowButton />
-            </Table.RowWithId>
-          ))}
+          {data
+            ?.map(page => page.results)
+            .flat()
+            .map((subject, i, a) => (
+              <Table.RowWithId
+                ref={a.length === i + 1 ? lastElementRef : null}
+                key={subject.url}
+                id={subject.url}
+              >
+                <Table.SelectRowCheckbox />
+                <Table.Data>{subject.name}</Table.Data>
+                <Table.EditRowButton />
+              </Table.RowWithId>
+            ))}
         </Table>
       </div>
     </DashboardLayout>

@@ -1,18 +1,29 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { InputText } from '@/shared/ui/Input';
-import { Table } from '@/shared/ui/Table';
-import { useTeacher, useTeacherUpdate } from '@/entities/teachers';
+import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { TeachersTableRowPlaceholder } from './TeachersTableRowPlaceholder';
-import { SelectSubjects } from './SelectSubjects';
+import { SelectSubjects } from '../subjects/SelectSubjects';
+import useSWR from 'swr';
+import { fetcher, Teacher } from '@/shared/api';
 
-export function TeachersUpdater({ id }: { id: number }) {
+export function TeachersUpdater({
+  id: url,
+  refresh,
+}: TableUpdaterComponentProps<string>) {
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const patronymicRef = useRef<HTMLInputElement>(null);
-  const [selectedSubjects, setSelectedSubjects] = useState<number[]>([]);
+  const [selectedSubjects, setSelectedSubjects] = useState<string[] | null>(
+    null
+  );
 
-  const { data: teacher } = useTeacher(id);
-  const updateTeacher = useTeacherUpdate();
+  const { data: teacher, mutate } = useSWR<Teacher>(url, fetcher);
+
+  useEffect(() => {
+    if (!selectedSubjects && teacher) {
+      setSelectedSubjects(teacher.subjects);
+    }
+  }, [selectedSubjects, teacher]);
 
   if (!teacher) {
     return <TeachersTableRowPlaceholder />;
@@ -39,22 +50,27 @@ export function TeachersUpdater({ id }: { id: number }) {
           ref={patronymicRef}
         />
       </Table.Data>
-      <Table.Data>
-        <SelectSubjects
-          value={selectedSubjects}
-          onChange={setSelectedSubjects}
-          url={teacher.subjects_url}
-        />
-      </Table.Data>
+      {selectedSubjects ? (
+        <Table.Data>
+          <SelectSubjects
+            value={selectedSubjects}
+            onChange={setSelectedSubjects}
+          />
+        </Table.Data>
+      ) : (
+        <Table.DataLoader />
+      )}
       <Table.EditorActions
-        onSave={() =>
-          updateTeacher(id, {
+        onSave={async () => {
+          await fetcher.patch(url, {
             first_name: firstNameRef.current?.value,
             last_name: lastNameRef.current?.value,
             patronymic: patronymicRef.current?.value,
             subjects: selectedSubjects,
-          })
-        }
+          });
+          refresh();
+          mutate();
+        }}
       />
     </Table.Row>
   );

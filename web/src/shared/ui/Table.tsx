@@ -37,6 +37,14 @@ export type TableProps<T extends Id> = {
   onDelete: (ids: T[]) => Promise<unknown> | unknown;
 };
 
+export type TableCreatorComponentProps = {
+  refresh: AsyncAction;
+};
+
+export type TableUpdaterComponentProps<T> = {
+  id: T;
+} & TableCreatorComponentProps;
+
 type AsyncAction = () => Promise<unknown> | unknown;
 
 type ItemsMapValue = { isEditing?: boolean; isSelected?: boolean };
@@ -306,21 +314,24 @@ Table.EditorActions = function TableRowEditorActions({
   );
 };
 
-export type TableRowWithIdProps<T extends Id> = {
+export type TableRowWithIdProps<T = Id> = {
   id: T;
   children?: ReactNode;
 };
 
-Table.RowWithId = function TableRowContent<T extends Id>({
-  children,
-}: TableRowWithIdProps<T>) {
-  const { isSelected } = useContext(TableRowWithIdContext);
-  return (
-    <Table.Row className={clsx({ '[&>td]:bg-blue-50': isSelected })}>
-      {children}
-    </Table.Row>
-  );
-};
+Table.RowWithId = forwardRef<HTMLTableRowElement, TableRowWithIdProps>(
+  function TableRowWithId({ children }, ref) {
+    const { isSelected } = useContext(TableRowWithIdContext);
+    return (
+      <Table.Row
+        className={clsx({ '[&>td]:bg-blue-50': isSelected })}
+        ref={ref}
+      >
+        {children}
+      </Table.Row>
+    );
+  }
+);
 
 Table.Row = forwardRef<HTMLTableRowElement, ComponentPropsWithRef<'tr'>>(
   function TableRow({ className, ...props }, ref) {

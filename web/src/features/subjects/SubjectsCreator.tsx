@@ -1,11 +1,10 @@
-import { useSubjectCreate } from '@/entities/subjects';
+import { API_SUBJECTS, fetcher } from '@/shared/api';
 import { InputText } from '@/shared/ui/Input';
-import { Table } from '@/shared/ui/Table';
+import { Table, TableCreatorComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 
-export function SubjectsCreator() {
+export function SubjectsCreator({ refresh }: TableCreatorComponentProps) {
   const nameRef = useRef<HTMLInputElement>(null);
-  const { trigger: createSubject } = useSubjectCreate();
 
   return (
     <Table.Row>
@@ -14,7 +13,10 @@ export function SubjectsCreator() {
         <InputText ref={nameRef} required />
       </Table.Data>
       <Table.EditorActions
-        onSave={() => createSubject({ name: nameRef.current!.value })}
+        onSave={async () => {
+          await fetcher.post(API_SUBJECTS, { name: nameRef.current!.value });
+          refresh();
+        }}
       />
     </Table.Row>
   );

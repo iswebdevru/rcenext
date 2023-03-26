@@ -1,23 +1,25 @@
 import { Table } from '@/shared/ui/Table';
 import { DashboardLayout } from '@/layouts';
-import {
-  displayGroupName,
-  useGroupDeleteMany,
-  useGroups,
-} from '@/entities/groups';
+import { displayGroupName } from '@/entities/groups';
 import { GroupsCreator, GroupsLoader } from '@/features/groups';
 import GroupsUpdater from '@/features/groups/GroupsUpdater';
+import { usePaginatedFetch } from '@/shared/hooks';
+import { API_GROUPS, fetcher, Group } from '@/shared/api';
 
 export default function Groups() {
-  const { data: groups } = useGroups();
-  const { trigger: deleteGroups } = useGroupDeleteMany();
+  const { data, lastElementRef, mutate } = usePaginatedFetch<Group>(API_GROUPS);
+
+  const deleteGroups = async (urls: string[]) => {
+    await Promise.all(urls.map(url => fetcher.delete(url)));
+    mutate();
+  };
 
   return (
     <DashboardLayout>
       <div className="h-full p-6">
-        <Table<number>
-          creator={() => <GroupsCreator />}
-          updater={id => <GroupsUpdater id={id} />}
+        <Table<string>
+          creator={() => <GroupsCreator refresh={mutate} />}
+          updater={url => <GroupsUpdater refresh={mutate} id={url} />}
           header={
             <Table.Row>
               <Table.SelectAllRowsCheckbox />
@@ -29,14 +31,21 @@ export default function Groups() {
           onDelete={ids => deleteGroups(ids)}
           loader={<GroupsLoader />}
         >
-          {groups?.map(group => (
-            <Table.RowWithId key={group.id} id={group.id}>
-              <Table.SelectRowCheckbox />
-              <Table.Data>{displayGroupName(group)}</Table.Data>
-              <Table.Data>{group.main_block}</Table.Data>
-              <Table.EditRowButton />
-            </Table.RowWithId>
-          ))}
+          {data
+            ?.map(page => page.results)
+            .flat()
+            .map((group, i, a) => (
+              <Table.RowWithId
+                ref={a.length === i + 1 ? lastElementRef : null}
+                key={group.url}
+                id={group.url}
+              >
+                <Table.SelectRowCheckbox />
+                <Table.Data>{displayGroupName(group)}</Table.Data>
+                <Table.Data>{group.main_block}</Table.Data>
+                <Table.EditRowButton />
+              </Table.RowWithId>
+            ))}
         </Table>
       </div>
     </DashboardLayout>
