@@ -2,7 +2,7 @@ import AdminNav from '@/widgets/AdminNav';
 import { PropsWithChildren } from 'react';
 import { BaseLayout } from './BaseLayout';
 
-export function DashboardLayout({ children }: PropsWithChildren) {
+export function AdminLayout({ children }: PropsWithChildren) {
   return (
     <BaseLayout wide>
       <div className="flex h-full">

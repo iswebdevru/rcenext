@@ -1,5 +1,5 @@
 import { Table } from '@/shared/ui/Table';
-import { DashboardLayout } from '@/layouts';
+import { AdminLayout } from '@/layouts';
 import { displayGroupName } from '@/entities/groups';
 import { GroupsCreator, GroupsLoader } from '@/features/groups';
 import GroupsUpdater from '@/features/groups/GroupsUpdater';
@@ -15,7 +15,7 @@ export default function Groups() {
   };
 
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <div className="h-full p-6">
         <Table<string>
           creator={() => <GroupsCreator refresh={mutate} />}
@@ -48,6 +48,6 @@ export default function Groups() {
             ))}
         </Table>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 }

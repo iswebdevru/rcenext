@@ -12,7 +12,7 @@ export const InputText = forwardRef<
       ref={ref}
       className={classNameWithDefaults(
         clsx({
-          'transition-[outline,border] outline outline-blue-200 outline-0 h-8 rounded-md text-sm border border-neutral-200 px-3 py-1 w-full focus:outline-4 focus:border-blue-500':
+          'transition-[outline,border] outline outline-blue-200 outline-0 h-8 rounded-md text-sm border border-slate-200 px-3 py-1 w-full focus:outline-4 focus:border-blue-500':
             true,
           'valid:border-green-600 invalid:border-red-500': wasFocused,
         }),

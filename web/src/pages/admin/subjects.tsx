@@ -3,7 +3,7 @@ import {
   SubjectsTableRowPlaceholder,
   SubjectsUpdater,
 } from '@/features/subjects';
-import { DashboardLayout } from '@/layouts';
+import { AdminLayout } from '@/layouts';
 import { API_SUBJECTS, fetcher, Subject } from '@/shared/api';
 import { usePaginatedFetch } from '@/shared/hooks';
 import { Table } from '@/shared/ui/Table';
@@ -18,7 +18,7 @@ export default function Subjects() {
   };
 
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <div className="h-full p-6">
         <Table<string>
           creator={() => <SubjectsCreator refresh={mutate} />}
@@ -49,6 +49,6 @@ export default function Subjects() {
             ))}
         </Table>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 }

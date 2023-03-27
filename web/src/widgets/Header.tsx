@@ -7,7 +7,7 @@ export type HeaderProps = {
 
 export default function Header({ wide }: HeaderProps) {
   return (
-    <header className="relative z-10 bg-white border-b shadow-sm h-14 border-neutral-200">
+    <header className="relative z-10 bg-white border-b h-14 border-slate-200">
       <div
         className={clsx({
           'flex items-center justify-between h-full': true,

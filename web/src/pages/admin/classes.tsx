@@ -12,7 +12,7 @@ import {
   WEEK_TYPES,
 } from '@/shared/constants';
 import { CreateClassesTimetable } from '@/features/classes';
-import { DashboardLayout } from '@/layouts';
+import { AdminLayout } from '@/layouts';
 
 const timetableData: Timetable[] = [
   {
@@ -289,7 +289,7 @@ export default function Edit() {
   const [showTimetableModal, setShowTimetableModal] = useState(false);
 
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <div className="flex gap-4 p-4">
         <div className="grow">
           <div className="mb-4">
@@ -366,6 +366,6 @@ export default function Edit() {
       >
         <CreateClassesTimetable />
       </Modal>
-    </DashboardLayout>
+    </AdminLayout>
   );
 }

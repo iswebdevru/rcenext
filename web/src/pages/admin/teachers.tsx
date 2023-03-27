@@ -1,4 +1,4 @@
-import { DashboardLayout } from '@/layouts';
+import { AdminLayout } from '@/layouts';
 import { Table } from '@/shared/ui/Table';
 import {
   TeachersCreator,
@@ -19,7 +19,7 @@ export default function Teachers() {
   };
 
   return (
-    <DashboardLayout>
+    <AdminLayout>
       <div className="h-full p-6">
         <Table<string>
           onDelete={deleteTeachers}
@@ -62,6 +62,6 @@ export default function Teachers() {
             ))}
         </Table>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 }

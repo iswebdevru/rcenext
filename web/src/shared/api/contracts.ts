@@ -6,6 +6,11 @@ export type Paginated<T> = {
 
 export type Hyperlink = string;
 
+export type Token = {
+  token: string;
+  expiry: string;
+};
+
 export type Teacher = {
   url: Hyperlink;
   first_name: string;

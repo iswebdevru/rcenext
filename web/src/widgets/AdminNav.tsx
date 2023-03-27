@@ -14,21 +14,21 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 const links = [
-  { href: '/dashboard', text: 'Главная', icon: faHouse },
-  { href: '/dashboard/classes', text: 'Занятия', icon: faBook },
-  { href: '/dashboard/practice', text: 'Практика', icon: faBuildingUser },
-  { href: '/dashboard/teachers', text: 'Преподаватели', icon: faUserTie },
-  { href: '/dashboard/groups', text: 'Группы', icon: faUserGroup },
-  { href: '/dashboard/bells', text: 'Звонки', icon: faBell },
-  { href: '/dashboard/calendar', text: 'Календарь', icon: faCalendarDays },
-  { href: '/dashboard/subjects', text: 'Предметы', icon: faLinesLeaning },
+  { href: '/admin', text: 'Главная', icon: faHouse },
+  { href: '/admin/classes', text: 'Занятия', icon: faBook },
+  { href: '/admin/practice', text: 'Практика', icon: faBuildingUser },
+  { href: '/admin/teachers', text: 'Преподаватели', icon: faUserTie },
+  { href: '/admin/groups', text: 'Группы', icon: faUserGroup },
+  { href: '/admin/bells', text: 'Звонки', icon: faBell },
+  { href: '/admin/calendar', text: 'Календарь', icon: faCalendarDays },
+  { href: '/admin/subjects', text: 'Предметы', icon: faLinesLeaning },
 ] as const;
 
 export default function AdminNav() {
   const { pathname } = useRouter();
 
   return (
-    <div className="h-full py-10 bg-white border-r border-neutral-200">
+    <div className="h-full py-10 bg-white border-r border-slate-200">
       <nav>
         <ul>
           {links.map(link => {
