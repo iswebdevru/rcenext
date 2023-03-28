@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -63,6 +64,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
     'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.ApiPagination',
     'PAGE_SIZE': 2
+}
+
+REST_KNOX = {
+    'TOKEN_TTL': timedelta(days=1),
+    'AUTO_REFRESH': True,
 }
 
 ROOT_URLCONF = 'apps.urls'
