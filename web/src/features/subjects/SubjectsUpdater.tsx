@@ -3,7 +3,7 @@ import { InputText } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 import { SubjectsTableRowPlaceholder } from './SubjectsTableRowPlaceholder';
-import { fetcher, formatToken } from '@/shared/api';
+import { fetcher, formatToken, Subject } from '@/shared/api';
 import { getSession } from 'next-auth/react';
 
 export function SubjectsUpdater({
@@ -11,7 +11,7 @@ export function SubjectsUpdater({
   refresh,
 }: TableUpdaterComponentProps<string>) {
   const nameRef = useRef<HTMLInputElement>(null);
-  const { data: subject } = useSWR(url);
+  const { data: subject } = useSWR<Subject>(url, fetcher);
 
   if (!subject) {
     return <SubjectsTableRowPlaceholder />;
