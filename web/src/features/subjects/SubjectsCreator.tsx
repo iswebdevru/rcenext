@@ -1,6 +1,7 @@
-import { API_SUBJECTS, fetcher } from '@/shared/api';
+import { API_SUBJECTS, fetcher, formatToken } from '@/shared/api';
 import { InputText } from '@/shared/ui/Input';
 import { Table, TableCreatorComponentProps } from '@/shared/ui/Table';
+import { getSession } from 'next-auth/react';
 import { useRef } from 'react';
 
 export function SubjectsCreator({ refresh }: TableCreatorComponentProps) {
@@ -14,8 +15,16 @@ export function SubjectsCreator({ refresh }: TableCreatorComponentProps) {
       </Table.Data>
       <Table.EditorActions
         onSave={async () => {
-          await fetcher.post(API_SUBJECTS, { name: nameRef.current!.value });
-          refresh();
+          const session = await getSession();
+          if (!session) {
+            return;
+          }
+          await fetcher.post(
+            API_SUBJECTS,
+            { name: nameRef.current!.value },
+            formatToken(session)
+          );
+          return refresh();
         }}
       />
     </Table.Row>

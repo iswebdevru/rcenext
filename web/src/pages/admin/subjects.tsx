@@ -4,16 +4,22 @@ import {
   SubjectsUpdater,
 } from '@/features/subjects';
 import { AdminLayout } from '@/layouts';
-import { API_SUBJECTS, fetcher, Subject } from '@/shared/api';
+import { API_SUBJECTS, fetcher, formatToken, Subject } from '@/shared/api';
 import { usePaginatedFetch } from '@/shared/hooks';
 import { Table } from '@/shared/ui/Table';
+import { getSession } from 'next-auth/react';
 
 export default function Subjects() {
   const { data, lastElementRef, mutate } =
     usePaginatedFetch<Subject>(API_SUBJECTS);
 
   const deleteSubjects = async (urls: string[]) => {
-    await Promise.all(urls.map(url => fetcher.delete(url)));
+    const session = await getSession();
+    if (session) {
+      await Promise.all(
+        urls.map(url => fetcher.delete(url, formatToken(session)))
+      );
+    }
     mutate();
   };
 

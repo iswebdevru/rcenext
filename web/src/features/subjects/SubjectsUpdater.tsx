@@ -3,7 +3,8 @@ import { InputText } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 import { SubjectsTableRowPlaceholder } from './SubjectsTableRowPlaceholder';
-import { fetcher } from '@/shared/api';
+import { fetcher, formatToken } from '@/shared/api';
+import { getSession } from 'next-auth/react';
 
 export function SubjectsUpdater({
   id: url,
@@ -24,10 +25,18 @@ export function SubjectsUpdater({
       </Table.Data>
       <Table.EditorActions
         onSave={async () => {
-          await fetcher.patch(url, {
-            name: nameRef.current?.value,
-          });
-          refresh();
+          const session = await getSession();
+          if (!session) {
+            return;
+          }
+          await fetcher.patch(
+            url,
+            {
+              name: nameRef.current?.value,
+            },
+            formatToken(session)
+          );
+          return refresh();
         }}
       />
     </Table.Row>
