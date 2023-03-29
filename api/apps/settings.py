@@ -67,8 +67,9 @@ REST_FRAMEWORK = {
 }
 
 REST_KNOX = {
-    'TOKEN_TTL': timedelta(days=1),
+    'AUTH_HEADER_PREFIX': 'Bearer',
     'AUTO_REFRESH': True,
+    'TOKEN_TTL': timedelta(days=2),
 }
 
 ROOT_URLCONF = 'apps.urls'

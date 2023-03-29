@@ -1,38 +1,62 @@
-export const fetcher = <T>(...args: Parameters<typeof fetch>) =>
-  fetch(...args).then<T>(res => res.json());
+// TODO: FIX DELETE METHOD
 
-fetcher.delete = (url: string, token?: string) =>
-  fetch(url, {
-    method: 'DELETE',
-    headers: getHeaders(token),
+type FetcherExtraArgs = {
+  onResponse?: (res: Response) => void;
+};
+
+type FetcherProtectedArgs<B> = {
+  method: string;
+  body?: B;
+  token?: string;
+  onUnauthorized?: (res: Response) => Promise<void>;
+};
+
+type FetcherActionArgs<B> = Omit<FetcherProtectedArgs<B>, 'method'>;
+
+export const fetcher = <T>(
+  input: RequestInfo | URL,
+  init?: RequestInit,
+  extra?: FetcherExtraArgs
+) =>
+  fetch(input, init).then<T>(res => {
+    extra?.onResponse && extra.onResponse(res);
+    return res.json();
   });
 
-fetcher.post = <R, B>(url: string, body: B, token?: string) =>
-  fetcher<R>(url, {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: getHeaders(token),
-  });
+fetcher.delete = <R, B>(url: string, args?: FetcherActionArgs<B>) =>
+  fetcher.protected(url, { method: 'DELETE', ...args });
 
-fetcher.patch = <R, B>(url: string, body: B, token?: string) =>
-  fetcher<R>(url, {
-    method: 'PATCH',
-    body: JSON.stringify(body),
-    headers: getHeaders(token),
-  });
+fetcher.post = <R, B>(url: string, args?: FetcherActionArgs<B>) =>
+  fetcher.protected<R, B>(url, { method: 'POST', ...args });
 
-fetcher.put = <R, B>(url: string, body: B, token?: string) =>
-  fetcher<R>(url, {
-    method: 'PUT',
-    body: JSON.stringify(body),
-    headers: getHeaders(token),
-  });
+fetcher.patch = <R, B>(url: string, args?: FetcherActionArgs<B>) =>
+  fetcher.protected<R, B>(url, { method: 'PATCH', ...args });
 
-function getHeaders(token?: string) {
+fetcher.put = <R, B>(url: string, args?: FetcherActionArgs<B>) =>
+  fetcher.protected<R, B>(url, { method: 'PUT', ...args });
+
+fetcher.protected = <R, B>(
+  url: string,
+  { method, body, token, onUnauthorized }: FetcherProtectedArgs<B>
+) => {
   const headers = new Headers();
-  headers.append('Content-Type', 'application/json');
-  if (token) {
-    headers.append('Authorization', token);
+  const reqInit: RequestInit = {
+    method,
+    headers,
+  };
+
+  if (body) {
+    headers.append('Content-Type', 'application/json');
+    reqInit.body = JSON.stringify(body);
   }
-  return headers;
-}
+  if (token) {
+    headers.append('Authorization', `Bearer ${token}`);
+  }
+  return fetcher<R>(url, reqInit, {
+    onResponse: res => {
+      if (res.status === 401 && onUnauthorized) {
+        return onUnauthorized(res);
+      }
+    },
+  });
+};

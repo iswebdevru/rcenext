@@ -5,12 +5,24 @@ import { GroupsCreator, GroupsLoader } from '@/features/groups';
 import GroupsUpdater from '@/features/groups/GroupsUpdater';
 import { usePaginatedFetch } from '@/shared/hooks';
 import { API_GROUPS, fetcher, Group } from '@/shared/api';
+import { getSession, signOut } from 'next-auth/react';
 
 export default function Groups() {
   const { data, lastElementRef, mutate } = usePaginatedFetch<Group>(API_GROUPS);
 
   const deleteGroups = async (urls: string[]) => {
-    await Promise.all(urls.map(url => fetcher.delete(url)));
+    const session = await getSession();
+    if (!session) {
+      return;
+    }
+    await Promise.all(
+      urls.map(url =>
+        fetcher.delete(url, {
+          token: session.accessToken.value,
+          onUnauthorized: () => signOut({ callbackUrl: '/' }),
+        })
+      )
+    );
     mutate();
   };
 

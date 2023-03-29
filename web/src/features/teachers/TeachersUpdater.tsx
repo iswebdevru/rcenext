@@ -5,6 +5,7 @@ import { TeachersTableRowPlaceholder } from './TeachersTableRowPlaceholder';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 import useSWR from 'swr';
 import { fetcher, Teacher } from '@/shared/api';
+import { getSession, signOut } from 'next-auth/react';
 
 export function TeachersUpdater({
   id: url,
@@ -28,6 +29,25 @@ export function TeachersUpdater({
   if (!teacher) {
     return <TeachersTableRowPlaceholder />;
   }
+
+  const onSave = async () => {
+    const session = await getSession();
+    if (!session) {
+      return;
+    }
+    await fetcher.patch(url, {
+      body: {
+        first_name: firstNameRef.current?.value,
+        last_name: lastNameRef.current?.value,
+        patronymic: patronymicRef.current?.value,
+        subjects: selectedSubjects,
+      },
+      token: session.accessToken.value,
+      onUnauthorized: () => signOut({ callbackUrl: '/' }),
+    });
+    refresh();
+    mutate();
+  };
 
   return (
     <Table.Row>
@@ -60,18 +80,7 @@ export function TeachersUpdater({
       ) : (
         <Table.DataLoader />
       )}
-      <Table.EditorActions
-        onSave={async () => {
-          await fetcher.patch(url, {
-            first_name: firstNameRef.current?.value,
-            last_name: lastNameRef.current?.value,
-            patronymic: patronymicRef.current?.value,
-            subjects: selectedSubjects,
-          });
-          refresh();
-          mutate();
-        }}
-      />
+      <Table.EditorActions onSave={onSave} />
     </Table.Row>
   );
 }

@@ -8,13 +8,25 @@ import {
 } from '@/features/teachers';
 import { usePaginatedFetch } from '@/shared/hooks';
 import { API_TEACHERS, fetcher, Teacher } from '@/shared/api';
+import { getSession, signOut } from 'next-auth/react';
 
 export default function Teachers() {
   const { data, lastElementRef, mutate } =
     usePaginatedFetch<Teacher>(API_TEACHERS);
 
   const deleteTeachers = async (urls: string[]) => {
-    await Promise.all(urls.map(url => fetcher.delete(url)));
+    const session = await getSession();
+    if (!session) {
+      return;
+    }
+    await Promise.all(
+      urls.map(url =>
+        fetcher.delete(url, {
+          token: session.accessToken.value,
+          onUnauthorized: () => signOut({ callbackUrl: '/' }),
+        })
+      )
+    );
     mutate();
   };
 

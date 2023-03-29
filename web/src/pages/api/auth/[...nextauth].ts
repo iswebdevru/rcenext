@@ -1,7 +1,7 @@
 import nextAuth from 'next-auth';
 import { AuthOptions } from 'next-auth/core/types';
 import Credentials from 'next-auth/providers/credentials';
-import { API_LOGIN, fetcher, Token } from '@/shared/api';
+import { API_LOGIN, API_LOGOUT, fetcher, Token } from '@/shared/api';
 
 interface WithAccessToken {
   accessToken: {
@@ -11,7 +11,7 @@ interface WithAccessToken {
 }
 
 export const authOptions: AuthOptions = {
-  session: { strategy: 'jwt' },
+  session: { strategy: 'jwt', maxAge: 172800 },
   pages: {
     signIn: '/login',
     error: '/login',
@@ -20,7 +20,9 @@ export const authOptions: AuthOptions = {
     Credentials({
       id: 'credentials',
       authorize: async credentials => {
-        const data = await fetcher.post<Token, any>(API_LOGIN, credentials);
+        const data = await fetcher.post<Token, any>(API_LOGIN, {
+          body: credentials,
+        });
         if (!data.token) {
           return null;
         }
@@ -48,6 +50,13 @@ export const authOptions: AuthOptions = {
     session({ session, token }) {
       session.accessToken = token.accessToken;
       return session;
+    },
+  },
+  events: {
+    async signOut({ token }) {
+      return fetcher.post(API_LOGOUT, {
+        token: token.accessToken.value,
+      });
     },
   },
 };

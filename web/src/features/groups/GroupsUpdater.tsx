@@ -5,6 +5,7 @@ import { InputText } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 import { GroupsLoader } from './GroupsLoader';
+import { getSession, signOut } from 'next-auth/react';
 
 export default function GroupsUpdater({
   id: url,
@@ -17,6 +18,22 @@ export default function GroupsUpdater({
   if (!group) {
     return <GroupsLoader />;
   }
+
+  const onSave = async () => {
+    const session = await getSession();
+    if (!session) {
+      return;
+    }
+    await fetcher.patch(url, {
+      body: {
+        ...parseGroupName(groupNameRef.current!.value),
+        main_block: parseInt(mainBlock.current!.value),
+      },
+      token: session.accessToken.value,
+      onUnauthorized: () => signOut({ callbackUrl: '/' }),
+    });
+    refresh();
+  };
 
   return (
     <Table.Row>
@@ -35,15 +52,7 @@ export default function GroupsUpdater({
           defaultValue={group.main_block}
         />
       </Table.Data>
-      <Table.EditorActions
-        onSave={async () => {
-          await fetcher.patch(url, {
-            ...parseGroupName(groupNameRef.current!.value),
-            main_block: parseInt(mainBlock.current!.value),
-          });
-          refresh();
-        }}
-      />
+      <Table.EditorActions onSave={onSave} />
     </Table.Row>
   );
 }
