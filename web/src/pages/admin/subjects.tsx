@@ -7,10 +7,14 @@ import { AdminLayout } from '@/layouts';
 import { API_SUBJECTS, deleteEntities, Subject } from '@/shared/api';
 import { usePaginatedFetch } from '@/shared/hooks';
 import { Table } from '@/shared/ui/Table';
+import { useState } from 'react';
 
 export default function Subjects() {
-  const { data, lastElementRef, mutate } =
-    usePaginatedFetch<Subject>(API_SUBJECTS);
+  const [searchFilter, setSearchFilter] = useState('');
+
+  const { data, lastElementRef, mutate } = usePaginatedFetch<Subject>(
+    `${API_SUBJECTS}?search=${searchFilter}`
+  );
 
   const deleteSubjects = async (urls: string[]) => {
     await deleteEntities(urls);
@@ -32,6 +36,7 @@ export default function Subjects() {
           }
           loader={<SubjectsTableRowPlaceholder />}
           onDelete={deleteSubjects}
+          onSearchChange={e => setSearchFilter(e.target.value)}
         >
           {data
             ?.map(page => page.results)

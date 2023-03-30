@@ -8,10 +8,13 @@ import {
 } from '@/features/teachers';
 import { usePaginatedFetch } from '@/shared/hooks';
 import { API_TEACHERS, deleteEntities, Teacher } from '@/shared/api';
+import { useState } from 'react';
 
 export default function Teachers() {
-  const { data, lastElementRef, mutate } =
-    usePaginatedFetch<Teacher>(API_TEACHERS);
+  const [searchFilter, setSearchFilter] = useState('');
+  const { data, lastElementRef, mutate } = usePaginatedFetch<Teacher>(
+    `${API_TEACHERS}?search=${searchFilter}`
+  );
 
   const deleteTeachers = async (urls: string[]) => {
     await deleteEntities(urls);
@@ -36,6 +39,7 @@ export default function Teachers() {
             </Table.Row>
           }
           loader={<TeachersTableRowPlaceholder />}
+          onSearchChange={e => setSearchFilter(e.target.value)}
         >
           {data
             ?.map(page => page.results)

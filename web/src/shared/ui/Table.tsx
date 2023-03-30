@@ -6,6 +6,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  ChangeEventHandler,
   Children,
   ComponentPropsWithRef,
   createContext,
@@ -35,6 +36,7 @@ export type TableProps<T extends Id> = {
   updater: (id: T) => ReactElement;
   creator: () => ReactElement;
   onDelete: (ids: T[]) => Promise<unknown> | unknown;
+  onSearchChange?: ChangeEventHandler<HTMLInputElement>;
 };
 
 export type TableCreatorComponentProps = {
@@ -83,6 +85,7 @@ export function Table<T extends Id>({
   updater,
   creator,
   onDelete,
+  onSearchChange,
 }: TableProps<T>) {
   const allItems = useMemo(
     () => (children ? Children.map(children, child => child.props.id) : []),
@@ -132,7 +135,7 @@ export function Table<T extends Id>({
   return (
     <div>
       <div className="flex gap-4 mb-4">
-        <InputSearch />
+        <InputSearch onChange={onSearchChange} />
         <Button
           type="button"
           variant="danger-outline"
