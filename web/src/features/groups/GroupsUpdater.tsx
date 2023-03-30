@@ -1,11 +1,10 @@
 import useSWR from 'swr';
 import { displayGroupName, parseGroupName } from '@/entities/groups';
-import { fetcher, Group } from '@/shared/api';
+import { fetcher, Group, partiallyUpdateEntity } from '@/shared/api';
 import { InputText } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 import { GroupsLoader } from './GroupsLoader';
-import { getSession, signOut } from 'next-auth/react';
 
 export default function GroupsUpdater({
   id: url,
@@ -20,19 +19,13 @@ export default function GroupsUpdater({
   }
 
   const onSave = async () => {
-    const session = await getSession();
-    if (!session) {
-      return;
-    }
-    await fetcher.patch(url, {
+    await partiallyUpdateEntity(url, {
       body: {
         ...parseGroupName(groupNameRef.current!.value),
         main_block: parseInt(mainBlock.current!.value),
       },
-      token: session.accessToken.value,
-      onUnauthorized: () => signOut({ callbackUrl: '/' }),
     });
-    refresh();
+    return refresh();
   };
 
   return (

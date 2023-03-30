@@ -4,26 +4,14 @@ import { displayGroupName } from '@/entities/groups';
 import { GroupsCreator, GroupsLoader } from '@/features/groups';
 import GroupsUpdater from '@/features/groups/GroupsUpdater';
 import { usePaginatedFetch } from '@/shared/hooks';
-import { API_GROUPS, fetcher, Group } from '@/shared/api';
-import { getSession, signOut } from 'next-auth/react';
+import { API_GROUPS, deleteEntities, Group } from '@/shared/api';
 
 export default function Groups() {
   const { data, lastElementRef, mutate } = usePaginatedFetch<Group>(API_GROUPS);
 
   const deleteGroups = async (urls: string[]) => {
-    const session = await getSession();
-    if (!session) {
-      return;
-    }
-    await Promise.all(
-      urls.map(url =>
-        fetcher.delete(url, {
-          token: session.accessToken.value,
-          onUnauthorized: () => signOut({ callbackUrl: '/' }),
-        })
-      )
-    );
-    mutate();
+    await deleteEntities(urls);
+    return mutate();
   };
 
   return (

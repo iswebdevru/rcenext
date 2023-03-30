@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { InputText } from '@/shared/ui/Input';
 import { Select } from '@/shared/ui/select';
-import { displayGroupName, useGroups } from '@/entities/groups';
-import { useSubjects } from '@/entities/subjects';
-import { useTeachers } from '@/entities/teachers';
+import { displayGroupName } from '@/entities/groups';
 
 type SelectGroupProps = {
   value?: number;

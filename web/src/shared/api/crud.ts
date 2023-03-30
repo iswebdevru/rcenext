@@ -6,7 +6,7 @@ async function withToken<T>(action: (session: string) => Promise<T>) {
   if (!session) {
     return;
   }
-  return action(session.accessToken.value);
+  return action(`Bearer ${session.accessToken.value}`);
 }
 
 async function onUnauthorized() {
@@ -49,7 +49,7 @@ export async function updateEntity<R, B>(
   );
 }
 
-export async function deleteEntity<R, B>(
+export async function deleteEntity<B>(
   input: RequestInfo | URL,
   init?: FetcherRequestInit<B>
 ) {
@@ -58,5 +58,20 @@ export async function deleteEntity<R, B>(
       token,
       onUnauthorized,
     })
+  );
+}
+export async function deleteEntities<B>(
+  inputs: (RequestInfo | URL)[],
+  init?: FetcherRequestInit<B>
+) {
+  return withToken(token =>
+    Promise.all(
+      inputs.map(input =>
+        fetcher.delete<B>(input, init, {
+          token,
+          onUnauthorized,
+        })
+      )
+    )
   );
 }

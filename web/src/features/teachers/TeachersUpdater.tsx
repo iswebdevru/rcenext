@@ -4,8 +4,7 @@ import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { TeachersTableRowPlaceholder } from './TeachersTableRowPlaceholder';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 import useSWR from 'swr';
-import { fetcher, Teacher } from '@/shared/api';
-import { getSession, signOut } from 'next-auth/react';
+import { fetcher, partiallyUpdateEntity, Teacher } from '@/shared/api';
 
 export function TeachersUpdater({
   id: url,
@@ -31,22 +30,15 @@ export function TeachersUpdater({
   }
 
   const onSave = async () => {
-    const session = await getSession();
-    if (!session) {
-      return;
-    }
-    await fetcher.patch(url, {
+    await partiallyUpdateEntity(url, {
       body: {
         first_name: firstNameRef.current?.value,
         last_name: lastNameRef.current?.value,
         patronymic: patronymicRef.current?.value,
         subjects: selectedSubjects,
       },
-      token: session.accessToken.value,
-      onUnauthorized: () => signOut({ callbackUrl: '/' }),
     });
-    refresh();
-    mutate();
+    return Promise.all([refresh(), mutate()]);
   };
 
   return (

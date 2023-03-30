@@ -3,39 +3,26 @@ import { InputText } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 import { SubjectsTableRowPlaceholder } from './SubjectsTableRowPlaceholder';
-import { fetcher, Subject } from '@/shared/api';
-import { getSession, signOut } from 'next-auth/react';
+import { fetcher, partiallyUpdateEntity, Subject } from '@/shared/api';
 
 export function SubjectsUpdater({
   id: url,
   refresh,
 }: TableUpdaterComponentProps<string>) {
   const nameRef = useRef<HTMLInputElement>(null);
-  const { data: subject } = useSWR<Subject>(url, fetcher);
+  const { data: subject, mutate } = useSWR<Subject>(url, fetcher);
 
   if (!subject) {
     return <SubjectsTableRowPlaceholder />;
   }
 
   const onSave = async () => {
-    const session = await getSession();
-    if (!session) {
-      return;
-    }
-    await fetcher.patch(
-      url,
-      {
-        body: {
-          name: nameRef.current?.value,
-        },
+    await partiallyUpdateEntity(url, {
+      body: {
+        name: nameRef.current?.value,
       },
-      {
-        token: session.accessToken.value,
-        onUnauthorized: () => signOut({ callbackUrl: '/' }),
-      }
-    );
-
-    return refresh();
+    });
+    return Promise.all([refresh(), mutate()]);
   };
 
   return (

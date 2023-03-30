@@ -1,8 +1,7 @@
 import { parseGroupName } from '@/entities/groups';
-import { API_GROUPS, fetcher } from '@/shared/api';
+import { API_GROUPS, createEntity } from '@/shared/api';
 import { InputText } from '@/shared/ui/Input';
 import { Table, TableCreatorComponentProps } from '@/shared/ui/Table';
-import { getSession, signOut } from 'next-auth/react';
 import { useRef } from 'react';
 
 export function GroupsCreator({ refresh }: TableCreatorComponentProps) {
@@ -10,19 +9,13 @@ export function GroupsCreator({ refresh }: TableCreatorComponentProps) {
   const mainBlock = useRef<HTMLInputElement>(null);
 
   const onSave = async () => {
-    const session = await getSession();
-    if (!session) {
-      return;
-    }
-    await fetcher.post(API_GROUPS, {
+    await createEntity(API_GROUPS, {
       body: {
         ...parseGroupName(groupNameRef.current!.value),
         main_block: parseInt(mainBlock.current!.value),
       },
-      token: session.accessToken.value,
-      onUnauthorized: () => signOut({ callbackUrl: '/' }),
     });
-    refresh();
+    return refresh();
   };
 
   return (
@@ -38,7 +31,6 @@ export function GroupsCreator({ refresh }: TableCreatorComponentProps) {
       <Table.Data>
         <InputText required pattern="[1-9]+" ref={mainBlock} />
       </Table.Data>
-      <Table.Data></Table.Data>
       <Table.EditorActions onSave={onSave} />
     </Table.Row>
   );

@@ -54,7 +54,7 @@ export const authOptions: AuthOptions = {
   },
   events: {
     async signOut({ token }) {
-      return fetcher.post(API_LOGOUT, {
+      return fetcher.post(API_LOGOUT, undefined, {
         token: token.accessToken.value,
       });
     },
