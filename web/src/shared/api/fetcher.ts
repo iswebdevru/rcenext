@@ -1,62 +1,102 @@
-// TODO: FIX DELETE METHOD
-
-type FetcherExtraArgs = {
-  onResponse?: (res: Response) => void;
-};
-
-type FetcherProtectedArgs<B> = {
-  method: string;
-  body?: B;
-  token?: string;
+export type FetcherExtraArgs = {
   onUnauthorized?: (res: Response) => Promise<void>;
+  token?: string;
 };
 
-type FetcherActionArgs<B> = Omit<FetcherProtectedArgs<B>, 'method'>;
+export type FetcherRequestInit<B> = {
+  body?: B;
+} & Omit<RequestInit, 'body'>;
 
-export const fetcher = <T>(
+export const fetcher = async <R>(
   input: RequestInfo | URL,
   init?: RequestInit,
   extra?: FetcherExtraArgs
-) =>
-  fetch(input, init).then<T>(res => {
-    extra?.onResponse && extra.onResponse(res);
-    return res.json();
-  });
-
-fetcher.delete = <R, B>(url: string, args?: FetcherActionArgs<B>) =>
-  fetcher.protected(url, { method: 'DELETE', ...args });
-
-fetcher.post = <R, B>(url: string, args?: FetcherActionArgs<B>) =>
-  fetcher.protected<R, B>(url, { method: 'POST', ...args });
-
-fetcher.patch = <R, B>(url: string, args?: FetcherActionArgs<B>) =>
-  fetcher.protected<R, B>(url, { method: 'PATCH', ...args });
-
-fetcher.put = <R, B>(url: string, args?: FetcherActionArgs<B>) =>
-  fetcher.protected<R, B>(url, { method: 'PUT', ...args });
-
-fetcher.protected = <R, B>(
-  url: string,
-  { method, body, token, onUnauthorized }: FetcherProtectedArgs<B>
 ) => {
-  const headers = new Headers();
-  const reqInit: RequestInit = {
-    method,
-    headers,
-  };
-
-  if (body) {
-    headers.append('Content-Type', 'application/json');
-    reqInit.body = JSON.stringify(body);
-  }
-  if (token) {
-    headers.append('Authorization', `Bearer ${token}`);
-  }
-  return fetcher<R>(url, reqInit, {
-    onResponse: res => {
-      if (res.status === 401 && onUnauthorized) {
-        return onUnauthorized(res);
-      }
-    },
-  });
+  return (await fetcher.any(input, init, extra)).json() as R;
 };
+
+fetcher.delete = <B>(
+  input: RequestInfo | URL,
+  args?: FetcherRequestInit<B>,
+  extra?: FetcherExtraArgs
+) => fetcher.any<B>(input, { method: 'DELETE', ...args }, extra);
+
+fetcher.post = <R, B>(
+  input: RequestInfo | URL,
+  init?: FetcherRequestInit<B>,
+  extra?: FetcherExtraArgs
+) =>
+  fetcher
+    .any<B>(input, { method: 'POST', ...init }, extra)
+    .then(res => res.json()) as Promise<R>;
+
+fetcher.patch = <R, B>(
+  input: RequestInfo | URL,
+  args?: FetcherRequestInit<B>,
+  extra?: FetcherExtraArgs
+) =>
+  fetcher
+    .any<B>(input, { method: 'PATCH', ...args }, extra)
+    .then(res => res.json()) as Promise<R>;
+
+fetcher.put = <R, B>(
+  input: RequestInfo | URL,
+  args?: FetcherRequestInit<B>,
+  extra?: FetcherExtraArgs
+) =>
+  fetcher
+    .any<B>(input, { method: 'PUT', ...args }, extra)
+    .then(res => res.json()) as Promise<R>;
+
+fetcher.any = async <B>(
+  input: RequestInfo | URL,
+  init?: FetcherRequestInit<B>,
+  extra?: FetcherExtraArgs
+) => {
+  const headers: [string, string][] = [];
+  let options: RequestInit = {};
+  let bodyObj: B | undefined;
+  if (init) {
+    const { body, ...rest } = init;
+    bodyObj = body;
+    options = rest;
+  }
+  if (bodyObj) {
+    headers.push(['Content-Type', 'application/json']);
+    options.body = JSON.stringify(bodyObj);
+  }
+  if (extra?.token) {
+    headers.push(['Authorization', extra.token]);
+  }
+  options.headers = extendHeaders(options.headers, headers);
+  const res = await fetch(input, options);
+  if (extra?.onUnauthorized && res.status === 401) {
+    extra.onUnauthorized(res);
+  }
+  return res;
+};
+
+function extendHeaders(
+  headers?: HeadersInit,
+  headersToAdd?: [string, string][]
+): HeadersInit | undefined {
+  if (!headers) {
+    return headersToAdd;
+  }
+  if (!headersToAdd) {
+    return headers;
+  }
+  if (Array.isArray(headers)) {
+    return [...headers, ...headersToAdd];
+  }
+  if (headers instanceof Headers) {
+    for (const [name, value] of headersToAdd) {
+      headers.append(name, value);
+    }
+    return headers;
+  }
+  for (const [name, value] of headersToAdd) {
+    headers[name] = value;
+  }
+  return headers;
+}

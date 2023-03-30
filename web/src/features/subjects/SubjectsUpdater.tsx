@@ -22,13 +22,18 @@ export function SubjectsUpdater({
     if (!session) {
       return;
     }
-    await fetcher.patch(url, {
-      body: {
-        name: nameRef.current?.value,
+    await fetcher.patch(
+      url,
+      {
+        body: {
+          name: nameRef.current?.value,
+        },
       },
-      token: session.accessToken.value,
-      onUnauthorized: () => signOut({ callbackUrl: '/' }),
-    });
+      {
+        token: session.accessToken.value,
+        onUnauthorized: () => signOut({ callbackUrl: '/' }),
+      }
+    );
 
     return refresh();
   };
