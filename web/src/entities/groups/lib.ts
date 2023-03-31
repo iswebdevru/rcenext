@@ -1,6 +1,6 @@
 import { Group } from '@/shared/api';
 
-const groupRegExp = /^([А-ЯA-Z]+)(к)?-([1-4])(\d{2,})$/;
+export const groupRegExp = /^([А-ЯA-Z]+)(к)?-([1-4])(\d{2,})$/;
 
 export function displayGroupName(group: Group) {
   return `${group.specialization}${group.is_commercial ? 'к' : ''}-${

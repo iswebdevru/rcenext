@@ -1,13 +1,27 @@
 import { Table } from '@/shared/ui/Table';
 import { AdminLayout } from '@/layouts';
-import { displayGroupName } from '@/entities/groups';
+import {
+  displayGroupName,
+  groupRegExp,
+  parseGroupName,
+} from '@/entities/groups';
 import { GroupsCreator, GroupsLoader } from '@/features/groups';
 import GroupsUpdater from '@/features/groups/GroupsUpdater';
 import { usePaginatedFetch } from '@/shared/hooks';
 import { API_GROUPS, deleteEntities, Group } from '@/shared/api';
+import { useState } from 'react';
 
 export default function Groups() {
-  const { data, lastElementRef, mutate } = usePaginatedFetch<Group>(API_GROUPS);
+  const [search, setSearch] = useState('');
+  const normalizedSearch = groupRegExp.test(search)
+    ? Object.values(parseGroupName(search))
+        .map(v => (!v ? 0 : v))
+        .join(' ')
+    : search;
+
+  const { data, lastElementRef, mutate } = usePaginatedFetch<Group>(
+    `${API_GROUPS}?search=${normalizedSearch}`
+  );
 
   const deleteGroups = async (urls: string[]) => {
     await deleteEntities(urls);
@@ -30,6 +44,7 @@ export default function Groups() {
           }
           onDelete={ids => deleteGroups(ids)}
           loader={<GroupsLoader />}
+          onSearchChange={e => setSearch(e.target.value)}
         >
           {data
             ?.map(page => page.results)

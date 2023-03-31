@@ -3,6 +3,15 @@ import { Button } from '@/shared/ui/button';
 import { InputText } from '@/shared/ui/Input';
 import { Select } from '@/shared/ui/select';
 import { displayGroupName } from '@/entities/groups';
+import { usePaginatedFetch } from '@/shared/hooks';
+import {
+  API_GROUPS,
+  API_SUBJECTS,
+  API_TEACHERS,
+  Group,
+  Subject,
+  Teacher,
+} from '@/shared/api';
 
 type SelectGroupProps = {
   value?: number;
@@ -11,14 +20,17 @@ type SelectGroupProps = {
 };
 
 function SelectGroup(props: SelectGroupProps) {
-  const { data: groups } = useGroups();
+  const { data: groups, lastElementRef } = usePaginatedFetch<Group>(API_GROUPS);
   return (
     <Select {...props}>
-      {groups?.map(group => (
-        <Select.Option key={group.id} value={group.id}>
-          {displayGroupName(group)}
-        </Select.Option>
-      ))}
+      {groups
+        ?.map(page => page.results)
+        .flat()
+        .map(group => (
+          <Select.Option key={group.url} value={group.url} ref={lastElementRef}>
+            {displayGroupName(group)}
+          </Select.Option>
+        ))}
     </Select>
   );
 }
@@ -30,42 +42,58 @@ type SelectSubjectProps = {
 };
 
 function SelectSubject(props: SelectSubjectProps) {
-  const { data: subjects } = useSubjects();
+  const { data: subjects, lastElementRef } =
+    usePaginatedFetch<Subject>(API_SUBJECTS);
 
   return (
     <Select {...props}>
-      {subjects?.map(subject => (
-        <Select.Option key={subject.id} value={subject.id}>
-          {subject.name}
-        </Select.Option>
-      ))}
+      {subjects
+        ?.map(page => page.results)
+        .flat()
+        .map(subject => (
+          <Select.Option
+            key={subject.url}
+            value={subject.url}
+            ref={lastElementRef}
+          >
+            {subject.name}
+          </Select.Option>
+        ))}
     </Select>
   );
 }
 
 type SelectTeachersProps = {
-  onChange: (ids: number[]) => void;
-  value: number[];
+  onChange: (ids: string[]) => void;
+  value: string[];
   required: boolean;
 };
 
 function SelectTeachers(props: SelectTeachersProps) {
-  const { data: teachers } = useTeachers();
+  const { data: teachers, lastElementRef } =
+    usePaginatedFetch<Teacher>(API_TEACHERS);
 
   return (
-    <Select multiple {...props}>
-      {teachers?.map(teacher => (
-        <Select.Option key={teacher.id} value={teacher.id}>
-          {`${teacher.first_name[0]}. ${teacher.patronymic[0]}. ${teacher.last_name}`}
-        </Select.Option>
-      ))}
+    <Select<string> multiple {...props}>
+      {teachers
+        ?.map(page => page.results)
+        .flat()
+        .map(teacher => (
+          <Select.Option
+            key={teacher.url}
+            value={teacher.url}
+            ref={lastElementRef}
+          >
+            {`${teacher.first_name[0]}. ${teacher.patronymic[0]}. ${teacher.last_name}`}
+          </Select.Option>
+        ))}
     </Select>
   );
 }
 
 type ClassInfo = {
-  subjectId?: number;
-  teachersIds: number[];
+  subjectUrl?: number;
+  teachersUrls: string[];
   cabinet: string;
   note: string;
 };
@@ -74,42 +102,42 @@ const defaultClassesTimetable: ClassInfo[] = [
   {
     cabinet: '',
     note: '',
-    teachersIds: [],
+    teachersUrls: [],
   },
   {
     cabinet: '',
     note: '',
-    teachersIds: [],
+    teachersUrls: [],
   },
   {
     cabinet: '',
     note: '',
-    teachersIds: [],
+    teachersUrls: [],
   },
   {
     cabinet: '',
     note: '',
-    teachersIds: [],
+    teachersUrls: [],
   },
   {
     cabinet: '',
     note: '',
-    teachersIds: [],
+    teachersUrls: [],
   },
   {
     cabinet: '',
     note: '',
-    teachersIds: [],
+    teachersUrls: [],
   },
   {
     cabinet: '',
     note: '',
-    teachersIds: [],
+    teachersUrls: [],
   },
   {
     cabinet: '',
     note: '',
-    teachersIds: [],
+    teachersUrls: [],
   },
 ];
 
@@ -163,18 +191,20 @@ export function CreateClassesTimetable() {
                 <td className="px-2 py-2 text-center w-[6%]">{i}</td>
                 <td className="px-2 py-2 w-[32%]">
                   <SelectSubject
-                    value={info.subjectId}
-                    onChange={subjectId => updateTimetable(i, { subjectId })}
+                    value={info.subjectUrl}
+                    onChange={subjectId =>
+                      updateTimetable(i, { subjectUrl: subjectId })
+                    }
                     required
                   />
                 </td>
                 <td className="px-2 py-2 w-[32%]">
                   <SelectTeachers
                     required
-                    value={info.teachersIds}
+                    value={info.teachersUrls}
                     onChange={teachersIds =>
                       updateTimetable(i, {
-                        teachersIds,
+                        teachersUrls: teachersIds,
                       })
                     }
                   />

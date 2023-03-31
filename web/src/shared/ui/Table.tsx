@@ -130,7 +130,8 @@ export function Table<T extends Id>({
     .filter(([_, info]) => info.isSelected)
     .map(([id]) => id);
 
-  const areAllItemsSelected = compareArrays(selectedItems, allItems);
+  const areAllItemsSelected =
+    selectedItems.length !== 0 && compareArrays(selectedItems, allItems);
 
   return (
     <div>
