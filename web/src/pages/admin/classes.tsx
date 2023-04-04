@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ClassesTimetable, Timetable } from '@/entities/classes';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui/Button';
 import { Calendar } from '@/shared/ui/calendar';
 import { InputSearch } from '@/shared/ui/Input';
 import { Modal } from '@/shared/ui/modal';

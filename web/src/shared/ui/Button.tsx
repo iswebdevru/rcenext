@@ -26,3 +26,18 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     );
   }
 );
+
+export const HamburgerButton = forwardRef<
+  HTMLButtonElement,
+  ComponentPropsWithRef<'button'>
+>(function HamburgerButton({ ...props }, ref) {
+  return (
+    <button {...props} ref={ref}>
+      <svg className="w-10" viewBox="0 0 44 44">
+        <rect></rect>
+        <rect></rect>
+        <rect></rect>
+      </svg>
+    </button>
+  );
+});

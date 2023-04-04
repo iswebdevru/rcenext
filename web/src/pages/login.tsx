@@ -1,5 +1,5 @@
 import { BaseLayout } from '@/layouts';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui/Button';
 import { InputText } from '@/shared/ui/Input';
 import { GetServerSideProps } from 'next';
 import { getServerSession } from 'next-auth';

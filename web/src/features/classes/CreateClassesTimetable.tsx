@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from '@/shared/ui/button';
+import { Button } from '@/shared/ui/Button';
 import { InputText } from '@/shared/ui/Input';
 import { Select } from '@/shared/ui/select';
 import { displayGroupName } from '@/entities/groups';
