@@ -6,13 +6,6 @@ import { useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import { log } from 'console';
-
-// 1. Пользователь впервые посещает сайт
-// 2. Установив этот факт, определяем тему по предпочтениям пользователя
-// 3. Кэшируем соответствующую тему в localStorage
-// 4. Выбираем ее по умолчанию при последующих отрисовках
-// 5. В случае, если пользователь переключает тему, мы обновляем закэшированное значение
 
 export type HeaderProps = {
   wide?: boolean;
