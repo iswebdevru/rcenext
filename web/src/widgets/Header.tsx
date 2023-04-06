@@ -28,7 +28,7 @@ export default function Header({ wide }: HeaderProps) {
   const session = useSession();
 
   return (
-    <header className="relative z-10 bg-white border-b h-14 border-slate-200">
+    <header className="relative z-10 bg-white border-b h-14 border-slate-200 dark:bg-neutral-800 dark:border-neutral-700">
       <div
         className={clsx({
           'flex items-center h-full': true,
@@ -36,7 +36,10 @@ export default function Header({ wide }: HeaderProps) {
           'px-6': !!wide,
         })}
       >
-        <Link href="/" className="text-sm font-semibold text-blue-400">
+        <Link
+          href="/"
+          className="text-sm font-bold text-blue-400 dark:text-white"
+        >
           RCENext
         </Link>
         <nav className="hidden ml-16 lg:block">
@@ -48,7 +51,7 @@ export default function Header({ wide }: HeaderProps) {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-sm text-black transition-colors hover:text-neutral-400"
+                  className="text-sm text-black transition-colors hover:text-neutral-400 dark:text-neutral-200 dark:hover:text-neutral-400"
                 >
                   {link.text}
                 </Link>
@@ -62,7 +65,7 @@ export default function Header({ wide }: HeaderProps) {
         {session.data ? (
           <button
             onClick={() => signOut()}
-            className="items-center hidden ml-5 transition-colors lg:flex text-neutral-900 hover:text-neutral-400"
+            className="items-center hidden ml-6 transition-colors lg:flex text-neutral-900 hover:text-neutral-400 dark:text-neutral-400 dark:hover:text-neutral-50"
           >
             <FontAwesomeIcon
               icon={faRightFromBracket}

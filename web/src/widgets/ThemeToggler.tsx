@@ -1,4 +1,3 @@
-import { clsx } from '@/shared/lib/ui';
 import { useTheme } from '@/shared/ui/theme';
 
 const WIDTH = 42;
@@ -19,31 +18,19 @@ export function ThemeToggler() {
           width={WIDTH}
           height={HEIGHT}
           rx={12}
-          className={clsx({
-            'transition-all': true,
-            'fill-slate-800': !isDark,
-            'fill-slate-200': isDark,
-          })}
+          className="transition-all fill-slate-800 dark:fill-slate-200"
         ></rect>
         <circle
           cx={isDark ? WIDTH - HEIGHT / 2 : HEIGHT / 2}
           cy={HEIGHT / 2}
           r={R}
-          className={clsx({
-            'transition-all ': true,
-            'fill-slate-50': !isDark,
-            'fill-black': isDark,
-          })}
+          className="transition-all fill-slate-50 dark:fill-slate-900"
         />
         <circle
           cx={isDark ? WIDTH - HEIGHT / 2 - R : HEIGHT / 2 - R}
           cy={11}
           r={isDark ? R : 0}
-          className={clsx({
-            'transition-all': true,
-            'fill-slate-800': !isDark,
-            'fill-slate-200': isDark,
-          })}
+          className="transition-all fill-slate-800 dark:fill-slate-200"
         />
       </svg>
     </button>
