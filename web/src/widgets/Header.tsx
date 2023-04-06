@@ -1,11 +1,16 @@
-import { clsx } from '@/shared/lib/ui';
 import Link from 'next/link';
-import { ThemeToggler } from './ThemeToggler';
+import dynamic from 'next/dynamic';
+import { clsx } from '@/shared/lib/ui';
 import { HamburgerButton } from '@/shared/ui/Button';
 import { useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+
+const ThemeTogglerWithNoSSR = dynamic(
+  () => import('./ThemeToggler').then(module => module.ThemeToggler),
+  { ssr: false }
+);
 
 export type HeaderProps = {
   wide?: boolean;
@@ -52,7 +57,7 @@ export default function Header({ wide }: HeaderProps) {
           </ul>
         </nav>
         <div className="items-center hidden ml-auto lg:flex">
-          <ThemeToggler />
+          <ThemeTogglerWithNoSSR />
         </div>
         {session.data ? (
           <button

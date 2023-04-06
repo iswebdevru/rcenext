@@ -5,6 +5,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 import { Open_Sans } from '@next/font/google';
 import '@/application/style.css';
 import { clsx } from '@/shared/lib/ui';
+import { ThemeProvider } from '@/shared/ui/theme';
 
 const montserrat = Open_Sans({
   variable: '--font-main',
@@ -18,14 +19,16 @@ export default function App({
 }: AppProps) {
   return (
     <SessionProvider session={session}>
-      <div
-        className={clsx({
-          [montserrat.variable]: true,
-          'h-full font-sans': true,
-        })}
-      >
-        <Component {...pageProps} />
-      </div>
+      <ThemeProvider>
+        <div
+          className={clsx({
+            [montserrat.variable]: true,
+            'h-full font-sans': true,
+          })}
+        >
+          <Component {...pageProps} />
+        </div>
+      </ThemeProvider>
     </SessionProvider>
   );
 }
