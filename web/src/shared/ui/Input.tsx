@@ -12,7 +12,7 @@ export const InputText = forwardRef<
       ref={ref}
       className={classNameWithDefaults(
         clsx({
-          'transition-[outline,border] text-black dark:text-slate-200 bg-white outline outline-blue-200 outline-0 h-8 rounded-md text-sm border border-slate-200 px-3 py-1 w-full focus:outline-4 focus:border-blue-500 dark:bg-slate-800 dark:border-slate-600 dark:focus:border-blue-700 dark:outline-blue-600':
+          'transition-[outline,border] text-black dark:text-slate-200 bg-white outline outline-blue-200 outline-0 h-8 rounded-md text-sm border border-slate-200 px-3 py-1 w-full focus:outline-4 focus:border-blue-500 dark:bg-slate-800 dark:border-slate-700 dark:focus:border-blue-700 dark:outline-blue-600':
             true,
           'valid:border-green-600 invalid:border-red-500 dark:valid:border-green-600 dark:invalid:border-red-500':
             wasFocused,
@@ -34,7 +34,7 @@ export const InputSearch = forwardRef<
       {...props}
       ref={ref}
       className={classNameWithDefaults(
-        'transition-[border,outline] border outline outline-0 outline-blue-200 border-slate-200 rounded-md w-full pl-8 pr-2 py-1 focus:outline-4 focus:border-blue-500 dark:bg-slate-800 dark:border-slate-600',
+        'transition-[border,outline] border outline outline-0 outline-blue-200 border-slate-200 rounded-md w-full pl-8 pr-2 py-1 focus:outline-4 focus:border-blue-500 dark:bg-slate-800 dark:border-slate-700',
         className
       )}
     />

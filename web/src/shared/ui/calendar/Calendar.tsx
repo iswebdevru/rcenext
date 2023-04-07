@@ -14,9 +14,9 @@ export function Calendar({ date, setDate }: CalendarProps) {
   const days = getDaysAroundCurrentMonth(date);
 
   return (
-    <div className="p-2 bg-white border rounded-md">
-      <div className="flex items-center justify-between px-1 py-2 mb-4">
-        <p className="text-xl font-bold">
+    <div className="p-3 bg-white border rounded-lg border-slate-200 dark:border-slate-700 dark:bg-slate-800">
+      <div className="flex items-center justify-between px-2 py-1 mb-3">
+        <p className="text-lg font-bold text-slate-900 dark:text-slate-200">
           {HUMAN_READABLE_MONTHS[currentMonth]} {currentYear}
         </p>
         <div className="flex gap-4">
@@ -43,25 +43,25 @@ export function Calendar({ date, setDate }: CalendarProps) {
         </div>
       </div>
       <div className="grid justify-center grid-cols-7 gap-2">
-        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
           ПН
         </div>
-        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
           ВТ
         </div>
-        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
           СР
         </div>
-        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
           ЧТ
         </div>
-        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
           ПТ
         </div>
-        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
           СБ
         </div>
-        <div className="pb-3 text-sm font-semibold text-center text-neutral-900">
+        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
           ВС
         </div>
         {days.map(day => (
@@ -74,12 +74,12 @@ export function Calendar({ date, setDate }: CalendarProps) {
             key={`${day.date}-${day.month}`}
             disabled={day.month !== currentMonth}
             className={clsx({
-              'rounded-md leading-none aspect-square text-center p-2': true,
-              'text-neutral-900': day.month === currentMonth,
-              'hover:bg-slate-100':
+              'rounded-lg leading-none aspect-square text-center p-1.5': true,
+              'text-slate-900 dark:text-slate-200': day.month === currentMonth,
+              'hover:bg-slate-200 dark:hover:bg-blue-500':
                 day.month === currentMonth && day.date !== currentDate,
-              'text-neutral-300': day.month !== currentMonth,
-              'bg-slate-200':
+              'text-slate-300 dark:text-slate-600': day.month !== currentMonth,
+              'bg-slate-300 dark:bg-blue-600':
                 day.month === currentMonth && day.date === currentDate,
             })}
           >

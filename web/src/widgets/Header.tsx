@@ -28,7 +28,7 @@ export default function Header({ wide }: HeaderProps) {
   const session = useSession();
 
   return (
-    <header className="relative z-10 bg-white border-b h-14 border-slate-200 dark:bg-slate-800 dark:border-slate-600">
+    <header className="relative z-10 bg-white border-b h-14 border-slate-200 dark:bg-slate-800 dark:border-slate-700">
       <div
         className={clsx({
           'flex items-center h-full': true,
@@ -51,7 +51,7 @@ export default function Header({ wide }: HeaderProps) {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-sm font-semibold text-black transition-colors hover:text-blue-600 dark:text-slate-200 dark:hover:text-blue-400"
+                  className="text-sm font-semibold transition-colors text-slate-700 hover:text-blue-600 dark:text-slate-200 dark:hover:text-blue-400"
                 >
                   {link.text}
                 </Link>

@@ -28,7 +28,7 @@ export default function AdminNav() {
   const { pathname } = useRouter();
 
   return (
-    <div className="h-full py-10 bg-white border-r border-slate-200 dark:bg-slate-800 dark:border-slate-600">
+    <div className="h-full py-10 bg-white border-r border-slate-200 dark:bg-slate-800 dark:border-slate-700">
       <nav>
         <ul>
           {links.map(link => {

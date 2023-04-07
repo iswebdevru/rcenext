@@ -157,7 +157,7 @@ export function Table<T extends Id>({
           Добавить
         </Button>
       </div>
-      <div className="bg-white border rounded-md border-slate-200 dark:bg-slate-800 dark:border-slate-600">
+      <div className="bg-white border rounded-md border-slate-200 dark:bg-slate-800 dark:border-slate-700">
         <table className="w-full table-fixed">
           <tbody>
             <TableHeaderContext.Provider
@@ -346,7 +346,7 @@ Table.Row = forwardRef<HTMLTableRowElement, ComponentPropsWithRef<'tr'>>(
         {...props}
         ref={ref}
         className={classNameWithDefaults(
-          'border-b border-slate-200 dark:border-slate-600 group/row last:border-b-0 rounded-md transition-[background]',
+          'border-b border-slate-200 dark:border-slate-700 group/row last:border-b-0 rounded-md transition-[background]',
           className
         )}
       />
