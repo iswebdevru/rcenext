@@ -28,7 +28,7 @@ export default function AdminNav() {
   const { pathname } = useRouter();
 
   return (
-    <div className="h-full py-10 bg-white border-r border-slate-200">
+    <div className="h-full py-10 bg-white border-r border-slate-200 dark:bg-slate-800 dark:border-slate-600">
       <nav>
         <ul>
           {links.map(link => {
@@ -38,9 +38,10 @@ export default function AdminNav() {
                 <Link
                   href={link.href}
                   className={clsx({
-                    'group transition-color hover:text-blue-500': true,
-                    'text-blue-500': isActive,
-                    'text-neutral-700': !isActive,
+                    'group transition-color hover:text-blue-500 dark:hover:text-blue-500':
+                      true,
+                    'text-blue-500 dark:text-blue-500': isActive,
+                    'text-slate-900 dark:text-slate-300': !isActive,
                   })}
                 >
                   <div className="flex items-center">

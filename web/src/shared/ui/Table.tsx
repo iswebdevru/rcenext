@@ -21,7 +21,7 @@ import {
 } from 'react';
 import { compareArrays } from '../lib/common';
 import { classNameWithDefaults, clsx } from '../lib/ui';
-import { Button } from './button';
+import { Button } from './Button';
 import { InputSearch } from './Input';
 
 export type Id = string | number;
@@ -157,7 +157,7 @@ export function Table<T extends Id>({
           Добавить
         </Button>
       </div>
-      <div className="bg-white border rounded-md border-neutral-200">
+      <div className="bg-white border rounded-md border-slate-200 dark:bg-slate-800 dark:border-slate-600">
         <table className="w-full table-fixed">
           <tbody>
             <TableHeaderContext.Provider
@@ -328,7 +328,9 @@ Table.RowWithId = forwardRef<HTMLTableRowElement, TableRowWithIdProps>(
     const { isSelected } = useContext(TableRowWithIdContext);
     return (
       <Table.Row
-        className={clsx({ '[&>td]:bg-blue-50': isSelected })}
+        className={clsx({
+          '[&>td]:bg-slate-100 dark:[&>td]:bg-slate-700': isSelected,
+        })}
         ref={ref}
       >
         {children}
@@ -344,7 +346,7 @@ Table.Row = forwardRef<HTMLTableRowElement, ComponentPropsWithRef<'tr'>>(
         {...props}
         ref={ref}
         className={classNameWithDefaults(
-          'border-b group/row last:border-b-0 rounded-md transition-[background]',
+          'border-b border-slate-200 dark:border-slate-600 group/row last:border-b-0 rounded-md transition-[background]',
           className
         )}
       />
@@ -365,7 +367,7 @@ Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
     return (
       <td
         className={classNameWithDefaults(
-          'px-6 py-3 text-sm group-last/row:first:rounded-bl-md group-last:last:rounded-br-md',
+          'px-6 py-3 text-black dark:text-slate-200 text-sm group-last/row:first:rounded-bl-md group-last:last:rounded-br-md',
           className
         )}
         {...props}
@@ -378,7 +380,7 @@ Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
 
 Table.Head = function TableHead({ children }: PropsWithChildren) {
   return (
-    <th className="px-6 py-3 text-sm text-left first:w-[61px] last:w-[114px]">
+    <th className="px-6 py-3 text-sm text-left first:w-[61px] last:w-[114px] text-slate-900 dark:text-slate-100 font-semibold">
       <div className="flex items-center">{children}</div>
     </th>
   );

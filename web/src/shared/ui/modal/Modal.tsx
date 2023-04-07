@@ -14,7 +14,7 @@ export function Modal({ state, onClose, children }: ModalProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    rootRef.current = document.getElementById('__next') as HTMLDivElement;
+    rootRef.current = document.getElementById('__root') as HTMLDivElement;
     setMounted(true);
   }, []);
 

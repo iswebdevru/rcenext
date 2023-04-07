@@ -21,6 +21,7 @@ export default function App({
     <SessionProvider session={session}>
       <ThemeProvider>
         <div
+          id="__root"
           className={clsx({
             [montserrat.variable]: true,
             'h-full font-sans': true,

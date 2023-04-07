@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { FormEventHandler, useState } from 'react';
 import { Button } from '@/shared/ui/Button';
 import { InputText } from '@/shared/ui/Input';
 import { Select } from '@/shared/ui/select';
@@ -158,9 +158,14 @@ export function CreateClassesTimetable() {
     });
   };
 
+  const onSubmit: FormEventHandler<HTMLFormElement> = e => {
+    e.preventDefault();
+    console.log('here');
+  };
+
   return (
     <div className="p-6 bg-white rounded-md shadow-lg">
-      <form>
+      <form onSubmit={onSubmit}>
         <div className="flex flex-col items-start">
           <label className="mb-2 text-neutral-600">Группа:</label>
           <SelectGroup

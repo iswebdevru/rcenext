@@ -25,7 +25,7 @@ export default function Login() {
   return (
     <BaseLayout>
       <div className="flex items-center justify-center w-full h-full p-3">
-        <div className="flex-grow max-w-sm px-6 py-8 bg-white border rounded-lg border-slate-200 md:px-8 md:py-12">
+        <div className="flex-grow max-w-sm px-6 py-8 bg-white border rounded-lg text-slate-900 border-slate-200 md:px-8 md:py-12 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200">
           <h1 className="mb-8 text-xl font-bold text-center md:text-2xl">
             Аутентификация
           </h1>
@@ -62,7 +62,7 @@ export default function Login() {
             </Button>
           </form>
           {router.query.error === 'CredentialsSignin' ? (
-            <div className="mt-6 text-xs text-center text-red-500 sm:text-sm md:mt-8">
+            <div className="mt-6 text-xs text-center text-red-400 sm:text-sm md:mt-8">
               Неверное имя пользователя или пароль
             </div>
           ) : null}
