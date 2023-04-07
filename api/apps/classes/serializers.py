@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from .models import Timetable, TimetablePeriod
+from .models import ClassSchedule, ClassSchedulePeriod
 from .service import main_dates_map, week_days, week_types, get_day_info
 
 
 def create_period(period_data, timetable):
     teachers = period_data.pop('teachers')
-    period_record = TimetablePeriod.objects.create(
+    period_record = ClassSchedulePeriod.objects.create(
         **period_data, timetable=timetable
     )
     period_record.teachers.add(*teachers)
@@ -16,9 +16,9 @@ def create_periods(periods_data, timetable):
         create_period(period_data, timetable)
 
 
-class TimetablePeriodSerializer(serializers.HyperlinkedModelSerializer):
+class ClassSchedulePeriodSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = TimetablePeriod
+        model = ClassSchedulePeriod
         fields = [
             'index',
             'subject',
@@ -27,8 +27,8 @@ class TimetablePeriodSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
-class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
-    periods = TimetablePeriodSerializer(many=True)
+class MainClassScheduleSerializer(serializers.HyperlinkedModelSerializer):
+    periods = ClassSchedulePeriodSerializer(many=True)
     week_type = serializers.ChoiceField(week_types, write_only=True)
     week_day = serializers.ChoiceField(week_days, write_only=True)
 
@@ -48,7 +48,7 @@ class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
 
     def create(self, validated_data):
         periods = validated_data.pop('periods')
-        timetable = Timetable.objects.create(
+        timetable = ClassSchedule.objects.create(
             **validated_data, is_main=True
         )
         create_periods(periods, timetable)
@@ -65,7 +65,7 @@ class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
         return instance
 
     class Meta:
-        model = Timetable
+        model = ClassSchedule
         fields = [
             'url',
             'group',
@@ -83,12 +83,13 @@ class MainTimetableSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
-class ChangesTimetableSerializer(serializers.HyperlinkedModelSerializer):
-    periods = TimetablePeriodSerializer(many=True)
+class ChangesClassScheduleSerializer(serializers.HyperlinkedModelSerializer):
+    periods = ClassSchedulePeriodSerializer(many=True)
 
     def create(self, validated_data):
         periods = validated_data.pop('periods')
-        timetable = Timetable.objects.create(**validated_data, is_main=False)
+        timetable = ClassSchedule.objects.create(
+            **validated_data, is_main=False)
         create_periods(periods, timetable)
         return timetable
 
@@ -104,7 +105,7 @@ class ChangesTimetableSerializer(serializers.HyperlinkedModelSerializer):
         return instance
 
     class Meta:
-        model = Timetable
+        model = ClassSchedule
         fields = [
             'url',
             'group',
@@ -121,8 +122,8 @@ class ChangesTimetableSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
-class MixedTimetableSerializer(serializers.HyperlinkedModelSerializer):
-    periods = TimetablePeriodSerializer(many=True)
+class MixedClassScheduleSerializer(serializers.HyperlinkedModelSerializer):
+    periods = ClassSchedulePeriodSerializer(many=True)
 
     def to_representation(self, instance):
         primitive_value = super().to_representation(instance)
@@ -135,7 +136,7 @@ class MixedTimetableSerializer(serializers.HyperlinkedModelSerializer):
         return primitive_value
 
     class Meta:
-        model = Timetable
+        model = ClassSchedule
         fields = [
             'url',
             'group',

@@ -5,18 +5,18 @@ from knox.views import LogoutView
 from apps.teachers.views import TeacherViewSet
 from apps.subjects.views import SubjectViewSet
 from apps.groups.views import GroupViewSet
-from apps.timetables.views import MainTimetableViewSet, ChangesTimetableViewSet, MixedTimetableViewSet
 from apps.login.views import LoginView
+from apps.classes.views import MainClassScheduleViewSet, ChangesClassScheduleViewSet, MixedClassScheduleViewSet
 
 router = DefaultRouter()
 router.register('teachers', TeacherViewSet)
 router.register('subjects', SubjectViewSet)
 router.register('groups', GroupViewSet)
-router.register('timetables-main', MainTimetableViewSet,
+router.register('classes-main', MainClassScheduleViewSet,
                 basename="timetable-main")
-router.register('timetables-changes', ChangesTimetableViewSet,
+router.register('classes-changes', ChangesClassScheduleViewSet,
                 basename="timetable-changes")
-router.register('timetables', MixedTimetableViewSet,
+router.register('classes', MixedClassScheduleViewSet,
                 basename="timetable-mixed")
 
 urlpatterns = router.urls

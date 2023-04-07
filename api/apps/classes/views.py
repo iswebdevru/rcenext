@@ -3,15 +3,15 @@ from django.db.models import Q, Exists, OuterRef
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from .models import Timetable
-from .serializers import MainTimetableSerializer, ChangesTimetableSerializer, MixedTimetableSerializer
+from .models import ClassSchedule
+from .serializers import MainClassScheduleSerializer, ChangesClassScheduleSerializer, MixedClassScheduleSerializer
 from .filters import WeekDayFilterBackend, DateFilterBackend
 from .service import get_day_info, main_dates_map
 
 
-class MainTimetableViewSet(viewsets.ModelViewSet):
-    queryset = Timetable.objects.filter(is_main=True)
-    serializer_class = MainTimetableSerializer
+class MainClassScheduleViewSet(viewsets.ModelViewSet):
+    queryset = ClassSchedule.objects.filter(is_main=True)
+    serializer_class = MainClassScheduleSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [WeekDayFilterBackend]
 
@@ -21,9 +21,9 @@ class MainTimetableViewSet(viewsets.ModelViewSet):
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
 
-class ChangesTimetableViewSet(viewsets.ModelViewSet):
-    queryset = Timetable.objects.filter(is_main=False)
-    serializer_class = ChangesTimetableSerializer
+class ChangesClassScheduleViewSet(viewsets.ModelViewSet):
+    queryset = ClassSchedule.objects.filter(is_main=False)
+    serializer_class = ChangesClassScheduleSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DateFilterBackend]
 
@@ -33,8 +33,8 @@ class ChangesTimetableViewSet(viewsets.ModelViewSet):
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
 
-class MixedTimetableViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = MixedTimetableSerializer
+class MixedClassScheduleViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = MixedClassScheduleSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
@@ -42,4 +42,4 @@ class MixedTimetableViewSet(viewsets.ReadOnlyModelViewSet):
         changes_date = datetime.date.fromisoformat(date_str)
         week_type, week_day = get_day_info(changes_date)
         main_date = main_dates_map[week_type][week_day]
-        return Timetable.objects.exclude(Q(date=main_date) & Exists(Timetable.objects.filter(group=OuterRef('group'))))
+        return ClassSchedule.objects.exclude(Q(date=main_date) & Exists(ClassSchedule.objects.filter(group=OuterRef('group'))))

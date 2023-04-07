@@ -1,8 +1,6 @@
 import datetime
-from django.db.models import Case, When, Exists, OuterRef
-from django.db import connection
 from rest_framework import filters
-from .service import week_days, week_types, main_dates_map, get_day_info
+from .service import week_days, week_types, main_dates_map
 
 
 class WeekDayFilterBackend(filters.BaseFilterBackend):

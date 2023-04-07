@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'apps.teachers',
     'apps.subjects',
     'apps.groups',
-    'apps.timetables',
+    'apps.classes',
 ]
 
 MIDDLEWARE = [
