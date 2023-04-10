@@ -5,7 +5,7 @@ import { Calendar } from '@/shared/ui/calendar';
 import { InputSearch } from '@/shared/ui/Input';
 import { Modal } from '@/shared/ui/modal';
 import { Select } from '@/shared/ui/select';
-import { Toggles } from '@/shared/ui/toggles';
+import { Toggles } from '@/shared/ui/Toggles';
 import {
   DAYS_OF_THE_WEEK,
   TIMETABLE_TYPES,

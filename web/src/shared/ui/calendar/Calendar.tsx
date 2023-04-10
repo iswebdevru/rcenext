@@ -42,26 +42,26 @@ export function Calendar({ date, setDate }: CalendarProps) {
           </button>
         </div>
       </div>
-      <div className="grid justify-center grid-cols-7 gap-2">
-        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
+      <div className="grid justify-center grid-cols-7 gap-2 text-sm">
+        <div className="pb-2 font-semibold text-center text-slate-900 dark:text-slate-400">
           ПН
         </div>
-        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
+        <div className="pb-2 font-semibold text-center text-slate-900 dark:text-slate-400">
           ВТ
         </div>
-        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
+        <div className="pb-2 font-semibold text-center text-slate-900 dark:text-slate-400">
           СР
         </div>
-        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
+        <div className="pb-2 font-semibold text-center text-slate-900 dark:text-slate-400">
           ЧТ
         </div>
-        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
+        <div className="pb-2 font-semibold text-center text-slate-900 dark:text-slate-400">
           ПТ
         </div>
-        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
+        <div className="pb-2 font-semibold text-center text-slate-900 dark:text-slate-400">
           СБ
         </div>
-        <div className="pb-2 text-sm font-semibold text-center text-slate-900 dark:text-slate-400">
+        <div className="pb-2 font-semibold text-center text-slate-900 dark:text-slate-400">
           ВС
         </div>
         {days.map(day => (
@@ -72,14 +72,17 @@ export function Calendar({ date, setDate }: CalendarProps) {
               setDate(newDate);
             }}
             key={`${day.date}-${day.month}`}
-            disabled={day.month !== currentMonth}
+            disabled={
+              day.month !== currentMonth ||
+              (day.month === currentMonth && day.date === currentDate)
+            }
             className={clsx({
-              'rounded-lg leading-none aspect-square text-center p-1.5': true,
-              'text-slate-900 dark:text-slate-200': day.month === currentMonth,
-              'hover:bg-slate-200 dark:hover:bg-blue-500':
+              'rounded-lg outline-none outline-1 outline-offset-0 select-none outline leading-none aspect-square text-center p-1.5 transition-[outline,color,background]':
+                true,
+              'text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 focus:bg-slate-200 dark:focus:bg-slate-700':
                 day.month === currentMonth && day.date !== currentDate,
               'text-slate-300 dark:text-slate-600': day.month !== currentMonth,
-              'bg-slate-300 dark:bg-blue-600':
+              'outline-blue-400 bg-blue-50 text-blue-400 dark:bg-blue-600 dark:outline-transparent dark:text-blue-50':
                 day.month === currentMonth && day.date === currentDate,
             })}
           >

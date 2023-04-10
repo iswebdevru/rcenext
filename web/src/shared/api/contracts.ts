@@ -55,15 +55,15 @@ type CommonTimetableData = {
   updated_at: string;
 };
 
-export type MainTimetable = {
+export type ClassesScheduleMain = {
   is_main: true;
   week_type: string;
   week_day: string;
 } & CommonTimetableData;
 
-export type ChangesTimetable = {
+export type ClassesScheduleChanges = {
   is_main: false;
   date: string;
 } & CommonTimetableData;
 
-export type MixedTimetable = MainTimetable | ChangesTimetable;
+export type ClassesScheduleMixed = ClassesScheduleMain | ClassesScheduleChanges;

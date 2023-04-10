@@ -1,9 +1,10 @@
 import { ClassesTimetable, Timetable } from '@/entities/classes';
 import { BaseLayout } from '@/layouts';
+import { HUMAN_MONTHS } from '@/shared/constants';
 import { Calendar } from '@/shared/ui/calendar';
 import { InputSearch } from '@/shared/ui/Input';
 import { Sidebar } from '@/shared/ui/Sidebar';
-import { Toggles } from '@/shared/ui/toggles';
+import { Toggles } from '@/shared/ui/Toggles';
 import { useState } from 'react';
 
 const timetableData: Timetable[] = [
@@ -276,19 +277,28 @@ const timetableData: Timetable[] = [
 export default function Classes() {
   const [date, setDate] = useState(new Date());
   const [opened, setOpened] = useState(false);
-  const [blocks, setBlocks] = useState<'6' | '1-5'>('1-5');
+  const [blockType, setBlockType] = useState<'all' | '1-5' | '6'>('all');
   const [withChanges, setWithChanges] = useState(true);
 
   return (
     <BaseLayout>
       <div className="container flex gap-4 pt-6">
         <div className="grow">
-          <div className="grid justify-between grid-cols-1 gap-4 mb-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+          <h1 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-200">
+            Расписание занятий на {date.getDate()}{' '}
+            {HUMAN_MONTHS[date.getMonth()]}
+          </h1>
+          <h2 className="mb-4 font-bold text-slate-900 dark:text-slate-200">
+            1 корпус
+          </h2>
+          <div className="grid justify-between grid-cols-1 gap-4 mb-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
             {timetableData.map((timetable, i) => (
               <ClassesTimetable key={i} timetable={timetable} />
             ))}
           </div>
-          <h2 className="mb-2 text-lg font-bold">6 корпус</h2>
+          <h2 className="mb-4 font-bold text-slate-900 dark:text-slate-200">
+            6 корпус
+          </h2>
           <div className="grid justify-between grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
             {timetableData.map((timetable, i) => (
               <ClassesTimetable key={i} timetable={timetable} />
@@ -303,7 +313,8 @@ export default function Classes() {
                 <Calendar date={date} setDate={setDate} />
               </div>
               <div className="mb-3">
-                <Toggles value={blocks} setValue={setBlocks}>
+                <Toggles value={blockType} setValue={setBlockType}>
+                  <Toggles.Variant value="all">Все</Toggles.Variant>
                   <Toggles.Variant value="1-5">1-5</Toggles.Variant>
                   <Toggles.Variant value="6">6</Toggles.Variant>
                 </Toggles>

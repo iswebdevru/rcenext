@@ -28,7 +28,7 @@ export function Toggles<T extends VariantId>({
   return (
     <TogglesContext.Provider value={{ ...providerProps } as any}>
       <div>
-        <ul className="flex flex-wrap border rounded-md">{children}</ul>
+        <ul className="flex flex-wrap gap-1 p-1">{children}</ul>
       </div>
     </TogglesContext.Provider>
   );
@@ -44,9 +44,14 @@ Toggles.Variant = function Variant({ value, children }: VariantProps) {
   return (
     <li className="group grow">
       <button
+        disabled={value === selected}
         className={clsx({
-          'w-full border-r group-last:border-r-0 transition': true,
-          'bg-slate-200': value === selected,
+          'outline-none outline-1 outline-offset-0 select-none block w-full p-0.5 text-sm rounded-md font-semibold transition-[outline,color,background]':
+            true,
+          'text-slate-700 focus:outline-1 focus:outline-slate-600 dark:text-slate-400 hover:text-blue-400 dark:hover:text-blue-50 focus:text-slate-900 dark:focus:text-slate-200':
+            value !== selected,
+          'bg-blue-50 outline-1 outline-blue-400 text-blue-400 dark:bg-blue-700 dark:text-blue-50 dark:outline-transparent':
+            value === selected,
         })}
         onClick={() => setValue(value)}
       >
