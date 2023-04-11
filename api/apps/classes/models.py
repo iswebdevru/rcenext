@@ -5,7 +5,7 @@ from apps.teachers.models import Teacher
 from apps.core.models import TimestampModel
 
 
-class ClassSchedule(TimestampModel):
+class ClassesSchedule(TimestampModel):
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     date = models.DateField()
     is_main = models.BooleanField()
@@ -21,9 +21,9 @@ class ClassSchedule(TimestampModel):
         ]
 
 
-class ClassSchedulePeriod(TimestampModel):
+class ClassesSchedulePeriod(TimestampModel):
     timetable = models.ForeignKey(
-        ClassSchedule, on_delete=models.CASCADE, related_name='periods')
+        ClassesSchedule, on_delete=models.CASCADE, related_name='periods')
     index = models.PositiveSmallIntegerField()
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     teachers = models.ManyToManyField(Teacher)

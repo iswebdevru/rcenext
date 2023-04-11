@@ -9,8 +9,4 @@ class TeacherViewSet(viewsets.ModelViewSet):
     serializer_class = TeacherSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [filters.SearchFilter]
-    search_fields = [
-        'first_name',
-        'last_name',
-        'patronymic',
-    ]
+    search_fields = ['first_name', 'last_name', 'patronymic']

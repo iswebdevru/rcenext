@@ -1,23 +1,24 @@
 import datetime
 from rest_framework import filters
-from .service import week_days, week_types, main_dates_map
+from .serializers import WeekDayFilterGetParamsSerializer, DateFilterGetParamsSerializer
+from .service import main_dates_map
 
 
 class WeekDayFilterBackend(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
-        week_day = request.query_params.get('week_day')
-        week_type = request.query_params.get('week_type')
-        if week_day not in week_days or week_type not in week_types:
-            return queryset
-        date = main_dates_map[week_type][week_day]
-        return queryset.filter(date=date)
+        serializer = WeekDayFilterGetParamsSerializer(
+            data=request.query_params
+        )
+        if serializer.is_valid():
+            date = main_dates_map[serializer.validated_data['week_type']
+                                  ][serializer.validated_data['week_day']]
+            return queryset.filter(date=date)
+        return queryset
 
 
 class DateFilterBackend(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
-        try:
-            date_str = request.query_params.get('date')
-            date = datetime.date.fromisoformat(date_str)
-            return queryset.filter(date=date)
-        except:
-            return queryset
+        serializer = DateFilterGetParamsSerializer(data=request.query_params)
+        if serializer.is_valid():
+            return queryset.filter(date=serializer.validated_data['date'])
+        return queryset

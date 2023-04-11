@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'knox',
+    'django_filters',
     'apps.login',
     'apps.core',
     'apps.teachers',
@@ -63,7 +64,7 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
     'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.ApiPagination',
-    'PAGE_SIZE': 2
+    'PAGE_SIZE': 2,
 }
 
 REST_KNOX = {

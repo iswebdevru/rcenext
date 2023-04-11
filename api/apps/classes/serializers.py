@@ -1,11 +1,11 @@
 from rest_framework import serializers
-from .models import ClassSchedule, ClassSchedulePeriod
+from .models import ClassesSchedule, ClassesSchedulePeriod
 from .service import main_dates_map, week_days, week_types, get_day_info
 
 
 def create_period(period_data, timetable):
     teachers = period_data.pop('teachers')
-    period_record = ClassSchedulePeriod.objects.create(
+    period_record = ClassesSchedulePeriod.objects.create(
         **period_data, timetable=timetable
     )
     period_record.teachers.add(*teachers)
@@ -16,9 +16,18 @@ def create_periods(periods_data, timetable):
         create_period(period_data, timetable)
 
 
-class ClassSchedulePeriodSerializer(serializers.HyperlinkedModelSerializer):
+class WeekDayFilterGetParamsSerializer(serializers.Serializer):
+    week_day = serializers.ChoiceField(week_days)
+    week_type = serializers.ChoiceField(week_types)
+
+
+class DateFilterGetParamsSerializer(serializers.Serializer):
+    date = serializers.DateField()
+
+
+class ClassesSchedulePeriodSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = ClassSchedulePeriod
+        model = ClassesSchedulePeriod
         fields = [
             'index',
             'subject',
@@ -27,8 +36,8 @@ class ClassSchedulePeriodSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
-class MainClassScheduleSerializer(serializers.HyperlinkedModelSerializer):
-    periods = ClassSchedulePeriodSerializer(many=True)
+class ClassesScheduleMainSerializer(serializers.HyperlinkedModelSerializer):
+    periods = ClassesSchedulePeriodSerializer(many=True)
     week_type = serializers.ChoiceField(week_types, write_only=True)
     week_day = serializers.ChoiceField(week_days, write_only=True)
 
@@ -48,7 +57,7 @@ class MainClassScheduleSerializer(serializers.HyperlinkedModelSerializer):
 
     def create(self, validated_data):
         periods = validated_data.pop('periods')
-        timetable = ClassSchedule.objects.create(
+        timetable = ClassesSchedule.objects.create(
             **validated_data, is_main=True
         )
         create_periods(periods, timetable)
@@ -65,7 +74,7 @@ class MainClassScheduleSerializer(serializers.HyperlinkedModelSerializer):
         return instance
 
     class Meta:
-        model = ClassSchedule
+        model = ClassesSchedule
         fields = [
             'url',
             'group',
@@ -83,12 +92,12 @@ class MainClassScheduleSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
-class ChangesClassScheduleSerializer(serializers.HyperlinkedModelSerializer):
-    periods = ClassSchedulePeriodSerializer(many=True)
+class ClassesScheduleChangesSerializer(serializers.HyperlinkedModelSerializer):
+    periods = ClassesSchedulePeriodSerializer(many=True)
 
     def create(self, validated_data):
         periods = validated_data.pop('periods')
-        timetable = ClassSchedule.objects.create(
+        timetable = ClassesSchedule.objects.create(
             **validated_data, is_main=False)
         create_periods(periods, timetable)
         return timetable
@@ -105,7 +114,7 @@ class ChangesClassScheduleSerializer(serializers.HyperlinkedModelSerializer):
         return instance
 
     class Meta:
-        model = ClassSchedule
+        model = ClassesSchedule
         fields = [
             'url',
             'group',
@@ -122,8 +131,8 @@ class ChangesClassScheduleSerializer(serializers.HyperlinkedModelSerializer):
         }
 
 
-class MixedClassScheduleSerializer(serializers.HyperlinkedModelSerializer):
-    periods = ClassSchedulePeriodSerializer(many=True)
+class ClassesScheduleMixedSerializer(serializers.HyperlinkedModelSerializer):
+    periods = ClassesSchedulePeriodSerializer(many=True)
 
     def to_representation(self, instance):
         primitive_value = super().to_representation(instance)
@@ -136,7 +145,7 @@ class MixedClassScheduleSerializer(serializers.HyperlinkedModelSerializer):
         return primitive_value
 
     class Meta:
-        model = ClassSchedule
+        model = ClassesSchedule
         fields = [
             'url',
             'group',
