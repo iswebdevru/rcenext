@@ -6,7 +6,7 @@ from apps.teachers.views import TeacherViewSet
 from apps.subjects.views import SubjectViewSet
 from apps.groups.views import GroupViewSet
 from apps.login.views import LoginView
-from apps.classes.views import ClassesScheduleMainViewSet, ClassesScheduleChangesViewSet, ClassScheduleMixedViewSet
+from apps.classes.views import ClassesScheduleMainViewSet, ClassesScheduleChangesViewSet, ClassesScheduleMixedViewSet
 
 router = DefaultRouter()
 router.register('teachers', TeacherViewSet)
@@ -16,7 +16,7 @@ router.register('classes-main', ClassesScheduleMainViewSet,
                 basename="timetable-main")
 router.register('classes-changes', ClassesScheduleChangesViewSet,
                 basename="timetable-changes")
-router.register('classes', ClassScheduleMixedViewSet,
+router.register('classes', ClassesScheduleMixedViewSet,
                 basename="timetable-mixed")
 
 urlpatterns = router.urls

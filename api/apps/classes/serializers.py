@@ -16,15 +16,6 @@ def create_periods(periods_data, timetable):
         create_period(period_data, timetable)
 
 
-class WeekDayFilterGetParamsSerializer(serializers.Serializer):
-    week_day = serializers.ChoiceField(week_days)
-    week_type = serializers.ChoiceField(week_types)
-
-
-class DateFilterGetParamsSerializer(serializers.Serializer):
-    date = serializers.DateField()
-
-
 class ClassesSchedulePeriodSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ClassesSchedulePeriod

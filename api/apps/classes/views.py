@@ -1,20 +1,17 @@
-import datetime
-from django.db.models import Q, Exists, OuterRef
-from rest_framework import viewsets, status, filters
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django_filters import rest_framework as drf_filters
 from .models import ClassesSchedule
-from .serializers import ClassesScheduleMainSerializer, ClassesScheduleChangesSerializer, ClassesScheduleMixedSerializer, DateFilterGetParamsSerializer
-from .filters import WeekDayFilterBackend, DateFilterBackend
-from .service import get_day_info, main_dates_map
+from .serializers import ClassesScheduleMainSerializer, ClassesScheduleChangesSerializer, ClassesScheduleMixedSerializer
+from .filters import WeekDayFilterBackend, DateFilterBackend, ClassesScheduleMixedFilterBackend, GroupBlockFilterBackend
 
 
 class ClassesScheduleMainViewSet(viewsets.ModelViewSet):
     queryset = ClassesSchedule.objects.filter(is_main=True)
     serializer_class = ClassesScheduleMainSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [WeekDayFilterBackend]
+    filter_backends = [WeekDayFilterBackend, GroupBlockFilterBackend]
 
     def partial_update(self, request, pk=None):
         response = {
@@ -26,7 +23,7 @@ class ClassesScheduleChangesViewSet(viewsets.ModelViewSet):
     queryset = ClassesSchedule.objects.filter(is_main=False)
     serializer_class = ClassesScheduleChangesSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [DateFilterBackend]
+    filter_backends = [DateFilterBackend, GroupBlockFilterBackend]
 
     def partial_update(self, request, pk=None):
         response = {
@@ -34,19 +31,12 @@ class ClassesScheduleChangesViewSet(viewsets.ModelViewSet):
         return Response(response, status=status.HTTP_403_FORBIDDEN)
 
 
-class ClassScheduleMixedViewSet(viewsets.ReadOnlyModelViewSet):
+class ClassesScheduleMixedViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ClassesSchedule.objects.all()
     serializer_class = ClassesScheduleMixedSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [drf_filters.DjangoFilterBackend]
+    filter_backends = [drf_filters.DjangoFilterBackend,
+                       ClassesScheduleMixedFilterBackend,
+                       GroupBlockFilterBackend]
     filterset_fields = ['group__specialization', 'group__course',
-                        'group__index', 'group__is_commercial', 'group__main_block']
-
-    def get_queryset(self):
-        serializer = DateFilterGetParamsSerializer(
-            data=self.request.query_params
-        )
-        serializer.is_valid(raise_exception=True)
-        date = serializer.validated_data['date']
-        week_type, week_day = get_day_info(date)
-        main_date = main_dates_map[week_type][week_day]
-        return ClassesSchedule.objects.filter(Q(date=date) | Q(date=main_date) & ~Exists(ClassesSchedule.objects.filter(Q(group=OuterRef('group')) & Q(date=date))))
+                        'group__index', 'group__is_commercial']

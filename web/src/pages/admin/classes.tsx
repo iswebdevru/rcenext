@@ -5,15 +5,17 @@ import { InputSearch } from '@/shared/ui/Input';
 import { Modal } from '@/shared/ui/modal';
 import { Select } from '@/shared/ui/select';
 import { Toggles } from '@/shared/ui/Toggles';
-import { WEEK_DAYS, WEEK_TYPES, WeekDay, WeekType } from '@/shared/constants';
+import { WEEK_DAYS, WEEK_TYPES } from '@/shared/constants';
 import { CreateClassesSchedule } from '@/features/classes';
 import { AdminLayout } from '@/layouts';
 import {
   API_CLASSES_CHANGES,
   API_CLASSES_MAIN,
+  WeekDay,
+  WeekType,
   createEntity,
 } from '@/shared/api';
-import { formatDate } from '@/shared/lib/common';
+import { formatDate } from '@/shared/lib/date';
 
 type ClassesScheduleType = 'main' | 'changes';
 

@@ -1,6 +1,3 @@
-export type WeekType = 'ЧИСЛ' | 'ЗНАМ';
-export type WeekDay = 'ПН' | 'ВТ' | 'СР' | 'ЧТ' | 'ПТ' | 'СБ';
-
 export const WEEK_TYPES = [
   {
     id: 'ЧИСЛ',

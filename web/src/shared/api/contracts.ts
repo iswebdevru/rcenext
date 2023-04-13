@@ -39,6 +39,9 @@ export type Group = {
   updated_at: string;
 };
 
+export type WeekType = 'ЧИСЛ' | 'ЗНАМ';
+export type WeekDay = 'ПН' | 'ВТ' | 'СР' | 'ЧТ' | 'ПТ' | 'СБ' | 'ВС';
+
 export type ClassesSchedulePeriod = {
   index: number;
   subject: Hyperlink;
@@ -58,8 +61,8 @@ type CommonTimetableData = {
 
 export type ClassesScheduleMain = {
   is_main: true;
-  week_type: string;
-  week_day: string;
+  week_type: WeekType;
+  week_day: WeekDay;
 } & CommonTimetableData;
 
 export type ClassesScheduleChanges = {

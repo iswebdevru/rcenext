@@ -8,11 +8,10 @@ export function displayGroupName(group: Group) {
   }${group.index < 10 ? 0 : ''}${group.index}`;
 }
 
-export function parseGroupName(
-  group: string
-): Omit<Group, 'main_block' | 'url' | 'created_at' | 'updated_at'> {
+export function parseGroupName(group: string): Partial<Group> {
   const parsed = group.match(groupRegExp);
   if (!parsed) {
+    /([А-ЯA-Z]+)/;
     throw new Error('Неверное название группы');
   }
   const [_, specialization, isCommercial, course, index] = parsed;
