@@ -27,7 +27,8 @@ class ClassesSchedulePeriod(TimestampModel):
     index = models.PositiveSmallIntegerField()
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     teachers = models.ManyToManyField(Teacher)
-    cabinet = models.CharField(max_length=55)
+    cabinet = models.CharField(max_length=255)
+    note = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         constraints = [

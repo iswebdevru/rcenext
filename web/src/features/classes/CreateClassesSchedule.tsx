@@ -11,11 +11,12 @@ import {
   Group,
   Subject,
   Teacher,
+  ClassesSchedulePeriod,
 } from '@/shared/api';
 
 type SelectGroupProps = {
-  value?: number;
-  onChange: (value: number) => void;
+  value?: string;
+  onChange: (value: string) => void;
   required: boolean;
 };
 
@@ -36,8 +37,8 @@ function SelectGroup(props: SelectGroupProps) {
 }
 
 type SelectSubjectProps = {
-  value?: number;
-  onChange: (value: number) => void;
+  value?: string;
+  onChange: (value: string) => void;
   required: boolean;
 };
 
@@ -91,64 +92,80 @@ function SelectTeachers(props: SelectTeachersProps) {
   );
 }
 
-type ClassInfo = {
-  subjectUrl?: number;
-  teachersUrls: string[];
-  cabinet: string;
-  note: string;
-};
-
-const defaultClassesTimetable: ClassInfo[] = [
+const defaultClassesTimetable: ClassesSchedulePeriod[] = [
   {
+    index: 0,
     cabinet: '',
     note: '',
-    teachersUrls: [],
+    teachers: [],
+    subject: '',
   },
   {
+    index: 1,
     cabinet: '',
     note: '',
-    teachersUrls: [],
+    teachers: [],
+    subject: '',
   },
   {
+    index: 2,
     cabinet: '',
     note: '',
-    teachersUrls: [],
+    teachers: [],
+    subject: '',
   },
   {
+    index: 3,
     cabinet: '',
     note: '',
-    teachersUrls: [],
+    teachers: [],
+    subject: '',
   },
   {
+    index: 4,
     cabinet: '',
     note: '',
-    teachersUrls: [],
+    teachers: [],
+    subject: '',
   },
   {
+    index: 5,
     cabinet: '',
     note: '',
-    teachersUrls: [],
+    teachers: [],
+    subject: '',
   },
   {
+    index: 6,
     cabinet: '',
     note: '',
-    teachersUrls: [],
+    teachers: [],
+    subject: '',
   },
   {
+    index: 7,
     cabinet: '',
     note: '',
-    teachersUrls: [],
+    teachers: [],
+    subject: '',
   },
 ];
 
-export function CreateClassesTimetable() {
-  const [selectedGroup, setSelectedGroup] = useState<number | undefined>();
-  const [classesTimetable, setClassesTimetable] = useState(
-    defaultClassesTimetable
-  );
+export type CreateClassesScheduleProps = {
+  onSubmit: (classesSchedule: {
+    group: string;
+    periods: ClassesSchedulePeriod[];
+  }) => void;
+};
 
-  const updateTimetable = (i: number, info: Partial<ClassInfo>) => {
-    setClassesTimetable(p => {
+export function CreateClassesSchedule({
+  onSubmit: userOnSubmit,
+}: CreateClassesScheduleProps) {
+  const [group, setGroup] = useState<string | undefined>();
+  const [periods, setPeriods] = useState(defaultClassesTimetable);
+
+  const updatePeriods = (i: number, info: Partial<ClassesSchedulePeriod>) => {
+    setPeriods(p => {
       const copy = [...p];
       copy[i] = {
         ...copy[i],
@@ -160,7 +177,12 @@ export function CreateClassesTimetable() {
 
   const onSubmit: FormEventHandler<HTMLFormElement> = e => {
     e.preventDefault();
-    console.log('here');
+    userOnSubmit({
+      group: group as string,
+      periods: periods.filter(
+        period => period.subject && period.cabinet && period.teachers.length
+      ),
+    });
   };
 
   return (
@@ -168,11 +190,7 @@ export function CreateClassesTimetable() {
       <form onSubmit={onSubmit}>
         <div className="flex flex-col items-start">
           <label className="mb-2 text-neutral-600">Группа:</label>
-          <SelectGroup
-            value={selectedGroup}
-            onChange={setSelectedGroup}
-            required
-          />
+          <SelectGroup value={group} onChange={setGroup} required />
         </div>
         <table className="mb-4">
           <tbody>
@@ -191,14 +209,14 @@ export function CreateClassesTimetable() {
                 Примечание
               </th>
             </tr>
-            {classesTimetable.map((info, i) => (
-              <tr key={i} className="">
-                <td className="px-2 py-2 text-center w-[6%]">{i}</td>
+            {periods.map(period => (
+              <tr key={period.index} className="">
+                <td className="px-2 py-2 text-center w-[6%]">{period.index}</td>
                 <td className="px-2 py-2 w-[32%]">
                   <SelectSubject
-                    value={info.subjectUrl}
-                    onChange={subjectId =>
-                      updateTimetable(i, { subjectUrl: subjectId })
+                    value={period.subject}
+                    onChange={subject =>
+                      updatePeriods(period.index, { subject })
                     }
                     required
                   />
@@ -206,10 +224,10 @@ export function CreateClassesTimetable() {
                 <td className="px-2 py-2 w-[32%]">
                   <SelectTeachers
                     required
-                    value={info.teachersUrls}
-                    onChange={teachersIds =>
-                      updateTimetable(i, {
-                        teachersUrls: teachersIds,
+                    value={period.teachers}
+                    onChange={teachers =>
+                      updatePeriods(period.index, {
+                        teachers,
                       })
                     }
                   />
@@ -217,18 +235,22 @@ export function CreateClassesTimetable() {
                 <td className="w-[15%] px-2 py-2 ">
                   <InputText
                     placeholder="Кабинет"
-                    value={info.cabinet}
+                    value={period.cabinet}
                     onChange={e =>
-                      updateTimetable(i, { cabinet: e.currentTarget.value })
+                      updatePeriods(period.index, {
+                        cabinet: e.currentTarget.value,
+                      })
                     }
                   />
                 </td>
                 <td className="w-[15%] px-2 py-2 ">
                   <InputText
                     placeholder="Примечание"
-                    value={info.note}
+                    value={period.note}
                     onChange={e => {
-                      updateTimetable(i, { note: e.currentTarget.value });
+                      updatePeriods(period.index, {
+                        note: e.currentTarget.value,
+                      });
                     }}
                   />
                 </td>

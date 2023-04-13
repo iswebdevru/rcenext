@@ -1,284 +1,24 @@
-import { ClassesTimetable, Timetable } from '@/entities/classes';
+import { ClassesScheduleCard } from '@/entities/classes';
 import { BaseLayout } from '@/layouts';
+import { API_CLASSES, ClassesScheduleMixed } from '@/shared/api';
 import { HUMAN_MONTHS } from '@/shared/constants';
+import { usePaginatedFetch } from '@/shared/hooks';
+import { formatDate } from '@/shared/lib/common';
 import { Calendar } from '@/shared/ui/calendar';
 import { InputSearch } from '@/shared/ui/Input';
 import { Sidebar } from '@/shared/ui/Sidebar';
 import { Toggles } from '@/shared/ui/Toggles';
 import { useState } from 'react';
 
-const timetableData: Timetable[] = [
-  {
-    group: 'ИС-203',
-    classes: [
-      {
-        number: 0,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 1,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 2,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 3,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-    ],
-  },
-  {
-    group: 'ИС-203',
-    classes: [
-      {
-        number: 0,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 1,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 2,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 3,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-    ],
-  },
-  {
-    group: 'ИС-203',
-    classes: [
-      {
-        number: 0,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 1,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 2,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 3,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-    ],
-  },
-  {
-    group: 'ИС-203',
-    classes: [
-      {
-        number: 0,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 1,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 2,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 3,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-    ],
-  },
-  {
-    group: 'ИС-203',
-    classes: [
-      {
-        number: 0,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 1,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 2,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 3,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-    ],
-  },
-  {
-    group: 'ИС-203',
-    classes: [
-      {
-        number: 0,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 1,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 2,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 3,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-    ],
-  },
-  {
-    group: 'ИС-203',
-    classes: [
-      {
-        number: 0,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 1,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 2,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 3,
-        subject: 'Математика',
-        cabinet: 'МАС пнг',
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-    ],
-  },
-  {
-    group: 'ИС-203',
-    classes: [
-      {
-        number: 0,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 1,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 2,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-      {
-        number: 3,
-        subject: 'Математика',
-        cabinet: 302,
-        note: '3к',
-        teacher: 'Кто-то',
-      },
-    ],
-  },
-];
-
 export default function Classes() {
   const [date, setDate] = useState(new Date());
   const [opened, setOpened] = useState(false);
   const [blockType, setBlockType] = useState<'all' | '1-5' | '6'>('all');
   const [withChanges, setWithChanges] = useState(true);
+
+  const { data, lastElementRef } = usePaginatedFetch<ClassesScheduleMixed>(
+    `${API_CLASSES}?date=${formatDate(date)}`
+  );
 
   return (
     <BaseLayout>
@@ -292,18 +32,21 @@ export default function Classes() {
             1 корпус
           </h2>
           <div className="grid justify-between grid-cols-1 gap-4 mb-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-            {timetableData.map((timetable, i) => (
-              <ClassesTimetable key={i} timetable={timetable} />
-            ))}
+            {data
+              ?.map(page => page.results)
+              .flat()
+              .map((schedule, i, a) => (
+                <ClassesScheduleCard
+                  key={schedule.url}
+                  schedule={schedule}
+                  ref={i === a.length - 1 ? lastElementRef : null}
+                />
+              ))}
           </div>
           <h2 className="mb-4 font-bold text-slate-900 dark:text-slate-200">
             6 корпус
           </h2>
-          <div className="grid justify-between grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-            {timetableData.map((timetable, i) => (
-              <ClassesTimetable key={i} timetable={timetable} />
-            ))}
-          </div>
+          <div className="grid justify-between grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4"></div>
           {/* <button onClick={() => setOpened(p => !p)}>oopene</button> */}
         </div>
         <div className="flex-shrink-0">

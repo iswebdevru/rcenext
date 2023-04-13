@@ -39,17 +39,18 @@ export type Group = {
   updated_at: string;
 };
 
-export type TimetablePeriod = {
+export type ClassesSchedulePeriod = {
   index: number;
   subject: Hyperlink;
   teachers: Hyperlink[];
   cabinet: string;
+  note?: string;
 };
 
 type CommonTimetableData = {
   url: Hyperlink;
   group: Hyperlink;
-  periods: TimetablePeriod[];
+  periods: ClassesSchedulePeriod[];
   note: string | null;
   created_at: string;
   updated_at: string;

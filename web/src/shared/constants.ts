@@ -1,21 +1,13 @@
-export const TIMETABLE_TYPES = [
-  {
-    id: 0,
-    value: 'Основное',
-  },
-  {
-    id: 1,
-    value: 'Изменения',
-  },
-] as const;
+export type WeekType = 'ЧИСЛ' | 'ЗНАМ';
+export type WeekDay = 'ПН' | 'ВТ' | 'СР' | 'ЧТ' | 'ПТ' | 'СБ';
 
 export const WEEK_TYPES = [
   {
-    id: 0,
+    id: 'ЧИСЛ',
     value: 'Числитель',
   },
   {
-    id: 1,
+    id: 'ЗНАМ',
     value: 'Знаменатель',
   },
 ] as const;
@@ -45,11 +37,11 @@ export const HUMAN_MONTHS = [
   'декабря',
 ];
 
-export const DAYS_OF_THE_WEEK = [
-  { id: '1', value: 'Понедельник' },
-  { id: '2', value: 'Вторник' },
-  { id: '3', value: 'Среда' },
-  { id: '4', value: 'Четверг' },
-  { id: '5', value: 'Пятница' },
-  { id: '6', value: 'Суббота' },
+export const WEEK_DAYS = [
+  { id: 'ПН', value: 'Понедельник' },
+  { id: 'ВТ', value: 'Вторник' },
+  { id: 'СР', value: 'Среда' },
+  { id: 'ЧТ', value: 'Четверг' },
+  { id: 'ПТ', value: 'Пятница' },
+  { id: 'СБ', value: 'Суббота' },
 ] as const;

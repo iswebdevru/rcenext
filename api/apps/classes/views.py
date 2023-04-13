@@ -46,6 +46,7 @@ class ClassScheduleMixedViewSet(viewsets.ReadOnlyModelViewSet):
             data=self.request.query_params
         )
         serializer.is_valid(raise_exception=True)
-        week_type, week_day = get_day_info(serializer.validated_data['date'])
+        date = serializer.validated_data['date']
+        week_type, week_day = get_day_info(date)
         main_date = main_dates_map[week_type][week_day]
-        return ClassesSchedule.objects.exclude(Q(date=main_date) & Exists(ClassesSchedule.objects.filter(group=OuterRef('group'))))
+        return ClassesSchedule.objects.filter(Q(date=date) | Q(date=main_date) & ~Exists(ClassesSchedule.objects.filter(Q(group=OuterRef('group')) & Q(date=date))))

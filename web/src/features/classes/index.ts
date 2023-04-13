@@ -1,1 +1,1 @@
-export * from './CreateClassesTimetable';
+export * from './CreateClassesSchedule';

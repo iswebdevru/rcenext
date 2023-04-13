@@ -33,6 +33,7 @@ class ClassesSchedulePeriodSerializer(serializers.HyperlinkedModelSerializer):
             'subject',
             'teachers',
             'cabinet',
+            'note'
         ]
 
 
