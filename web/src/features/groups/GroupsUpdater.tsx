@@ -4,7 +4,6 @@ import { fetcher, Group, partiallyUpdateEntity } from '@/shared/api';
 import { InputText } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
-import { GroupsLoader } from './GroupsLoader';
 
 export default function GroupsUpdater({
   id: url,
@@ -15,7 +14,7 @@ export default function GroupsUpdater({
   const { data: group } = useSWR<Group>(url, fetcher);
 
   if (!group) {
-    return <GroupsLoader />;
+    return null;
   }
 
   const onSave = async () => {

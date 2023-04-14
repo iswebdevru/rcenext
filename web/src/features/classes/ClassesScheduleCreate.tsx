@@ -158,7 +158,7 @@ export type CreateClassesScheduleProps = {
   }) => void;
 };
 
-export function CreateClassesSchedule({
+export function ClassesScheduleCreate({
   onSubmit: userOnSubmit,
 }: CreateClassesScheduleProps) {
   const [group, setGroup] = useState<string | undefined>();

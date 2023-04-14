@@ -1,1 +1,2 @@
-export * from './ClassesTimetable';
+export * from './CollegeBlockToggles';
+export * from './ClassesScheduleCard';

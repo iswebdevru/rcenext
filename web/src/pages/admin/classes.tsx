@@ -6,7 +6,7 @@ import { Modal } from '@/shared/ui/modal';
 import { Select } from '@/shared/ui/select';
 import { Toggles } from '@/shared/ui/Toggles';
 import { WEEK_DAYS, WEEK_TYPES } from '@/shared/constants';
-import { CreateClassesSchedule } from '@/features/classes';
+import { ClassesScheduleCreate } from '@/features/classes';
 import { AdminLayout } from '@/layouts';
 import {
   API_CLASSES_CHANGES,
@@ -16,11 +16,12 @@ import {
   createEntity,
 } from '@/shared/api';
 import { formatDate } from '@/shared/lib/date';
-
-type ClassesScheduleType = 'main' | 'changes';
+import { CollegeBlock, CollegeBlockToggles } from '@/entities/classes';
+import { ClassesScheduleGrid } from '@/widgets/classes';
 
 export default function Edit() {
-  const [scheduleType, setScheduleType] = useState<ClassesScheduleType>('main');
+  const [scheduleKind, setScheduleKind] = useState<'main' | 'changes'>('main');
+  const [collegeBlock, setCollegeBlock] = useState<CollegeBlock>(-1);
   const [date, setDate] = useState(new Date());
   const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
@@ -39,33 +40,52 @@ export default function Edit() {
               Добавить
             </Button>
           </div>
-          <div className="grid grid-cols-4 gap-4">
-            {/* {timetableData.map((data, i) => (
-              <ClassesTimetable
-                key={i}
-                timetable={data}
-                controlPanel={
-                  <div className="flex gap-2">
-                    <button>Select</button>
-                    <button>Edit</button>
-                    <button>Del</button>
-                  </div>
-                }
-              ></ClassesTimetable>
-            ))} */}
-          </div>
+          {collegeBlock === -1 || collegeBlock === 1 ? (
+            <>
+              <h2 className="mb-4 font-bold text-slate-900 dark:text-slate-200">
+                1-5 корпус
+              </h2>
+              <ClassesScheduleGrid
+                kind={scheduleKind}
+                collegeBlock={1}
+                date={date}
+                weekDay={weekDay}
+                weekType={weekType}
+              />
+            </>
+          ) : null}
+          {collegeBlock === -1 || collegeBlock === 6 ? (
+            <>
+              <h2 className="mb-4 font-bold text-slate-900 dark:text-slate-200">
+                6 корпус
+              </h2>
+              <ClassesScheduleGrid
+                kind={scheduleKind}
+                collegeBlock={6}
+                date={date}
+                weekDay={weekDay}
+                weekType={weekType}
+              />
+            </>
+          ) : null}
         </div>
-        <div className="shrink-0 w-80">
+        <div className="shrink-0">
           <div className="mb-2">
             <InputSearch placeholder="Группа" />
           </div>
           <div className="mb-2">
-            <Toggles value={scheduleType} setValue={setScheduleType}>
+            <CollegeBlockToggles
+              value={collegeBlock}
+              setValue={setCollegeBlock}
+            />
+          </div>
+          <div className="mb-2">
+            <Toggles value={scheduleKind} setValue={setScheduleKind}>
               <Toggles.Variant value="main">Основное</Toggles.Variant>
               <Toggles.Variant value="changes">Изменения</Toggles.Variant>
             </Toggles>
           </div>
-          {scheduleType === 'main' ? (
+          {scheduleKind === 'main' ? (
             <>
               <div className="mb-2">
                 <Select value={weekDay} onChange={setWeekDay}>
@@ -93,9 +113,9 @@ export default function Edit() {
         state={showTimetableModal}
         onClose={() => setShowTimetableModal(false)}
       >
-        <CreateClassesSchedule
+        <ClassesScheduleCreate
           onSubmit={({ group, periods }) => {
-            if (scheduleType === 'main') {
+            if (scheduleKind === 'main') {
               createEntity(API_CLASSES_MAIN, {
                 body: {
                   group,

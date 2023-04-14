@@ -5,11 +5,12 @@ import {
   groupRegExp,
   parseGroupName,
 } from '@/entities/groups';
-import { GroupsCreator, GroupsLoader } from '@/features/groups';
+import { GroupsCreator } from '@/features/groups';
 import GroupsUpdater from '@/features/groups/GroupsUpdater';
 import { usePaginatedFetch } from '@/shared/hooks';
 import { API_GROUPS, deleteEntities, Group } from '@/shared/api';
 import { useState } from 'react';
+import { LoaderWrapper } from '@/shared/ui/LoaderWrapper';
 
 export default function Groups() {
   const [search, setSearch] = useState('');
@@ -19,9 +20,8 @@ export default function Groups() {
         .join(' ')
     : search;
 
-  const { data, lastElementRef, mutate } = usePaginatedFetch<Group>(
-    `${API_GROUPS}?search=${normalizedSearch}`
-  );
+  const { data, lastElementRef, mutate, isValidating } =
+    usePaginatedFetch<Group>(`${API_GROUPS}?search=${normalizedSearch}`);
 
   const deleteGroups = async (urls: string[]) => {
     await deleteEntities(urls);
@@ -31,36 +31,41 @@ export default function Groups() {
   return (
     <AdminLayout>
       <div className="h-full p-6">
-        <Table<string>
-          creator={() => <GroupsCreator refresh={mutate} />}
-          updater={url => <GroupsUpdater refresh={mutate} id={url} />}
-          header={
-            <Table.Row>
-              <Table.SelectAllRowsCheckbox />
-              <Table.Head>Группа</Table.Head>
-              <Table.Head>Корпус</Table.Head>
-              <Table.Head />
-            </Table.Row>
-          }
-          onDelete={ids => deleteGroups(ids)}
-          loader={<GroupsLoader />}
-          onSearchChange={e => setSearch(e.target.value)}
-        >
-          {data
-            ?.map(page => page.results)
-            .flat()
-            .map((group, i, a) => (
-              <Table.RowWithId
-                ref={a.length === i + 1 ? lastElementRef : null}
-                key={group.url}
-                id={group.url}
-              >
-                <Table.SelectRowCheckbox />
-                <Table.Data>{displayGroupName(group)}</Table.Data>
-                <Table.Data>{group.main_block}</Table.Data>
-                <Table.EditRowButton />
-              </Table.RowWithId>
-            ))}
+        <Table<string>>
+          <Table.Header
+            onDelete={deleteGroups}
+            onSearchChange={e => setSearch(e.target.value)}
+          />
+          <LoaderWrapper enabled={isValidating}>
+            <Table.Body<string>
+              creator={() => <GroupsCreator refresh={mutate} />}
+              updater={url => <GroupsUpdater refresh={mutate} id={url} />}
+              header={
+                <Table.Row>
+                  <Table.SelectAllRowsCheckbox />
+                  <Table.Head>Группа</Table.Head>
+                  <Table.Head>Корпус</Table.Head>
+                  <Table.Head />
+                </Table.Row>
+              }
+            >
+              {data
+                ?.map(page => page.results)
+                .flat()
+                .map((group, i, a) => (
+                  <Table.Row
+                    ref={a.length === i + 1 ? lastElementRef : null}
+                    key={group.url}
+                    rowId={group.url}
+                  >
+                    <Table.SelectRowCheckbox />
+                    <Table.Data>{displayGroupName(group)}</Table.Data>
+                    <Table.Data>{group.main_block}</Table.Data>
+                    <Table.EditRowButton />
+                  </Table.Row>
+                ))}
+            </Table.Body>
+          </LoaderWrapper>
         </Table>
       </div>
     </AdminLayout>

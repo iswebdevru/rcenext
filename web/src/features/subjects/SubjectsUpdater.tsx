@@ -2,7 +2,6 @@ import useSWR from 'swr';
 import { InputText } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
-import { SubjectsTableRowPlaceholder } from './SubjectsTableRowPlaceholder';
 import { fetcher, partiallyUpdateEntity, Subject } from '@/shared/api';
 
 export function SubjectsUpdater({
@@ -13,7 +12,7 @@ export function SubjectsUpdater({
   const { data: subject, mutate } = useSWR<Subject>(url, fetcher);
 
   if (!subject) {
-    return <SubjectsTableRowPlaceholder />;
+    return null;
   }
 
   const onSave = async () => {

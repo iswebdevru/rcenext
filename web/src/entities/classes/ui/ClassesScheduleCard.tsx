@@ -53,7 +53,7 @@ export const ClassesScheduleCard = forwardRef<
       ref={ref}
       className="bg-white border rounded-lg border-slate-200 dark:bg-slate-800 dark:border-slate-700"
     >
-      <table className="w-full h-full">
+      <table className="w-full">
         <tbody>
           <tr className="border-b border-slate-200 dark:border-slate-700">
             <th className="px-3 py-2 text-left" colSpan={3}>

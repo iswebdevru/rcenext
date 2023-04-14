@@ -1,1 +1,1 @@
-export * from './CreateClassesSchedule';
+export * from './ClassesScheduleCreate';

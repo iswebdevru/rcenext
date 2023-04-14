@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { InputText } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
-import { TeachersTableRowPlaceholder } from './TeachersTableRowPlaceholder';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 import useSWR from 'swr';
 import { fetcher, partiallyUpdateEntity, Teacher } from '@/shared/api';
@@ -26,7 +25,7 @@ export function TeachersUpdater({
   }, [selectedSubjects, teacher]);
 
   if (!teacher) {
-    return <TeachersTableRowPlaceholder />;
+    return null;
   }
 
   const onSave = async () => {

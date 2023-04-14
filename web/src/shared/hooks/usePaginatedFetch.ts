@@ -14,7 +14,10 @@ export function usePaginatedFetch<T>(key: string | null) {
       }
       return null;
     },
-    fetcher
+    fetcher,
+    {
+      keepPreviousData: true,
+    }
   );
   const toNext = useCallback(() => setSize(p => p + 1), [setSize]);
   const lastElementRef = usePagination(toNext);
