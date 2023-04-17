@@ -91,3 +91,10 @@ TEACHER, STUDENT - пока что равноправны, но ...
 `/admin/teachers` - менеджер преподавателей
 
 `/admin/timetable` - менеджер расписания
+
+##### offtop
+
+z indexes in app:
+30 - header
+40 - modals
+50 - notifications

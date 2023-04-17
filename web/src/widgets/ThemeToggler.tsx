@@ -1,4 +1,4 @@
-import { useTheme } from '@/shared/ui/theme';
+import { useTheme, useThemeEffect } from '@/shared/ui/Theme';
 
 const WIDTH = 42;
 const HEIGHT = 22;
@@ -6,6 +6,8 @@ const R = 7;
 
 export function ThemeToggler() {
   const { theme, toggleTheme } = useTheme();
+
+  useThemeEffect();
 
   const isDark = theme === 'dark';
 

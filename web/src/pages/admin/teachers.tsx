@@ -9,14 +9,21 @@ import { usePaginatedFetch } from '@/shared/hooks';
 import { API_TEACHERS, deleteEntities, Teacher } from '@/shared/api';
 import { useState } from 'react';
 import { LoaderWrapper } from '@/shared/ui/LoaderWrapper';
+import { useNotificationEmitter } from '@/shared/ui/Notification';
 
 export default function Teachers() {
   const [searchFilter, setSearchFilter] = useState('');
   const { data, lastElementRef, isValidating, mutate } =
     usePaginatedFetch<Teacher>(`${API_TEACHERS}?search=${searchFilter}`);
 
+  const notify = useNotificationEmitter();
+
   const deleteTeachers = async (urls: string[]) => {
     await deleteEntities(urls);
+    notify({
+      kind: 'success',
+      text: `Удалено ${urls.length} пользователей`,
+    });
     return mutate();
   };
 

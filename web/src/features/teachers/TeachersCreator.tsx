@@ -3,12 +3,15 @@ import { InputText } from '@/shared/ui/Input';
 import { Table, TableCreatorComponentProps } from '@/shared/ui/Table';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 import { API_TEACHERS, createEntity } from '@/shared/api';
+import { useNotificationEmitter } from '@/shared/ui/Notification';
 
 export function TeachersCreator({ refresh }: TableCreatorComponentProps) {
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const patronymicRef = useRef<HTMLInputElement>(null);
   const [subjects, setSubjects] = useState<string[]>([]);
+
+  const notify = useNotificationEmitter();
 
   const onSave = async () => {
     await createEntity(API_TEACHERS, {
@@ -19,7 +22,11 @@ export function TeachersCreator({ refresh }: TableCreatorComponentProps) {
         subjects: subjects,
       },
     });
-    return refresh();
+    refresh();
+    notify({
+      kind: 'success',
+      text: 'Добавлен 1 пользователь',
+    });
   };
 
   return (

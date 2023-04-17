@@ -4,6 +4,7 @@ import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 import useSWR from 'swr';
 import { fetcher, partiallyUpdateEntity, Teacher } from '@/shared/api';
+import { useNotificationEmitter } from '@/shared/ui/Notification';
 
 export function TeachersUpdater({
   id: url,
@@ -17,6 +18,8 @@ export function TeachersUpdater({
   );
 
   const { data: teacher, mutate } = useSWR<Teacher>(url, fetcher);
+
+  const notify = useNotificationEmitter();
 
   useEffect(() => {
     if (!selectedSubjects && teacher) {
@@ -36,6 +39,10 @@ export function TeachersUpdater({
         patronymic: patronymicRef.current?.value,
         subjects: selectedSubjects,
       },
+    });
+    notify({
+      kind: 'success',
+      text: 'Обновлен 1 пользователь',
     });
     return Promise.all([refresh(), mutate()]);
   };

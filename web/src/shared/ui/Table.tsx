@@ -27,6 +27,7 @@ import { classNameWithDefaults, clsx } from '../lib/ui';
 import { Button } from './Button';
 import { InputSearch } from './Input';
 import React from 'react';
+import { v4 as uuid } from 'uuid';
 
 /**
  * <Table>
@@ -80,8 +81,8 @@ type TableContext<T extends Id> = {
   deselectAllExistingItems: () => void;
   updateExistingItemById: (id: T, data: ItemsMapValue) => void;
 
-  newItems: number[];
-  setNewItems: Dispatch<SetStateAction<number[]>>;
+  newItems: string[];
+  setNewItems: Dispatch<SetStateAction<string[]>>;
 };
 
 const TableContext = createContext<TableContext<any>>(undefined as any);
@@ -92,7 +93,7 @@ export function Table<T extends Id>({ children }: PropsWithChildren) {
   const [existingItemsMap, setExistingItemsMap] = useState<ItemsMap<T>>(
     new Map()
   );
-  const [newItems, setNewItems] = useState<number[]>([]);
+  const [newItems, setNewItems] = useState<string[]>([]);
 
   const updateExistingItemById = useCallback((id: T, data: ItemsMapValue) => {
     setExistingItemsMap(prev => {
@@ -182,7 +183,7 @@ Table.Header = function TableHeader<T extends Id>({
       <Button
         type="button"
         variant="primary"
-        onClick={() => setNewItems(p => [Date.now(), ...p])}
+        onClick={() => setNewItems(p => [uuid(), ...p])}
       >
         Добавить
       </Button>

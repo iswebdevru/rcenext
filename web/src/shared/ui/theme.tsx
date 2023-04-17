@@ -1,67 +1,35 @@
-import {
-  PropsWithChildren,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect } from 'react';
+import { create } from 'zustand';
 
 export type Theme = 'dark' | 'light';
 
-export type ThemeContext = {
-  theme: Theme | null;
+export type ThemeState = {
+  theme: Theme;
   toggleTheme: () => void;
+  setTheme: (theme: Theme) => void;
 };
 
-const ThemeContext = createContext<ThemeContext>(undefined as any);
+export const useTheme = create<ThemeState>(set => ({
+  theme: localStorage.getItem('theme') as Theme,
+  setTheme(theme) {
+    set({ theme });
+  },
+  toggleTheme() {
+    set(state => {
+      const theme = state.theme === 'light' ? 'dark' : 'light';
+      return { theme };
+    });
+  },
+}));
 
-export function ThemeProvider({ children }: PropsWithChildren) {
-  const [theme, _setTheme] = useState<Theme | null>(null);
-
+export function useThemeEffect() {
+  const theme = useTheme(state => state.theme);
   useEffect(() => {
-    const cachedTheme = localStorage.getItem('theme') as Theme | null;
-    if (!cachedTheme) {
-      const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
-        ? 'dark'
-        : 'light';
-      localStorage.setItem('theme', preferredTheme);
-      _setTheme(preferredTheme);
+    localStorage.setItem('theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
     } else {
-      _setTheme(cachedTheme);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (theme !== null) {
-      localStorage.setItem('theme', theme);
-    }
-    if (
-      theme === 'dark' &&
-      !document.documentElement.classList.contains('dark')
-    ) {
-      document.documentElement.classList.add(theme);
-    } else if (
-      theme === 'light' &&
-      document.documentElement.classList.contains('dark')
-    ) {
       document.documentElement.classList.remove('dark');
     }
   }, [theme]);
-
-  const toggleTheme = useCallback(
-    () => _setTheme(p => (p === 'dark' ? 'light' : 'dark')),
-    []
-  );
-
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-}
-
-export function useTheme() {
-  return useContext(ThemeContext);
 }
