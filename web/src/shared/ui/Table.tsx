@@ -340,7 +340,7 @@ Table.EditorActions = function TableRowEditorActions({
   return (
     <Table.Data>
       <button
-        className="flex items-center justify-center p-1 m-1 group/editor-save shrink-0"
+        className="flex items-center justify-center p-1 group/editor-save shrink-0"
         onClick={async () => {
           await onSave();
           close();
@@ -349,7 +349,7 @@ Table.EditorActions = function TableRowEditorActions({
         <FontAwesomeIcon
           icon={faCheck}
           fixedWidth
-          className="text-xl text-neutral-600 group-hover/editor-save:text-green-500 group-hover/editor-save:scale-110"
+          className="text-lg text-neutral-600 group-hover/editor-save:text-green-500 group-hover/editor-save:scale-110"
         ></FontAwesomeIcon>
       </button>
       {isExisting ? (
@@ -360,7 +360,7 @@ Table.EditorActions = function TableRowEditorActions({
           <FontAwesomeIcon
             icon={faRotateBack}
             fixedWidth
-            className="text-xl text-neutral-600 group-hover/editor-cancel:text-yellow-500 group-hover/editor-cancel:scale-110"
+            className="text-lg text-neutral-600 group-hover/editor-cancel:text-yellow-500 group-hover/editor-cancel:scale-110"
           />
         </button>
       ) : (
@@ -371,7 +371,7 @@ Table.EditorActions = function TableRowEditorActions({
           <FontAwesomeIcon
             icon={faXmark}
             fixedWidth
-            className="text-xl text-neutral-600 group-hover/editor-del:text-red-500 group-hover/editor-del:scale-110"
+            className="text-lg text-neutral-600 group-hover/editor-del:text-red-500 group-hover/editor-del:scale-110"
           />
         </button>
       )}
@@ -388,6 +388,7 @@ Table.Row = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
   ref
 ) {
   const ctx = useContext(TableRowContext);
+
   return (
     <tr
       {...props}
@@ -419,12 +420,14 @@ Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
     return (
       <td
         className={classNameWithDefaults(
-          'px-6 py-3 text-black dark:text-slate-200 text-sm group-last/row:first:rounded-bl-md group-last:last:rounded-br-md',
+          'text-black dark:text-slate-200 text-sm group-last/row:first:rounded-bl-md group-last:last:rounded-br-md p-0',
           className
         )}
         {...props}
       >
-        <div className="flex items-center">{children}</div>
+        <div className="flex items-center px-6 overflow-x-auto overflow-y-hidden animate-table-data-show max-h-0">
+          {children}
+        </div>
       </td>
     );
   }

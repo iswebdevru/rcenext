@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { InputText } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { SelectSubjects } from '../subjects/SelectSubjects';
-import useSWR from 'swr';
 import { fetcher, partiallyUpdateEntity, Teacher } from '@/shared/api';
 import { useNotificationEmitter } from '@/shared/ui/Notification';
+import useSWR from 'swr';
 
 export function TeachersUpdater({
   id: url,

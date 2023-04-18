@@ -14,17 +14,7 @@ module.exports = {
         padding: '16px',
       },
       keyframes: {
-        appear: {
-          '0%': {
-            transform: 'translate(0%, 50%)',
-            opacity: 0.5,
-          },
-          '100%': {
-            transform: 'translate(0%, 0%)',
-            opacity: 1,
-          },
-        },
-        'notification-in': {
+        'notification-add': {
           '0%': {
             opacity: 0,
             transform: 'scale(0.85) translateY(30%)',
@@ -34,7 +24,7 @@ module.exports = {
             opacity: 100,
           },
         },
-        'notification-out': {
+        'notification-remove': {
           '0%': {
             opacity: 100,
             transform: 'scale(1) translateX(0%)',
@@ -44,11 +34,30 @@ module.exports = {
             opacity: 0,
           },
         },
+        'table-data-show': {
+          '0%': {
+            'max-height': 0,
+            opacity: 0,
+          },
+          '100%': {
+            'max-height': '50px',
+            'padding-top': '12px',
+            'padding-bottom': '12px',
+            opacity: 1,
+          },
+        },
+        'table-data-remove': {
+          '100%': {
+            opacity: 0,
+            'max-height': 0,
+          },
+        },
       },
       animation: {
-        appear: 'appear 0.1s ease-in-out 1',
-        'notification-add': 'notification-in 0.2s ease-in 1 forwards',
-        'notification-remove': 'notification-out 0.5s ease-out 1 forwards',
+        'notification-add': 'notification-add 0.2s ease 1 both',
+        'notification-remove': 'notification-remove 0.5s ease-out 1 both',
+        'table-data-show': 'table-data-show 0.2s ease 1 both',
+        'table-data-remove': 'table-data-remove 0.2s ease-out 1 both',
       },
     },
   },
