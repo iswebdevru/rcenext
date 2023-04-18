@@ -40,7 +40,7 @@ module.exports = {
             opacity: 0,
           },
           '100%': {
-            'max-height': '50px',
+            'max-height': '48px',
             'padding-top': '12px',
             'padding-bottom': '12px',
             opacity: 1,
@@ -52,12 +52,21 @@ module.exports = {
             'max-height': 0,
           },
         },
+        'table-data-edit': {
+          '0%': {
+            opacity: 0,
+          },
+          '100%': {
+            opacity: 1,
+          },
+        },
       },
       animation: {
         'notification-add': 'notification-add 0.2s ease 1 both',
         'notification-remove': 'notification-remove 0.5s ease-out 1 both',
         'table-data-show': 'table-data-show 0.2s ease 1 both',
         'table-data-remove': 'table-data-remove 0.2s ease-out 1 both',
+        'table-data-edit': 'table-data-edit 0.3s ease 1 both',
       },
     },
   },
