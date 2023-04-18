@@ -28,15 +28,10 @@ import { Button } from './Button';
 import { InputSearch } from './Input';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
+import { wait } from '../lib/time';
 
 /**
- * <Table>
- *    <Table.Header onDelete={} onSearchChange={} />
- *    <Table.Body>
- *      <Table.Row></Table.Row>
- *      <Table.Row></Table.Row>
- *    <TableBody />
- * <Table/>
+ * TODO: useMap(), поменять структуру данных для хранения новых записей
  */
 
 export type Id = string | number;
@@ -51,12 +46,15 @@ export type TableUpdaterComponentProps<T> = {
 
 type AsyncAction = () => Promise<unknown> | unknown;
 
-type ItemsMapValue = { state: 'show' | 'edit' | 'hide'; isSelected: boolean };
+type ItemsMapValue = {
+  state: 'show' | 'edit' | 'hide' | 'idle';
+  isSelected: boolean;
+};
 type ItemsMap<K extends Id> = Map<K, ItemsMapValue>;
 
 type TableRowContextExisting = {
   kind: 'existing';
-  state: 'show' | 'edit' | 'hide';
+  state: 'show' | 'edit' | 'hide' | 'idle';
   isSelected: boolean;
   toggleSelect: () => void;
   markEdited: () => void;
@@ -79,8 +77,9 @@ type TableContext<T extends Id> = {
   selectedItems: T[];
   areAllItemsSelected: boolean;
   selectAllExistingItems: () => void;
-  deselectAllExistingItems: () => void;
+  deleteExistingItemById: (id: T) => void;
   updateExistingItemById: (id: T, data: Partial<ItemsMapValue>) => void;
+  updateManyExistingItems: (data: Partial<ItemsMapValue>) => void;
 
   newItems: string[];
   setNewItems: Dispatch<SetStateAction<string[]>>;
@@ -112,15 +111,24 @@ export function Table<T extends Id>({ children }: PropsWithChildren) {
     },
     []
   );
-  const updateManyItems = useCallback((data: Partial<ItemsMapValue>) => {
+  const deleteExistingItemById = useCallback((id: T) => {
     setExistingItemsMap(prev => {
-      [...prev.keys()].map(id => {
-        const prevValue = prev.get(id);
-        prev.set(id, { ...DEFAULT_ITEM_VALUE, ...prevValue, ...data });
-      });
+      prev.delete(id);
       return new Map(prev);
     });
   }, []);
+  const updateManyExistingItems = useCallback(
+    (data: Partial<ItemsMapValue>) => {
+      setExistingItemsMap(prev => {
+        [...prev.keys()].map(id => {
+          const prevValue = prev.get(id);
+          prev.set(id, { ...DEFAULT_ITEM_VALUE, ...prevValue, ...data });
+        });
+        return new Map(prev);
+      });
+    },
+    []
+  );
   const selectAllExistingItems = useCallback(() => {
     setExistingItemsMap(prev => {
       allItems.current.forEach(id => {
@@ -130,10 +138,6 @@ export function Table<T extends Id>({ children }: PropsWithChildren) {
       return new Map(prev);
     });
   }, [allItems]);
-  const deselectAllExistingItems = useCallback(
-    () => updateManyItems({ isSelected: false }),
-    [updateManyItems]
-  );
 
   const selectedItems = [...existingItemsMap.entries()]
     .filter(([_, info]) => info.isSelected)
@@ -150,9 +154,10 @@ export function Table<T extends Id>({ children }: PropsWithChildren) {
         existingItemsMap,
         selectedItems,
         areAllItemsSelected,
-        selectAllExistingItems,
-        deselectAllExistingItems,
+        deleteExistingItemById,
         updateExistingItemById,
+        updateManyExistingItems,
+        selectAllExistingItems,
         newItems,
         setNewItems,
       }}
@@ -171,19 +176,35 @@ Table.Header = function TableHeader<T extends Id>({
   onDelete,
   onSearchChange,
 }: TableHeaderProps<T>) {
-  const { selectedItems, deselectAllExistingItems, setNewItems } =
-    useContext<TableContext<T>>(TableContext);
+  const {
+    selectedItems,
+    updateManyExistingItems,
+    updateExistingItemById,
+    deleteExistingItemById,
+    setNewItems,
+  } = useContext<TableContext<T>>(TableContext);
   return (
     <div className="flex gap-4 mb-4">
-      <InputSearch onChange={onSearchChange} />
+      <InputSearch
+        onChange={e => {
+          if (onSearchChange) {
+            updateManyExistingItems({ state: 'show' });
+            onSearchChange(e);
+          }
+        }}
+      />
       <Button
         type="button"
         variant="danger-outline"
         disabled={!selectedItems.length}
         className="ml-auto"
         onClick={async () => {
+          selectedItems.forEach(id =>
+            updateExistingItemById(id, { state: 'hide' })
+          );
+          await wait(200);
           await onDelete(selectedItems);
-          deselectAllExistingItems();
+          selectedItems.forEach(deleteExistingItemById);
         }}
       >
         Удалить
@@ -238,7 +259,9 @@ Table.Body = function TableBody<T extends Id>({
                 value={{
                   kind: 'new',
                   state: 'show',
-                  close: () => setNewItems(p => p.filter(v => v !== id)),
+                  close: () => {
+                    setNewItems(p => p.filter(v => v !== id));
+                  },
                 }}
               >
                 {creator()}
@@ -268,7 +291,7 @@ Table.Body = function TableBody<T extends Id>({
                           }),
                         close: () =>
                           updateExistingItemById(child.props.rowId, {
-                            state: 'edit',
+                            state: 'idle',
                           }),
                       }}
                     >
@@ -316,7 +339,7 @@ Table.SelectAllRowsCheckbox = function TableSelectAllRowsCheckbox() {
   const {
     areAllItemsSelected,
     selectAllExistingItems,
-    deselectAllExistingItems,
+    updateManyExistingItems,
   } = useContext(TableContext);
 
   return (
@@ -326,7 +349,7 @@ Table.SelectAllRowsCheckbox = function TableSelectAllRowsCheckbox() {
         checked={areAllItemsSelected}
         onChange={() => {
           if (areAllItemsSelected) {
-            return deselectAllExistingItems();
+            return updateManyExistingItems({ isSelected: false });
           }
           selectAllExistingItems();
         }}
@@ -428,6 +451,8 @@ Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
               true,
             'bg-slate-100 dark:bg-slate-700':
               ctx?.kind === 'existing' && ctx.isSelected,
+            'animate-table-data-blink-light dark:animate-table-data-blink-dark':
+              ctx?.state === 'edit' || ctx?.state === 'idle',
           }),
           className
         )}
@@ -435,10 +460,12 @@ Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
       >
         <div
           className={clsx({
-            'flex items-center h- px-6 overflow-x-auto overflow-y-hidden max-h-0':
-              true,
+            'flex items-center px-6 overflow-x-auto overflow-y-hidden': true,
+            'py-3': !ctx,
             'animate-table-data-show': ctx?.state === 'show',
-            'animate-table-data-edit max-h-12 px-6 py-3': ctx?.state === 'edit',
+            'animate-table-data-hide': ctx?.state === 'hide',
+            'max-h-12 px-6 py-3':
+              ctx?.state === 'edit' || ctx?.state === 'idle',
           })}
         >
           {children}

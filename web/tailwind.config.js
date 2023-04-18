@@ -36,8 +36,8 @@ module.exports = {
         },
         'table-data-show': {
           '0%': {
-            'max-height': 0,
             opacity: 0,
+            'max-height': 0,
           },
           '100%': {
             'max-height': '48px',
@@ -46,27 +46,49 @@ module.exports = {
             opacity: 1,
           },
         },
-        'table-data-remove': {
+        'table-data-hide': {
+          '0%': {
+            opacity: 1,
+            'max-height': '48px',
+            'padding-top': '12px',
+            'padding-bottom': '12px',
+          },
           '100%': {
             opacity: 0,
             'max-height': 0,
+            'padding-top': 0,
+            'padding-bottom': 0,
           },
         },
-        'table-data-edit': {
+        blink: {
           '0%': {
-            opacity: 0,
+            opacity: 0.5,
           },
           '100%': {
             opacity: 1,
           },
         },
+        'table-data-blink-light': {
+          '0%': {
+            'background-color': 'rgb(241 245 249)',
+          },
+        },
+        'table-data-blink-dark': {
+          '0%': {
+            'background-color': 'rgb(71 85 105)',
+          },
+        },
       },
       animation: {
+        blink: 'blink 0.3s ease 1 both',
         'notification-add': 'notification-add 0.2s ease 1 both',
         'notification-remove': 'notification-remove 0.5s ease-out 1 both',
         'table-data-show': 'table-data-show 0.2s ease 1 both',
-        'table-data-remove': 'table-data-remove 0.2s ease-out 1 both',
-        'table-data-edit': 'table-data-edit 0.3s ease 1 both',
+        'table-data-hide': 'table-data-hide 0.2s ease-out 1 both',
+        'table-data-blink-light':
+          'blink 0.3s ease 1 both, table-data-blink-light 0.6s ease 1 both',
+        'table-data-blink-dark':
+          'blink 0.3s ease 1 both, table-data-blink-dark 0.6s ease 1 both',
       },
     },
   },
