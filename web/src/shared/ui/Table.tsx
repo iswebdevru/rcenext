@@ -12,17 +12,14 @@ import {
   createContext,
   Dispatch,
   forwardRef,
-  MutableRefObject,
   PropsWithChildren,
   ReactElement,
   ReactNode,
   SetStateAction,
-  useCallback,
   useContext,
-  useRef,
+  useEffect,
   useState,
 } from 'react';
-import { compareArrays } from '../lib/common';
 import { classNameWithDefaults, clsx } from '../lib/ui';
 import { Button } from './Button';
 import { InputSearch } from './Input';
@@ -31,7 +28,8 @@ import { v4 as uuid } from 'uuid';
 import { wait } from '../lib/time';
 
 /**
- * TODO: useMap(), поменять структуру данных для хранения новых записей
+ * TODO: save();
+ *
  */
 
 export type Id = string | number;
@@ -46,11 +44,17 @@ export type TableUpdaterComponentProps<T> = {
 
 type AsyncAction = () => Promise<unknown> | unknown;
 
-type ItemsMapValue = {
+type ExistingItem<T extends Id> = {
+  id: T;
   state: 'show' | 'edit' | 'hide' | 'idle';
   isSelected: boolean;
+  child: ReactNode;
 };
-type ItemsMap<K extends Id> = Map<K, ItemsMapValue>;
+
+type NewItem = {
+  id: string;
+  state: 'show' | 'hide';
+};
 
 type TableRowContextExisting = {
   kind: 'existing';
@@ -58,106 +62,39 @@ type TableRowContextExisting = {
   isSelected: boolean;
   toggleSelect: () => void;
   markEdited: () => void;
-  close: () => void;
+  cancel: () => void;
 };
 type TableRowContextNew = {
   kind: 'new';
   state: 'show' | 'hide';
-  close: () => void;
+  cancel: () => Promise<void>;
+  save: () => void;
 };
 
-type TableRowContext = TableRowContextExisting | TableRowContextNew;
-
-const TableRowContext = createContext<TableRowContext | undefined>(undefined);
+const TableRowContext = createContext<
+  TableRowContextExisting | TableRowContextNew | undefined
+>(undefined);
 
 type TableContext<T extends Id> = {
-  allItems: MutableRefObject<T[]>;
-
-  existingItemsMap: ItemsMap<T>;
-  selectedItems: T[];
-  areAllItemsSelected: boolean;
-  selectAllExistingItems: () => void;
-  deleteExistingItemById: (id: T) => void;
-  updateExistingItemById: (id: T, data: Partial<ItemsMapValue>) => void;
-  updateManyExistingItems: (data: Partial<ItemsMapValue>) => void;
-
-  newItems: string[];
-  setNewItems: Dispatch<SetStateAction<string[]>>;
-};
-
-const DEFAULT_ITEM_VALUE: ItemsMapValue = {
-  state: 'show',
-  isSelected: false,
+  existingItems: ExistingItem<T>[];
+  setExistingItems: Dispatch<SetStateAction<ExistingItem<T>[]>>;
+  newItems: NewItem[];
+  setNewItems: Dispatch<SetStateAction<NewItem[]>>;
 };
 
 const TableContext = createContext<TableContext<any>>(undefined as any);
 
+const TTD = 200;
+
 export function Table<T extends Id>({ children }: PropsWithChildren) {
-  const allItems = useRef<T[]>([]);
-
-  const [existingItemsMap, setExistingItemsMap] = useState<ItemsMap<T>>(
-    new Map()
-  );
-  const [newItems, setNewItems] = useState<string[]>([]);
-
-  const updateExistingItemById = useCallback(
-    (id: T, data: Partial<ItemsMapValue>) => {
-      setExistingItemsMap(prev => {
-        const prevValue = prev.get(id);
-        return new Map(
-          prev.set(id, { ...DEFAULT_ITEM_VALUE, ...prevValue, ...data })
-        );
-      });
-    },
-    []
-  );
-  const deleteExistingItemById = useCallback((id: T) => {
-    setExistingItemsMap(prev => {
-      prev.delete(id);
-      return new Map(prev);
-    });
-  }, []);
-  const updateManyExistingItems = useCallback(
-    (data: Partial<ItemsMapValue>) => {
-      setExistingItemsMap(prev => {
-        [...prev.keys()].map(id => {
-          const prevValue = prev.get(id);
-          prev.set(id, { ...DEFAULT_ITEM_VALUE, ...prevValue, ...data });
-        });
-        return new Map(prev);
-      });
-    },
-    []
-  );
-  const selectAllExistingItems = useCallback(() => {
-    setExistingItemsMap(prev => {
-      allItems.current.forEach(id => {
-        const prevValue = prev.get(id);
-        prev.set(id, { ...DEFAULT_ITEM_VALUE, ...prevValue, isSelected: true });
-      });
-      return new Map(prev);
-    });
-  }, [allItems]);
-
-  const selectedItems = [...existingItemsMap.entries()]
-    .filter(([_, info]) => info.isSelected)
-    .map(([id]) => id);
-
-  const areAllItemsSelected =
-    selectedItems.length !== 0 &&
-    compareArrays(selectedItems, allItems.current);
+  const [existingItems, setExistingItems] = useState<ExistingItem<T>[]>([]);
+  const [newItems, setNewItems] = useState<NewItem[]>([]);
 
   return (
     <TableContext.Provider
       value={{
-        allItems,
-        existingItemsMap,
-        selectedItems,
-        areAllItemsSelected,
-        deleteExistingItemById,
-        updateExistingItemById,
-        updateManyExistingItems,
-        selectAllExistingItems,
+        existingItems,
+        setExistingItems,
         newItems,
         setNewItems,
       }}
@@ -176,19 +113,16 @@ Table.Header = function TableHeader<T extends Id>({
   onDelete,
   onSearchChange,
 }: TableHeaderProps<T>) {
-  const {
-    selectedItems,
-    updateManyExistingItems,
-    updateExistingItemById,
-    deleteExistingItemById,
-    setNewItems,
-  } = useContext<TableContext<T>>(TableContext);
+  const { setNewItems, existingItems, setExistingItems } =
+    useContext<TableContext<T>>(TableContext);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const itemsToDelete = existingItems.filter(item => item.isSelected);
+
   return (
     <div className="flex gap-4 mb-4">
       <InputSearch
         onChange={e => {
           if (onSearchChange) {
-            updateManyExistingItems({ state: 'show' });
             onSearchChange(e);
           }
         }}
@@ -196,15 +130,25 @@ Table.Header = function TableHeader<T extends Id>({
       <Button
         type="button"
         variant="danger-outline"
-        disabled={!selectedItems.length}
+        disabled={!itemsToDelete.length || isDisabled}
         className="ml-auto"
         onClick={async () => {
-          selectedItems.forEach(id =>
-            updateExistingItemById(id, { state: 'hide' })
+          setIsDisabled(true);
+          setExistingItems(prev =>
+            prev.map(item => {
+              if (!item.isSelected) {
+                return item;
+              }
+              return {
+                ...item,
+                state: 'hide',
+              };
+            })
           );
-          await wait(200);
-          await onDelete(selectedItems);
-          selectedItems.forEach(deleteExistingItemById);
+          await wait(TTD);
+          await onDelete(itemsToDelete.map(item => item.id));
+          setExistingItems(prev => prev.filter(item => !item.isSelected));
+          setIsDisabled(false);
         }}
       >
         Удалить
@@ -212,7 +156,9 @@ Table.Header = function TableHeader<T extends Id>({
       <Button
         type="button"
         variant="primary"
-        onClick={() => setNewItems(p => [uuid(), ...p])}
+        onClick={() =>
+          setNewItems(prev => [{ id: uuid(), state: 'show' }, ...prev])
+        }
       >
         Добавить
       </Button>
@@ -235,73 +181,105 @@ Table.Body = function TableBody<T extends Id>({
   creator,
   header,
 }: TableBodyProps<T>) {
-  const {
-    existingItemsMap,
-    allItems,
-    updateExistingItemById,
-    newItems,
-    setNewItems,
-  } = useContext(TableContext);
-  if (children) {
-    allItems.current = Children.map(children, child => child)
-      ?.filter(child => child.props.rowId !== undefined)
-      .map(child => child.props.rowId as T);
-  }
+  const { existingItems, setExistingItems, newItems, setNewItems } =
+    useContext(TableContext);
+
+  useEffect(() => {
+    setExistingItems(prev => {
+      if (!children) {
+        return [];
+      }
+      return Children.map(children, child => ({
+        isSelected: false,
+        state: 'show',
+        ...prev.find(item => item.id === child.props.rowId),
+        id: child.props.rowId as T,
+        child,
+      }));
+    });
+  }, [children, setExistingItems]);
+
   return (
     <div>
       <div className="bg-white border rounded-md border-slate-200 dark:bg-slate-800 dark:border-slate-700">
         <table className="w-full table-fixed">
           <tbody>
             {header}
-            {newItems.map(id => (
+            {newItems.map(item => (
               <TableRowContext.Provider
-                key={id}
+                key={item.id}
                 value={{
                   kind: 'new',
-                  state: 'show',
-                  close: () => {
-                    setNewItems(p => p.filter(v => v !== id));
+                  state: item.state,
+                  cancel: async () => {
+                    setNewItems(p =>
+                      p.map(v => {
+                        if (v.id !== item.id) {
+                          return v;
+                        }
+                        return { ...v, state: 'hide' };
+                      })
+                    );
+                    await wait(TTD);
+                    setNewItems(p => p.filter(v => v.id !== item.id));
                   },
+                  save: () => {},
                 }}
               >
                 {creator()}
               </TableRowContext.Provider>
             ))}
-            {children
-              ? Children.map(children, child => {
-                  if (child.props.rowId === undefined) {
-                    return child;
-                  }
-                  const rowInfo =
-                    existingItemsMap.get(child.props.rowId) ??
-                    DEFAULT_ITEM_VALUE;
-                  return (
-                    <TableRowContext.Provider
-                      value={{
-                        kind: 'existing',
-                        state: rowInfo.state,
-                        isSelected: rowInfo.isSelected,
-                        toggleSelect: () =>
-                          updateExistingItemById(child.props.rowId, {
-                            isSelected: !rowInfo.isSelected,
-                          }),
-                        markEdited: () =>
-                          updateExistingItemById(child.props.rowId, {
+            {existingItems.map(item => {
+              return (
+                <TableRowContext.Provider
+                  key={item.id}
+                  value={{
+                    kind: 'existing',
+                    state: item.state,
+                    isSelected: item.isSelected,
+                    toggleSelect: () =>
+                      setExistingItems(prev =>
+                        prev.map(current => {
+                          if (current.id !== item.id) {
+                            return current;
+                          }
+
+                          return {
+                            ...current,
+                            isSelected: !current.isSelected,
+                          };
+                        })
+                      ),
+                    markEdited: () =>
+                      setExistingItems(prev =>
+                        prev.map(current => {
+                          if (current.id !== item.id) {
+                            return current;
+                          }
+                          return {
+                            ...current,
                             state: 'edit',
-                          }),
-                        close: () =>
-                          updateExistingItemById(child.props.rowId, {
+                          };
+                        })
+                      ),
+                    cancel: () =>
+                      setExistingItems(prev =>
+                        prev.map(current => {
+                          if (current.id !== item.id) {
+                            return current;
+                          }
+                          return {
+                            ...current,
                             state: 'idle',
-                          }),
-                      }}
-                    >
-                      {rowInfo.state === 'edit'
-                        ? updater(child.props.rowId)
-                        : child}
-                    </TableRowContext.Provider>
-                  );
-                })
-              : null}
+                          };
+                        })
+                      ),
+                  }}
+                >
+                  {item.state === 'edit' ? updater(item.id) : item.child}
+                </TableRowContext.Provider>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -336,22 +314,20 @@ Table.EditRowButton = function TableEditRowButton() {
 };
 
 Table.SelectAllRowsCheckbox = function TableSelectAllRowsCheckbox() {
-  const {
-    areAllItemsSelected,
-    selectAllExistingItems,
-    updateManyExistingItems,
-  } = useContext(TableContext);
+  const { existingItems, setExistingItems } = useContext(TableContext);
 
   return (
     <Table.Head>
       <input
         type="checkbox"
-        checked={areAllItemsSelected}
+        checked={existingItems.every(item => item.isSelected)}
         onChange={() => {
-          if (areAllItemsSelected) {
-            return updateManyExistingItems({ isSelected: false });
-          }
-          selectAllExistingItems();
+          setExistingItems(prev => {
+            if (prev.every(item => item.isSelected)) {
+              return prev.map(item => ({ ...item, isSelected: false }));
+            }
+            return prev.map(item => ({ ...item, isSelected: true }));
+          });
         }}
       />
     </Table.Head>
@@ -372,7 +348,7 @@ Table.EditorActions = function TableRowEditorActions({
         className="flex items-center justify-center p-1 group/editor-save shrink-0"
         onClick={async () => {
           await onSave();
-          ctx?.close();
+          ctx?.cancel();
         }}
       >
         <FontAwesomeIcon
@@ -384,7 +360,7 @@ Table.EditorActions = function TableRowEditorActions({
       {ctx?.kind === 'existing' ? (
         <button
           className="flex items-center justify-center p-1 group/editor-cancel"
-          onClick={ctx?.close}
+          onClick={ctx?.cancel}
         >
           <FontAwesomeIcon
             icon={faRotateBack}
@@ -395,7 +371,7 @@ Table.EditorActions = function TableRowEditorActions({
       ) : (
         <button
           className="flex items-center justify-center p-1 group/editor-del shrink-0"
-          onClick={ctx?.close}
+          onClick={ctx?.cancel}
         >
           <FontAwesomeIcon
             icon={faXmark}
