@@ -3,7 +3,6 @@ import { InputText } from '@/shared/ui/Input';
 import { Table, TableCreatorComponentProps } from '@/shared/ui/Table';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 import { API_TEACHERS, createEntity } from '@/shared/api';
-import { useNotificationEmitter } from '@/shared/ui/Notification';
 
 export function TeachersCreator({ refresh }: TableCreatorComponentProps) {
   const firstNameRef = useRef<HTMLInputElement>(null);
@@ -11,10 +10,8 @@ export function TeachersCreator({ refresh }: TableCreatorComponentProps) {
   const patronymicRef = useRef<HTMLInputElement>(null);
   const [subjects, setSubjects] = useState<string[]>([]);
 
-  const notify = useNotificationEmitter();
-
-  const onSave = async () => {
-    await createEntity(API_TEACHERS, {
+  const onSave = () =>
+    createEntity(API_TEACHERS, {
       body: {
         first_name: firstNameRef.current!.value,
         last_name: lastNameRef.current!.value,
@@ -22,12 +19,6 @@ export function TeachersCreator({ refresh }: TableCreatorComponentProps) {
         subjects: subjects,
       },
     });
-    refresh();
-    notify({
-      kind: 'success',
-      text: 'Добавлен 1 пользователь',
-    });
-  };
 
   return (
     <Table.Row>
@@ -44,7 +35,7 @@ export function TeachersCreator({ refresh }: TableCreatorComponentProps) {
       <Table.Data>
         <SelectSubjects value={subjects} onChange={setSubjects} />
       </Table.Data>
-      <Table.EditorActions onSave={onSave} />
+      <Table.EditorActions onSave={onSave} refresh={refresh} />
     </Table.Row>
   );
 }

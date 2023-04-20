@@ -20,12 +20,13 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { classNameWithDefaults, clsx } from '../lib/ui';
+import { classNameWithDefaults, clsx, russianEnding } from '../lib/ui';
 import { Button } from './Button';
 import { InputSearch } from './Input';
 import React from 'react';
 import { v4 as uuid } from 'uuid';
 import { wait } from '../lib/time';
+import { useNotificationEmitter } from './Notification';
 
 /**
  * TODO: save();
@@ -44,7 +45,7 @@ export type TableUpdaterComponentProps<T> = {
 
 type AsyncAction = () => Promise<unknown> | unknown;
 
-type ExistingItem<T extends Id> = {
+type ExistingItem = {
   state: 'show' | 'edit' | 'hide' | 'idle';
   isSelected: boolean;
 };
@@ -65,8 +66,7 @@ type TableRowContextExisting = {
 type TableRowContextNew = {
   kind: 'new';
   state: 'show' | 'hide';
-  cancel: () => Promise<void>;
-  save: () => void;
+  close: () => Promise<void>;
 };
 
 const TableRowContext = createContext<
@@ -76,8 +76,8 @@ const TableRowContext = createContext<
 type TableContext<T extends Id> = {
   displayedItems: T[];
   setDisplayedItems: Dispatch<SetStateAction<T[]>>;
-  existingItems: Map<T, ExistingItem<T>>;
-  setExistingItems: Dispatch<SetStateAction<Map<T, ExistingItem<T>>>>;
+  existingItems: Map<T, ExistingItem>;
+  setExistingItems: Dispatch<SetStateAction<Map<T, ExistingItem>>>;
   newItems: NewItem[];
   setNewItems: Dispatch<SetStateAction<NewItem[]>>;
 };
@@ -88,7 +88,7 @@ const TTD = 200;
 
 export function Table<T extends Id>({ children }: PropsWithChildren) {
   const [displayedItems, setDisplayedItems] = useState<T[]>([]);
-  const [existingItems, setExistingItems] = useState<Map<T, ExistingItem<T>>>(
+  const [existingItems, setExistingItems] = useState<Map<T, ExistingItem>>(
     new Map()
   );
   const [newItems, setNewItems] = useState<NewItem[]>([]);
@@ -118,55 +118,72 @@ Table.Header = function TableHeader<T extends Id>({
   onDelete,
   onSearchChange,
 }: TableHeaderProps<T>) {
+  const notify = useNotificationEmitter();
+  const [isDisabled, setIsDisabled] = useState(false);
   const { displayedItems, setNewItems, existingItems, setExistingItems } =
     useContext<TableContext<T>>(TableContext);
-  const [isDisabled, setIsDisabled] = useState(false);
+
   const itemsToDelete = displayedItems.filter(
     id => existingItems.get(id)?.isSelected
   );
 
+  const handleDelete = async () => {
+    setIsDisabled(true);
+    setExistingItems(prev => {
+      const updated = new Map(prev);
+      itemsToDelete.forEach(id => {
+        updated.set(id, { ...updated.get(id)!, state: 'hide' });
+      });
+      return updated;
+    });
+    try {
+      await Promise.all([wait(TTD), onDelete(itemsToDelete)]);
+      notify({
+        kind: 'success',
+        text: `Удалено: ${itemsToDelete.length} запис${russianEnding(
+          itemsToDelete.length,
+          ['ь', 'и', 'ей']
+        )}`,
+      });
+      setExistingItems(prev => {
+        const updated = new Map(prev);
+        itemsToDelete.forEach(id => updated.delete(id));
+        return updated;
+      });
+    } catch (e) {
+      setExistingItems(prev => {
+        const updated = new Map(prev);
+        itemsToDelete.forEach(id => {
+          updated.set(id, { ...updated.get(id)!, state: 'show' });
+        });
+        return updated;
+      });
+      notify({
+        kind: 'error',
+        text: `Ошибка: не удалось выполнить удаление ${
+          itemsToDelete.length
+        } запис${russianEnding(itemsToDelete.length, ['и', 'ей', 'ей'])}`,
+      });
+    }
+    setIsDisabled(false);
+  };
+
+  const handleAdd = () =>
+    setNewItems(prev => [{ id: uuid(), state: 'show' }, ...prev]);
+
   return (
     <div className="flex gap-4 mb-4">
-      <InputSearch
-        onChange={e => {
-          if (onSearchChange) {
-            onSearchChange(e);
-          }
-        }}
-      />
+      <InputSearch onChange={onSearchChange} />
       <Button
         type="button"
         variant="danger-outline"
         disabled={!itemsToDelete.length || isDisabled}
         className="ml-auto"
-        onClick={async () => {
-          setIsDisabled(true);
-          setExistingItems(prev => {
-            const updated = new Map(prev);
-            itemsToDelete.forEach(id => {
-              updated.set(id, { ...updated.get(id)!, state: 'hide' });
-            });
-            return updated;
-          });
-          await wait(TTD);
-          await onDelete(itemsToDelete);
-          setExistingItems(prev => {
-            const updated = new Map(prev);
-            itemsToDelete.forEach(updated.delete);
-            return updated;
-          });
-          setIsDisabled(false);
-        }}
+        onClick={handleDelete}
       >
         Удалить
       </Button>
-      <Button
-        type="button"
-        variant="primary"
-        onClick={() =>
-          setNewItems(prev => [{ id: uuid(), state: 'show' }, ...prev])
-        }
-      >
+      <Button type="button" variant="primary" onClick={handleAdd}>
         Добавить
       </Button>
     </div>
@@ -217,7 +234,7 @@ Table.Body = function TableBody<T extends Id>({
                 value={{
                   kind: 'new',
                   state: item.state,
-                  cancel: async () => {
+                  close: async () => {
                     setNewItems(p =>
                       p.map(v => {
                         if (v.id !== item.id) {
@@ -229,7 +246,6 @@ Table.Body = function TableBody<T extends Id>({
                     await wait(TTD);
                     setNewItems(p => p.filter(v => v.id !== item.id));
                   },
-                  save: () => {},
                 }}
               >
                 {creator()}
@@ -365,20 +381,55 @@ Table.SelectAllRowsCheckbox = function TableSelectAllRowsCheckbox() {
 
 export type TableRowEditorActionsProps = {
   onSave: AsyncAction;
+  refresh: AsyncAction;
 };
 
 Table.EditorActions = function TableRowEditorActions({
   onSave,
+  refresh,
 }: TableRowEditorActionsProps) {
-  const ctx = useContext(TableRowContext);
+  const notify = useNotificationEmitter();
+  const ctx = useContext(TableRowContext)!;
+  // TODO: ДОДЕЛАТЬ
+  const handleSave = async () => {
+    try {
+      await onSave();
+      if (ctx.kind === 'new') {
+        ctx.close();
+        notify({
+          kind: 'success',
+          text: 'Запись успешно создана',
+        });
+      } else {
+        notify({
+          kind: 'success',
+          text: 'Запись успешно обновлена',
+        });
+        ctx.cancel();
+      }
+    } catch (e) {
+      // TODO: Вернуть редактирование/создание
+      if (ctx.kind === 'new') {
+        notify({
+          kind: 'error',
+          text: `Ошибка: не удалось сохранить запись`,
+        });
+        ctx.close();
+      } else {
+        notify({
+          kind: 'error',
+          text: `Ошибка: не удалось обновить запись`,
+        });
+        ctx.cancel();
+      }
+    }
+  };
+
   return (
     <Table.Data>
       <button
         className="flex items-center justify-center p-1 group/editor-save shrink-0"
-        onClick={async () => {
-          await onSave();
-          ctx?.cancel();
-        }}
+        onClick={handleSave}
       >
         <FontAwesomeIcon
           icon={faCheck}
@@ -386,7 +437,7 @@ Table.EditorActions = function TableRowEditorActions({
           className="text-lg text-neutral-600 group-hover/editor-save:text-green-500 group-hover/editor-save:scale-110"
         ></FontAwesomeIcon>
       </button>
-      {ctx?.kind === 'existing' ? (
+      {ctx.kind === 'existing' ? (
         <button
           className="flex items-center justify-center p-1 group/editor-cancel"
           onClick={ctx?.cancel}
@@ -400,7 +451,7 @@ Table.EditorActions = function TableRowEditorActions({
       ) : (
         <button
           className="flex items-center justify-center p-1 group/editor-del shrink-0"
-          onClick={ctx?.cancel}
+          onClick={ctx?.close}
         >
           <FontAwesomeIcon
             icon={faXmark}
