@@ -35,7 +35,10 @@ export function TeachersCreator({ refresh }: TableCreatorComponentProps) {
       <Table.Data>
         <SelectSubjects value={subjects} onChange={setSubjects} />
       </Table.Data>
-      <Table.EditorActions onSave={onSave} refresh={refresh} />
+      <Table.Data>
+        <Table.ButtonCreate onSave={onSave} refresh={refresh} />
+        <Table.ButtonCancel />
+      </Table.Data>
     </Table.Row>
   );
 }

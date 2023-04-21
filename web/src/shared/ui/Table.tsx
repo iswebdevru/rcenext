@@ -61,7 +61,7 @@ type TableRowContextExisting = {
   isSelected: boolean;
   toggleSelect: () => void;
   markEdited: () => void;
-  cancel: () => void;
+  toReadOnlyView: () => void;
 };
 type TableRowContextNew = {
   kind: 'new';
@@ -114,7 +114,7 @@ export type TableHeaderProps<T extends Id> = {
   onSearchChange?: ChangeEventHandler<HTMLInputElement>;
 };
 
-Table.Header = function TableHeader<T extends Id>({
+Table.ControlPanel = function TableControlPanel<T extends Id>({
   onDelete,
   onSearchChange,
 }: TableHeaderProps<T>) {
@@ -136,8 +136,9 @@ Table.Header = function TableHeader<T extends Id>({
       });
       return updated;
     });
+    await wait(TTD);
     try {
-      await Promise.all([wait(TTD), onDelete(itemsToDelete)]);
+      await onDelete(itemsToDelete);
       notify({
         kind: 'success',
         text: `Удалено: ${itemsToDelete.length} запис${russianEnding(
@@ -285,7 +286,7 @@ Table.Body = function TableBody<T extends Id>({
                             });
                             return updated;
                           }),
-                        cancel: () =>
+                        toReadOnlyView: () =>
                           setExistingItems(prev => {
                             const updated = new Map(prev);
                             const itemPrevData = updated.get(child.props.rowId);
@@ -316,25 +317,19 @@ Table.SelectRowCheckbox = function TableSelectRowCheckbox() {
   const { isSelected, toggleSelect } = useContext(
     TableRowContext
   ) as TableRowContextExisting;
-  return (
-    <Table.Data>
-      <input type="checkbox" checked={isSelected} onChange={toggleSelect} />
-    </Table.Data>
-  );
+  return <input type="checkbox" checked={isSelected} onChange={toggleSelect} />;
 };
 
-Table.EditRowButton = function TableEditRowButton() {
+Table.ButtonEdit = function TableButtonEdit() {
   const { markEdited } = useContext(TableRowContext) as TableRowContextExisting;
   return (
-    <Table.Data>
-      <button className="p-1 group/edit-btn" onClick={markEdited}>
-        <FontAwesomeIcon
-          icon={faPenToSquare}
-          fixedWidth
-          className="text-lg text-blue-500 transition-colors group-hover/edit-btn:text-blue-900 group-hover/edit-btn:scale-110"
-        />
-      </button>
-    </Table.Data>
+    <button className="p-1 group/edit-btn" onClick={markEdited}>
+      <FontAwesomeIcon
+        icon={faPenToSquare}
+        fixedWidth
+        className="text-lg text-blue-500 transition-colors group-hover/edit-btn:text-blue-900 group-hover/edit-btn:scale-110"
+      />
+    </button>
   );
 };
 
@@ -347,120 +342,144 @@ Table.SelectAllRowsCheckbox = function TableSelectAllRowsCheckbox() {
     displayedItems.every(id => existingItems.get(id)?.isSelected);
 
   return (
-    <Table.Head>
-      <input
-        type="checkbox"
-        checked={allVisibleItemsSelected}
-        onChange={() => {
-          setExistingItems(prev => {
-            const updated = new Map(prev);
-            if (allVisibleItemsSelected) {
-              displayedItems.forEach(id => {
-                updated.set(id, {
-                  state: 'show',
-                  ...prev.get(id),
-                  isSelected: false,
-                });
+    <input
+      type="checkbox"
+      checked={allVisibleItemsSelected}
+      onChange={() => {
+        setExistingItems(prev => {
+          const updated = new Map(prev);
+          if (allVisibleItemsSelected) {
+            displayedItems.forEach(id => {
+              updated.set(id, {
+                state: 'show',
+                ...prev.get(id),
+                isSelected: false,
               });
-            } else {
-              displayedItems.forEach(id => {
-                updated.set(id, {
-                  state: 'show',
-                  ...prev.get(id),
-                  isSelected: true,
-                });
+            });
+          } else {
+            displayedItems.forEach(id => {
+              updated.set(id, {
+                state: 'show',
+                ...prev.get(id),
+                isSelected: true,
               });
-            }
-            return updated;
-          });
-        }}
-      />
-    </Table.Head>
+            });
+          }
+          return updated;
+        });
+      }}
+    />
   );
 };
 
-export type TableRowEditorActionsProps = {
+Table.ButtonCancel = function TableButtonCancel() {
+  const ctx = useContext(TableRowContext)!;
+  if (ctx.kind === 'existing') {
+    return (
+      <button
+        className="flex items-center justify-center p-1 group/editor-cancel"
+        onClick={ctx?.toReadOnlyView}
+      >
+        <FontAwesomeIcon
+          icon={faRotateBack}
+          fixedWidth
+          className="text-lg text-neutral-600 group-hover/editor-cancel:text-yellow-500 group-hover/editor-cancel:scale-110"
+        />
+      </button>
+    );
+  }
+  return (
+    <button
+      className="flex items-center justify-center p-1 group/editor-del shrink-0"
+      onClick={ctx?.close}
+    >
+      <FontAwesomeIcon
+        icon={faXmark}
+        fixedWidth
+        className="text-lg text-neutral-600 group-hover/editor-del:text-red-500 group-hover/editor-del:scale-110"
+      />
+    </button>
+  );
+};
+
+export type TableButtonCreateProps = {
   onSave: AsyncAction;
   refresh: AsyncAction;
 };
 
-Table.EditorActions = function TableRowEditorActions({
+Table.ButtonCreate = function TableButtonCreate({
   onSave,
   refresh,
-}: TableRowEditorActionsProps) {
+}: TableButtonCreateProps) {
   const notify = useNotificationEmitter();
-  const ctx = useContext(TableRowContext)!;
-  // TODO: ДОДЕЛАТЬ
-  const handleSave = async () => {
+  const ctx = useContext(TableRowContext) as TableRowContextNew;
+
+  const handleCreate = async () => {
     try {
-      await onSave();
-      if (ctx.kind === 'new') {
-        ctx.close();
-        notify({
-          kind: 'success',
-          text: 'Запись успешно создана',
-        });
-      } else {
-        notify({
-          kind: 'success',
-          text: 'Запись успешно обновлена',
-        });
-        ctx.cancel();
-      }
+      await Promise.all([onSave(), ctx.close()]);
+      notify({
+        kind: 'success',
+        text: 'Запись успешно создана',
+      });
+      refresh();
     } catch (e) {
-      // TODO: Вернуть редактирование/создание
-      if (ctx.kind === 'new') {
-        notify({
-          kind: 'error',
-          text: `Ошибка: не удалось сохранить запись`,
-        });
-        ctx.close();
-      } else {
-        notify({
-          kind: 'error',
-          text: `Ошибка: не удалось обновить запись`,
-        });
-        ctx.cancel();
-      }
+      notify({
+        kind: 'error',
+        text: `Ошибка: не удалось сохранить запись`,
+      });
     }
   };
 
   return (
-    <Table.Data>
-      <button
-        className="flex items-center justify-center p-1 group/editor-save shrink-0"
-        onClick={handleSave}
-      >
-        <FontAwesomeIcon
-          icon={faCheck}
-          fixedWidth
-          className="text-lg text-neutral-600 group-hover/editor-save:text-green-500 group-hover/editor-save:scale-110"
-        ></FontAwesomeIcon>
-      </button>
-      {ctx.kind === 'existing' ? (
-        <button
-          className="flex items-center justify-center p-1 group/editor-cancel"
-          onClick={ctx?.cancel}
-        >
-          <FontAwesomeIcon
-            icon={faRotateBack}
-            fixedWidth
-            className="text-lg text-neutral-600 group-hover/editor-cancel:text-yellow-500 group-hover/editor-cancel:scale-110"
-          />
-        </button>
-      ) : (
-        <button
-          className="flex items-center justify-center p-1 group/editor-del shrink-0"
-          onClick={ctx?.close}
-        >
-          <FontAwesomeIcon
-            icon={faXmark}
-            fixedWidth
-            className="text-lg text-neutral-600 group-hover/editor-del:text-red-500 group-hover/editor-del:scale-110"
-          />
-        </button>
-      )}
-    </Table.Data>
+    <button
+      className="flex items-center justify-center p-1 group/editor-save shrink-0"
+      onClick={handleCreate}
+    >
+      <FontAwesomeIcon
+        icon={faCheck}
+        fixedWidth
+        className="text-lg text-neutral-600 group-hover/editor-save:text-green-500 group-hover/editor-save:scale-110"
+      ></FontAwesomeIcon>
+    </button>
+  );
+};
+
+export type TableButtonUpdateProps = TableButtonCreateProps;
+
+Table.ButtonUpdate = function TableButtonUpdate({
+  onSave,
+  refresh,
+}: TableButtonUpdateProps) {
+  const notify = useNotificationEmitter();
+  const ctx = useContext(TableRowContext) as TableRowContextExisting;
+
+  const handleUpdate = async () => {
+    try {
+      await onSave();
+      notify({
+        kind: 'success',
+        text: 'Запись успешно обновлена',
+      });
+    } catch (e) {
+      notify({
+        kind: 'error',
+        text: `Ошибка: не удалось обновить запись`,
+      });
+    }
+    ctx.toReadOnlyView();
+  };
+
+  return (
+    <button
+      className="flex items-center justify-center p-1 group/editor-save shrink-0"
+      onClick={handleUpdate}
+    >
+      <FontAwesomeIcon
+        icon={faCheck}
+        fixedWidth
+        className="text-lg text-neutral-600 group-hover/editor-save:text-green-500 group-hover/editor-save:scale-110"
+      ></FontAwesomeIcon>
+    </button>
   );
 };
 
@@ -516,7 +535,7 @@ Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
       >
         <div
           className={clsx({
-            'flex items-center px-6 overflow-x-auto overflow-y-hidden': true,
+            'flex items-center px-6': true,
             'py-3': !ctx,
             'animate-table-data-show': ctx?.state === 'show',
             'animate-table-data-hide': ctx?.state === 'hide',

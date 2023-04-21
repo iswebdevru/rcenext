@@ -15,14 +15,12 @@ export function SubjectsUpdater({
     return null;
   }
 
-  const onSave = async () => {
-    await partiallyUpdateEntity(url, {
+  const onSave = () =>
+    partiallyUpdateEntity(url, {
       body: {
         name: nameRef.current?.value,
       },
     });
-    return Promise.all([refresh(), mutate()]);
-  };
 
   return (
     <Table.Row>
@@ -30,7 +28,13 @@ export function SubjectsUpdater({
       <Table.Data>
         <InputText ref={nameRef} defaultValue={subject.name} />
       </Table.Data>
-      <Table.EditorActions onSave={onSave} />
+      <Table.Data>
+        <Table.ButtonUpdate
+          onSave={onSave}
+          refresh={() => Promise.all([refresh(), mutate()])}
+        />
+        <Table.ButtonCancel />
+      </Table.Data>
     </Table.Row>
   );
 }

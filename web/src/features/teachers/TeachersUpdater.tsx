@@ -3,7 +3,6 @@ import { InputText } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 import { fetcher, partiallyUpdateEntity, Teacher } from '@/shared/api';
-import { useNotificationEmitter } from '@/shared/ui/Notification';
 import useSWR from 'swr';
 
 export function TeachersUpdater({
@@ -19,8 +18,6 @@ export function TeachersUpdater({
 
   const { data: teacher, mutate } = useSWR<Teacher>(url, fetcher);
 
-  const notify = useNotificationEmitter();
-
   useEffect(() => {
     if (!selectedSubjects && teacher) {
       setSelectedSubjects(teacher.subjects);
@@ -31,8 +28,8 @@ export function TeachersUpdater({
     return null;
   }
 
-  const onSave = async () => {
-    await partiallyUpdateEntity(url, {
+  const onSave = () =>
+    partiallyUpdateEntity(url, {
       body: {
         first_name: firstNameRef.current?.value,
         last_name: lastNameRef.current?.value,
@@ -40,12 +37,6 @@ export function TeachersUpdater({
         subjects: selectedSubjects,
       },
     });
-    notify({
-      kind: 'success',
-      text: 'Обновлен 1 пользователь',
-    });
-    return Promise.all([refresh(), mutate()]);
-  };
 
   return (
     <Table.Row>
@@ -78,7 +69,13 @@ export function TeachersUpdater({
       ) : (
         <Table.DataLoader />
       )}
-      <Table.EditorActions onSave={onSave} />
+      <Table.Data>
+        <Table.ButtonUpdate
+          onSave={onSave}
+          refresh={() => Promise.all([refresh(), mutate()])}
+        />
+        <Table.ButtonCancel />
+      </Table.Data>
     </Table.Row>
   );
 }

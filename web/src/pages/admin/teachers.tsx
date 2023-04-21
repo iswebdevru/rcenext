@@ -24,7 +24,7 @@ export default function Teachers() {
     <AdminLayout>
       <div className="h-full p-6">
         <Table>
-          <Table.Header
+          <Table.ControlPanel
             onDelete={deleteTeachers}
             onSearchChange={e => setSearchFilter(e.target.value)}
           />
@@ -33,7 +33,9 @@ export default function Teachers() {
             updater={url => <TeachersUpdater refresh={mutate} id={url} />}
             header={
               <Table.Row>
-                <Table.SelectAllRowsCheckbox />
+                <Table.Head>
+                  <Table.SelectAllRowsCheckbox />
+                </Table.Head>
                 <Table.Head>Имя</Table.Head>
                 <Table.Head>Фамилия</Table.Head>
                 <Table.Head>Отчество</Table.Head>
@@ -51,7 +53,9 @@ export default function Teachers() {
                   rowId={teacher.url}
                   ref={a.length === i + 1 ? lastElementRef : null}
                 >
-                  <Table.SelectRowCheckbox />
+                  <Table.Data>
+                    <Table.SelectRowCheckbox />
+                  </Table.Data>
                   <Table.Data>{teacher.first_name}</Table.Data>
                   <Table.Data>{teacher.last_name}</Table.Data>
                   <Table.Data>{teacher.patronymic}</Table.Data>
@@ -62,7 +66,9 @@ export default function Teachers() {
                       ))}
                     </div>
                   </Table.Data>
-                  <Table.EditRowButton />
+                  <Table.Data>
+                    <Table.ButtonEdit />
+                  </Table.Data>
                 </Table.Row>
               ))}
           </Table.Body>

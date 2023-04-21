@@ -11,21 +11,19 @@ export default function GroupsUpdater({
 }: TableUpdaterComponentProps<string>) {
   const groupNameRef = useRef<HTMLInputElement>(null);
   const mainBlock = useRef<HTMLInputElement>(null);
-  const { data: group } = useSWR<Group>(url, fetcher);
+  const { data: group, mutate } = useSWR<Group>(url, fetcher);
 
   if (!group) {
     return null;
   }
 
-  const onSave = async () => {
-    await partiallyUpdateEntity(url, {
+  const onSave = () =>
+    partiallyUpdateEntity(url, {
       body: {
         ...parseGroupName(groupNameRef.current!.value),
         main_block: parseInt(mainBlock.current!.value),
       },
     });
-    return refresh();
-  };
 
   return (
     <Table.Row>
@@ -44,7 +42,13 @@ export default function GroupsUpdater({
           defaultValue={group.main_block}
         />
       </Table.Data>
-      <Table.EditorActions onSave={onSave} />
+      <Table.Data>
+        <Table.ButtonUpdate
+          onSave={onSave}
+          refresh={() => Promise.all([refresh(), mutate()])}
+        />
+        <Table.ButtonCancel />
+      </Table.Data>
     </Table.Row>
   );
 }

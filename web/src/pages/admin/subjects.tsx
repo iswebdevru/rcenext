@@ -21,7 +21,7 @@ export default function Subjects() {
     <AdminLayout>
       <div className="h-full p-6">
         <Table>
-          <Table.Header
+          <Table.ControlPanel
             onDelete={deleteSubjects}
             onSearchChange={e => setSearchFilter(e.target.value)}
           />
@@ -30,7 +30,9 @@ export default function Subjects() {
             updater={url => <SubjectsUpdater refresh={mutate} id={url} />}
             header={
               <Table.Row>
-                <Table.SelectAllRowsCheckbox />
+                <Table.Head>
+                  <Table.SelectAllRowsCheckbox />
+                </Table.Head>
                 <Table.Head>Предмет</Table.Head>
                 <Table.Head />
               </Table.Row>
@@ -45,9 +47,13 @@ export default function Subjects() {
                   key={subject.url}
                   rowId={subject.url}
                 >
-                  <Table.SelectRowCheckbox />
+                  <Table.Data>
+                    <Table.SelectRowCheckbox />
+                  </Table.Data>
                   <Table.Data>{subject.name}</Table.Data>
-                  <Table.EditRowButton />
+                  <Table.Data>
+                    <Table.ButtonEdit />
+                  </Table.Data>
                 </Table.Row>
               ))}
           </Table.Body>

@@ -8,15 +8,13 @@ export function GroupsCreator({ refresh }: TableCreatorComponentProps) {
   const groupNameRef = useRef<HTMLInputElement>(null);
   const mainBlock = useRef<HTMLInputElement>(null);
 
-  const onSave = async () => {
-    await createEntity(API_GROUPS, {
+  const onSave = () =>
+    createEntity(API_GROUPS, {
       body: {
         ...parseGroupName(groupNameRef.current!.value),
         main_block: parseInt(mainBlock.current!.value),
       },
     });
-    return refresh();
-  };
 
   return (
     <Table.Row>
@@ -31,7 +29,10 @@ export function GroupsCreator({ refresh }: TableCreatorComponentProps) {
       <Table.Data>
         <InputText required pattern="[1-9]+" ref={mainBlock} />
       </Table.Data>
-      <Table.EditorActions onSave={onSave} />
+      <Table.Data>
+        <Table.ButtonCreate onSave={onSave} refresh={refresh} />
+        <Table.ButtonCancel />
+      </Table.Data>
     </Table.Row>
   );
 }

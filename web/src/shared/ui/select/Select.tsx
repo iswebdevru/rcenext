@@ -109,7 +109,7 @@ export function Select<T extends Id>({
 
   return (
     <div
-      className="relative flex items-center w-full h-8"
+      className="relative z-10 flex items-center w-full h-8"
       ref={componentRef}
       onFocus={() => {
         setIsOpened(true);
@@ -151,7 +151,7 @@ export function Select<T extends Id>({
           height: isOpened ? dropDownRef.current?.offsetHeight : 0,
         }}
         className={clsx({
-          'absolute bg-white z-10 -left-1 top-[130%] -right-1 rounded-sm overflow-hidden transition-[height]':
+          'absolute bg-white -left-1 top-[130%] z-10 -right-1 rounded-sm overflow-hidden transition-[height]':
             true,
         })}
       >

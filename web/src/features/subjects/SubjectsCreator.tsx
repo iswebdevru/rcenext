@@ -6,12 +6,10 @@ import { useRef } from 'react';
 export function SubjectsCreator({ refresh }: TableCreatorComponentProps) {
   const nameRef = useRef<HTMLInputElement>(null);
 
-  const onSave = async () => {
-    await createEntity(API_SUBJECTS, {
+  const onSave = () =>
+    createEntity(API_SUBJECTS, {
       body: { name: nameRef.current!.value },
     });
-    return refresh();
-  };
 
   return (
     <Table.Row>
@@ -19,7 +17,10 @@ export function SubjectsCreator({ refresh }: TableCreatorComponentProps) {
       <Table.Data>
         <InputText ref={nameRef} required />
       </Table.Data>
-      <Table.EditorActions onSave={onSave} />
+      <Table.Data>
+        <Table.ButtonCreate onSave={onSave} refresh={refresh} />
+        <Table.ButtonCancel />
+      </Table.Data>
     </Table.Row>
   );
 }
