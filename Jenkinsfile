@@ -3,7 +3,12 @@ pipeline {
   stages {
     stage('Start') {
       steps {
-        echo 'Hello Pidor'
+        sh '''
+          docker version
+          docker compose version
+          cd /
+          ls /home
+        '''
       }
     }
   }
