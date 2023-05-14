@@ -8,7 +8,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-RUN python manage.py migrate
-RUN python manage.py collectstatic --noinput
-
-CMD ["gunicorn", "--bind", "0.0.0.0:80", "apps.wsgi"]
+ENTRYPOINT [ "/usr/src/app/docker/rest-api/startup.sh" ]
