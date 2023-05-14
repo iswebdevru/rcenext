@@ -4,7 +4,7 @@ services:
       context: ./backend
       dockerfile: ./docker/rest-api/Dockerfile
     env_file:
-      - './backend/.env'
+      - '/home/wardxela/env/rcenextapi'
     volumes:
       - rest-api-static-files:/usr/src/app/static
     extra_hosts:
