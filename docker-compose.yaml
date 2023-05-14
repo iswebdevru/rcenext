@@ -1,12 +1,26 @@
 services:
-  db:
-    image: postgres
+  rest-api:
+    build:
+      context: ./backend
+      dockerfile: ./docker/rest-api/Dockerfile
+    env_file:
+      - './backend/.env'
+    volumes:
+      - rest-api-static-files:/usr/src/app/static
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+  rest-api-proxy:
+    build:
+      context: ./backend
+      dockerfile: ./docker/rest-api-proxy/Dockerfile
     ports:
-      - '6667:5432'
-    environment:
-      - POSTGRES_PASSWORD=postgres
-  inmemory-store:
-    image: redis
-    command: redis-server --save 20 1
-    ports:
-      - '6668:6379'
+      - '4200:80'
+    volumes:
+      - rest-api-static-files:/usr/src/static
+    links:
+      - rest-api
+    depends_on:
+      - rest-api
+
+volumes:
+  rest-api-static-files:
