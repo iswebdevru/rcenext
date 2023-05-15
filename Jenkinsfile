@@ -3,11 +3,10 @@ pipeline {
   stages {
     stage('Start') {
       steps {
+        checkout scm
         sh '''
-          docker version
-          docker compose version
-          cd /
-          ls /home
+          ls
+          cat docker-compose.yaml
         '''
       }
     }
