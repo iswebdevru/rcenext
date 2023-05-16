@@ -8,6 +8,5 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-RUN chmod a+x /usr/src/app/docker/rest-api/startup.sh
-
-ENTRYPOINT [ "/usr/src/app/docker/rest-api/startup.sh" ]
+RUN chmod a+x ./docker/rest-api/startup.sh
+ENTRYPOINT [ "./docker/rest-api/startup.sh" ]
