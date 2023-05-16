@@ -1,4 +1,4 @@
-export const API = 'http://localhost:8000';
+export const API = process.env.NEXT_PUBLIC_RCENEXTAPI_URL;
 export const API_LOGIN = `${API}/auth/login/`;
 export const API_LOGOUT = `${API}/auth/logout/`;
 export const API_TEACHERS = `${API}/teachers/`;

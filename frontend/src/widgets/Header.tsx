@@ -2,7 +2,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { clsx } from '@/shared/lib/ui';
 import { HamburgerButton } from '@/shared/ui/Button';
-import { useState } from 'react';
+// import { useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
@@ -24,7 +24,7 @@ const links = [
 ] as const;
 
 export default function Header({ wide }: HeaderProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // const [isMenuOpen, setIsMenuOpen] = useState(false);
   const session = useSession();
 
   return (
@@ -77,7 +77,7 @@ export default function Header({ wide }: HeaderProps) {
         ) : null}
         <HamburgerButton
           className="ml-auto lg:hidden"
-          onClick={() => setIsMenuOpen(p => !p)}
+          // onClick={() => setIsMenuOpen(p => !p)}
         />
       </div>
     </header>

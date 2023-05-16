@@ -11,7 +11,7 @@ import { ClassesScheduleGrid } from '@/widgets/classes';
 
 export default function Classes() {
   const [date, setDate] = useState(new Date());
-  const [opened, setOpened] = useState(false);
+  // const [opened, setOpened] = useState(false);
   const [collegeBlock, setCollegeBlock] = useState<CollegeBlock>(-1);
   const [isMixed, setIsMixed] = useState(true);
   const [groupSearch, setGroupSearch] = useState('');
@@ -58,7 +58,7 @@ export default function Classes() {
           {/* <button onClick={() => setOpened(p => !p)}>oopene</button> */}
         </div>
         <div className="flex-shrink-0">
-          <Sidebar opened={opened}>
+          <Sidebar opened={true}>
             <div className="h-full">
               <div className="mb-3">
                 <Calendar date={date} setDate={setDate} />
