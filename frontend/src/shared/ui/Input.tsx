@@ -1,4 +1,6 @@
 import { classNameWithDefaults, clsx } from '@/shared/lib/ui';
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ComponentPropsWithRef, forwardRef, useState } from 'react';
 
 export const InputText = forwardRef<
@@ -30,13 +32,23 @@ export const InputSearch = forwardRef<
   ComponentPropsWithRef<'input'>
 >(function InputSearch({ className, ...props }, ref) {
   return (
-    <input
-      {...props}
-      ref={ref}
+    <div
       className={classNameWithDefaults(
-        'transition-[border,outline] border outline outline-0 outline-blue-200 border-slate-200 rounded-md w-full pl-8 pr-2 py-1 focus:outline-4 focus:border-blue-500 dark:bg-slate-800 dark:border-slate-700 dark:focus:border-blue-700 dark:outline-blue-700',
+        'group/search flex gap-2 text-sm items-center transition-[border,outline] bg-white border outline outline-0 outline-blue-200 border-zinc-200 rounded-md w-full p-3 py-1 focus-within:outline-4 focus-within:border-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:focus-within:border-blue-900 dark:outline-blue-800',
         className
       )}
-    />
+    >
+      <FontAwesomeIcon
+        icon={faMagnifyingGlass}
+        fixedWidth
+        size="xs"
+        className="transition-colors text-zinc-400 group-focus-within/search:text-blue-500 dark:group-focus-within/search:text-blue-600 dark:text-zinc-500"
+      />
+      <input
+        {...props}
+        ref={ref}
+        className="outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200"
+      />
+    </div>
   );
 });

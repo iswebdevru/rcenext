@@ -20,19 +20,19 @@ export function ThemeToggler() {
           width={WIDTH}
           height={HEIGHT}
           rx={12}
-          className="transition-all fill-slate-600 dark:fill-slate-100"
+          className="transition-all fill-zinc-300 dark:fill-zinc-900"
         ></rect>
         <circle
           cx={isDark ? WIDTH - HEIGHT / 2 : HEIGHT / 2}
           cy={HEIGHT / 2}
           r={R}
-          className="transition-all fill-slate-50 dark:fill-slate-700"
+          className="transition-all fill-white dark:fill-zinc-200"
         />
         <circle
           cx={isDark ? WIDTH - HEIGHT / 2 - R : HEIGHT / 2 - R}
           cy={11}
           r={isDark ? R : 0}
-          className="transition-all fill-slate-600 dark:fill-slate-100"
+          className="transition-all fill-zinc-300 dark:fill-zinc-900"
         />
       </svg>
     </button>

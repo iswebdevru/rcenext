@@ -27,16 +27,46 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   }
 );
 
+const HAMBURGER_WIDTH = 100;
+const HAMBURGER_HEIGHT = 100;
+const HAMBURGER_LINE_HEIGHT = 10;
+const HAMBURGER_GAP = (HAMBURGER_HEIGHT - HAMBURGER_LINE_HEIGHT * 3) / 2;
+
 export const HamburgerButton = forwardRef<
   HTMLButtonElement,
   ComponentPropsWithRef<'button'>
->(function HamburgerButton({ ...props }, ref) {
+>(function HamburgerButton({ className, ...props }, ref) {
   return (
-    <button {...props} ref={ref}>
-      <svg className="w-10" viewBox="0 0 44 44">
-        <rect></rect>
-        <rect></rect>
-        <rect></rect>
+    <button
+      {...props}
+      ref={ref}
+      className={classNameWithDefaults('group/hamburger', className)}
+    >
+      <svg
+        className="transition-colors w-9 fill-zinc-900 group-hover/hamburger:fill-zinc-400 dark:fill-zinc-500 dark:group-hover/hamburger:fill-zinc-200"
+        viewBox={`0 0 ${HAMBURGER_WIDTH + 10} ${HAMBURGER_HEIGHT + 4}`}
+      >
+        <rect
+          x={5}
+          y={5 + 15}
+          rx={5}
+          width={HAMBURGER_WIDTH}
+          height={HAMBURGER_LINE_HEIGHT}
+        ></rect>
+        <rect
+          x={5}
+          y={HAMBURGER_GAP + HAMBURGER_LINE_HEIGHT + 5}
+          rx={5}
+          width={HAMBURGER_WIDTH}
+          height={HAMBURGER_LINE_HEIGHT}
+        ></rect>
+        <rect
+          x={5}
+          y={(HAMBURGER_GAP + HAMBURGER_LINE_HEIGHT) * 2 - 10}
+          rx={5}
+          width={HAMBURGER_WIDTH}
+          height={HAMBURGER_LINE_HEIGHT}
+        ></rect>
       </svg>
     </button>
   );

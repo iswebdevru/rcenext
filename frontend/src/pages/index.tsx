@@ -10,7 +10,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      Добро пожаловать на RCENEXT
+      <h1 className="m-4 text-2xl text-center dark:text-white">
+        Hello, RCENEXT!
+      </h1>
     </BaseLayout>
   );
 }
