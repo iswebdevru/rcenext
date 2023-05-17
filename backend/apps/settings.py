@@ -153,3 +153,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+# Proxy
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
