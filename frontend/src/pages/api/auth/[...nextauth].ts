@@ -20,19 +20,23 @@ export const authOptions: AuthOptions = {
     Credentials({
       id: 'credentials',
       authorize: async credentials => {
-        const data = await fetcher.post<Token, any>(API_LOGIN, {
-          body: credentials,
-        });
-        if (!data.token) {
+        try {
+          const data = await fetcher.post<Token, any>(API_LOGIN, {
+            body: credentials,
+          });
+          if (!data.token) {
+            return null;
+          }
+          return {
+            id: data.token,
+            accessToken: {
+              exp: data.expiry,
+              value: data.token,
+            },
+          };
+        } catch (e) {
           return null;
         }
-        return {
-          id: data.token,
-          accessToken: {
-            exp: data.expiry,
-            value: data.token,
-          },
-        };
       },
       credentials: {
         username: { type: 'text' },

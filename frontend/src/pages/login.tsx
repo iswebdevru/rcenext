@@ -25,9 +25,9 @@ export default function Login() {
   return (
     <BaseLayout>
       <div className="flex items-center justify-center w-full h-full p-3">
-        <div className="flex-grow max-w-sm px-6 py-8 bg-white border rounded-lg text-slate-900 border-slate-200 md:px-8 md:py-12 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200">
+        <div className="flex-grow max-w-sm px-6 py-8 bg-white border rounded-lg text-slate-900 border-zinc-200 md:px-8 md:py-12 dark:bg-zinc-800 dark:border-zinc-600 dark:text-slate-200">
           <h1 className="mb-8 text-xl font-bold text-center md:text-2xl">
-            Аутентификация
+            Вход
           </h1>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
