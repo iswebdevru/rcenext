@@ -1,4 +1,4 @@
-FROM python:3.10.6
+FROM python:3.10-alpine
 
 WORKDIR /usr/src/app
 
@@ -8,5 +8,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-RUN chmod a+x ./startup.sh
-ENTRYPOINT [ "./startup.sh" ]
+ENTRYPOINT [ "sh", "./startup.sh" ]
