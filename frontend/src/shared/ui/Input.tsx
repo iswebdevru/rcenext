@@ -47,7 +47,7 @@ export const InputSearch = forwardRef<
       <input
         {...props}
         ref={ref}
-        className="outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200"
+        className="min-w-0 outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200"
       />
     </div>
   );

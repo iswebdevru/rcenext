@@ -13,14 +13,14 @@ export function ThemeToggler() {
 
   return (
     <button onClick={toggleTheme}>
-      <svg height={HEIGHT} viewBox="0 0 42 22">
+      <svg className="h-7 lg:h-6" viewBox="0 0 42 22">
         <rect
           x={0}
           y={0}
           width={WIDTH}
           height={HEIGHT}
           rx={12}
-          className="transition-all fill-zinc-300 dark:fill-zinc-900"
+          className="transition-all fill-zinc-300 dark:fill-zinc-700"
         ></rect>
         <circle
           cx={isDark ? WIDTH - HEIGHT / 2 : HEIGHT / 2}
@@ -32,7 +32,7 @@ export function ThemeToggler() {
           cx={isDark ? WIDTH - HEIGHT / 2 - R : HEIGHT / 2 - R}
           cy={11}
           r={isDark ? R : 0}
-          className="transition-all fill-zinc-300 dark:fill-zinc-900"
+          className="transition-all fill-zinc-300 dark:fill-zinc-700"
         />
       </svg>
     </button>

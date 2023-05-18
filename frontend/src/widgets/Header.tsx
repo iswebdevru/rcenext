@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { InputSearch } from '@/shared/ui/Input';
 import { useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 
 const ThemeTogglerWithNoSSR = dynamic(
   () => import('./ThemeToggler').then(module => module.ThemeToggler),
@@ -26,6 +27,7 @@ const baseLinks = [
 ] as const;
 
 export default function Header({ wide }: HeaderProps) {
+  const router = useRouter();
   const [isMenuOpened, setIsMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const session = useSession();
@@ -47,7 +49,7 @@ export default function Header({ wide }: HeaderProps) {
           href="/"
           className="text-sm font-bold text-blue-400 dark:text-white"
         >
-          RCENext
+          Расписание РКЭ
         </Link>
         <nav className="hidden ml-16 xl:block">
           <ul className="flex gap-10">
@@ -83,7 +85,7 @@ export default function Header({ wide }: HeaderProps) {
       {/* Mobile view */}
       <div
         className={clsx({
-          'xl:hidden block fixed z-30 left-0 top-0 w-full h-full bg-black bg bg-opacity-50 backdrop-blur-sm transition-opacity duration-300':
+          'xl:hidden block fixed z-30 left-0 top-0 w-full h-full bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300':
             true,
           'opacity-100': isMenuOpened,
           'opacity-0 pointer-events-none': !isMenuOpened,
@@ -99,29 +101,33 @@ export default function Header({ wide }: HeaderProps) {
       >
         <div
           className={clsx({
-            'flex flex-col h-full max-w-[260px] sm:max-w-xs gap-6 px-8 py-10 bg-white dark:bg-zinc-800 transition-[transform,opacity] duration-300':
+            'flex flex-col h-full max-w-[260px] sm:max-w-xs gap-6 px-6 py-8 bg-white dark:bg-zinc-900 transition-[transform,opacity] duration-300':
               true,
             '-translate-x-full scale-y-150 opacity-80': !isMenuOpened,
             'translate-x-0 scale-y-100 opacity-100': isMenuOpened,
           })}
           ref={mobileMenuRef}
         >
-          <Link
-            href="/"
-            className="text-sm font-bold text-blue-400 dark:text-white"
-          >
-            RCENext
+          <Link href="/" className="font-bold text-blue-400 dark:text-white">
+            Расписание РКЭ
           </Link>
           <div className="sm:hidden">
-            <InputSearch placeholder="Группа" />
+            <InputSearch className="h-9" placeholder="Группа" />
           </div>
           <nav>
-            <ul className="flex flex-col gap-4">
+            <ul className="flex flex-col gap-3">
               {links.map(link => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm font-semibold transition-colors text-slate-700 hover:text-blue-600 dark:text-zinc-200 dark:hover:text-zinc-400"
+                    className={clsx({
+                      'text-sm block w-full px-4 py-2 font-semibold transition-colors':
+                        true,
+                      'rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-neutral-200':
+                        link.href === router.asPath,
+                      'text-slate-500 dark:text-neutral-200':
+                        link.href !== router.asPath,
+                    })}
                   >
                     {link.text}
                   </Link>

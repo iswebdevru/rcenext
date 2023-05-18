@@ -64,9 +64,9 @@ export default function Classes() {
         <div className="flex-shrink-0">
           <div
             className={clsx({
-              'fixed top-0 left-0 z-20 w-full h-full bg-zinc-900 lg:bg-opacity-100 lg:bg-transparent lg:static transition-colors duration-300':
+              'fixed top-0 left-0 z-20 w-full h-full bg-black lg:bg-opacity-100 lg:bg-transparent lg:static transition-colors duration-300 lg:pointer-events-auto':
                 true,
-              'bg-opacity-20': isMobileFiltersOpened,
+              'bg-opacity-50 backdrop-blur-sm': isMobileFiltersOpened,
               'bg-opacity-0 pointer-events-none': !isMobileFiltersOpened,
             })}
             onClick={e => {
@@ -80,7 +80,7 @@ export default function Classes() {
           >
             <div
               className={clsx({
-                'flex flex-col h-full max-w-xs gap-3 px-4 py-6 sm:px-6 sm:py-8 ml-auto overflow-y-auto bg-white dark:bg-zinc-800 dark:lg:bg-transparent lg:bg-transparent transition-[transform,opacity,box-shadow,opacity] duration-300 lg:p-0 lg:scale-y-100 lg:translate-x-0 lg:shadow-none lg:opacity-100':
+                'flex flex-col h-full max-w-xs gap-3 px-4 py-6 sm:px-6 sm:py-8 ml-auto overflow-y-auto bg-white dark:bg-zinc-900 dark:lg:bg-transparent lg:bg-transparent transition-[transform,opacity,box-shadow,opacity] duration-300 lg:px-2 lg:py-0 lg:scale-y-100 lg:translate-x-0 lg:shadow-none lg:opacity-100':
                   true,
                 'translate-x-0 scale-y-100 shadow-md opacity-100':
                   isMobileFiltersOpened,

@@ -43,7 +43,7 @@ export const HamburgerButton = forwardRef<
       className={classNameWithDefaults('group/hamburger', className)}
     >
       <svg
-        className="transition-colors w-9 fill-zinc-900 group-hover/hamburger:fill-zinc-400 dark:fill-zinc-500 dark:group-hover/hamburger:fill-zinc-200"
+        className="transition-colors w-9 fill-zinc-700 group-hover/hamburger:fill-zinc-400 dark:fill-zinc-200 dark:group-hover/hamburger:fill-zinc-200"
         viewBox={`0 0 ${HAMBURGER_WIDTH + 10} ${HAMBURGER_HEIGHT + 4}`}
       >
         <rect
