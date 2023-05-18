@@ -2,21 +2,23 @@ services:
   rest-api:
     build:
       context: ./backend
-      dockerfile: ./docker/rest-api/Dockerfile
+      dockerfile: ./Dockerfile
     env_file:
       - '/home/wardxela/env/rcenextapi'
+    ports:
+      - '4200:80'
     volumes:
       - rest-api-static-files:/usr/src/app/static
     extra_hosts:
       - 'host.docker.internal:host-gateway'
-  rest-api-proxy:
+  static-server:
     build:
-      context: ./backend
-      dockerfile: ./docker/rest-api-proxy/Dockerfile
+      context: ./static-server
+      dockerfile: ./Dockerfile
     ports:
-      - '4200:80'
+      - '4201:80'
     volumes:
-      - rest-api-static-files:/usr/src/static
+      - rest-api-static-files:/usr/src/app/static
     links:
       - rest-api
     depends_on:
@@ -28,7 +30,7 @@ services:
     env_file:
       - '/home/wardxela/env/rcenextfrontend'
     ports:
-      - '4201:3000'
+      - '4202:3000'
 
 volumes:
   rest-api-static-files:
