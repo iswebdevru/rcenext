@@ -2,33 +2,25 @@ services:
   rest-api:
     build:
       context: ./backend
-      dockerfile: ./docker/rest-api/Dockerfile
+      dockerfile: ./Dockerfile.dev
     env_file:
       - './backend/.env'
-    volumes:
-      - rest-api-static-files:/usr/src/app/static
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-  rest-api-proxy:
-    build:
-      context: ./backend
-      dockerfile: ./docker/rest-api-proxy/Dockerfile
     ports:
       - '4200:80'
     volumes:
-      - rest-api-static-files:/usr/src/static
-    links:
-      - rest-api
-    depends_on:
-      - rest-api
+      - ./backend:/usr/src/app
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
   frontend:
     build:
       context: ./frontend
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.dev
     env_file:
       - './frontend/.env'
     ports:
-      - '4201:3000'
-
-volumes:
-  rest-api-static-files:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/.next
+      - /usr/src/app/node_modules
+    command: npm run dev
