@@ -1,7 +1,4 @@
-FROM python:3.10-alpine
-
-# fix postgresql library installation
-RUN apk add postgresql-dev
+FROM python:3.10
 
 WORKDIR /usr/src/app
 
