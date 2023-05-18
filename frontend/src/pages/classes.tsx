@@ -105,7 +105,7 @@ export default function Classes() {
               />
               <Button
                 variant="primary"
-                className="mt-auto"
+                className="mt-auto lg:hidden"
                 onClick={() => setIsMobileFiltersOpened(false)}
               >
                 Закрыть
