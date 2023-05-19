@@ -1,13 +1,13 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { useRef, useState } from 'react';
+import { useRouter } from 'next/router';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { clsx } from '@/shared/lib/ui';
 import { HamburgerButton } from '@/shared/ui/Button';
-import { signOut, useSession } from 'next-auth/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import { InputSearch } from '@/shared/ui/Input';
-import { useRef, useState } from 'react';
-import { useRouter } from 'next/router';
+import { GroupSearch } from '@/features/groups';
 
 const ThemeTogglerWithNoSSR = dynamic(
   () => import('./ThemeToggler').then(module => module.ThemeToggler),
@@ -65,7 +65,7 @@ export default function Header({ wide }: HeaderProps) {
           </ul>
         </nav>
         <div className="hidden ml-auto sm:block">
-          <InputSearch placeholder="Группа" />
+          <GroupSearch />
         </div>
         <div className="w-[1px] h-6 ml-6 bg-zinc-200 dark:bg-zinc-700 hidden sm:block"></div>
         <div className="items-center hidden ml-6 lg:flex">
@@ -111,7 +111,7 @@ export default function Header({ wide }: HeaderProps) {
             Расписание РКЭ
           </Link>
           <div className="sm:hidden">
-            <InputSearch className="h-9" placeholder="Группа" />
+            <GroupSearch />
           </div>
           <nav>
             <ul className="flex flex-col gap-3">
