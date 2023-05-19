@@ -225,7 +225,7 @@ Table.Body = function TableBody<T extends Id>({
 
   return (
     <div>
-      <div className="bg-white border rounded-md border-slate-200 dark:bg-slate-800 dark:border-slate-700">
+      <div className="bg-white border rounded-md border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700">
         <table className="w-full table-fixed">
           <tbody>
             {header}
@@ -497,7 +497,7 @@ Table.Row = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
       ref={ref}
       className={classNameWithDefaults(
         clsx({
-          'border-b border-slate-200 dark:border-slate-700 group/row last:border-b-0 rounded-md transition-[background]':
+          'border-b border-zinc-200 dark:border-zinc-700 group/row last:border-b-0 rounded-md transition-[background]':
             true,
         }),
         className
@@ -522,9 +522,9 @@ Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
       <td
         className={classNameWithDefaults(
           clsx({
-            'text-black dark:text-slate-200 text-sm group-last/row:first:rounded-bl-md group-last:last:rounded-br-md p-0':
+            'text-black dark:text-zinc-200 text-sm group-last/row:first:rounded-bl-md group-last:last:rounded-br-md p-0':
               true,
-            'bg-slate-100 dark:bg-slate-700':
+            'bg-zinc-50 dark:bg-zinc-700':
               ctx?.kind === 'existing' && ctx.isSelected,
             'animate-table-data-blink-light dark:animate-table-data-blink-dark':
               ctx?.state === 'edit' || ctx?.state === 'idle',

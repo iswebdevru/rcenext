@@ -24,11 +24,11 @@ const links = [
   { href: '/admin/subjects', text: 'Предметы', icon: faLinesLeaning },
 ] as const;
 
-export default function AdminNav() {
+export function AdminNav() {
   const { pathname } = useRouter();
 
   return (
-    <div className="h-full py-10 bg-white border-r border-slate-200 dark:bg-slate-800 dark:border-slate-700">
+    <div className="h-full py-10 bg-white border-r border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700">
       <nav>
         <ul>
           {links.map(link => {
@@ -38,16 +38,16 @@ export default function AdminNav() {
                 <Link
                   href={link.href}
                   className={clsx({
-                    'group transition-color hover:text-blue-500 dark:hover:text-blue-500':
+                    'group transition-color hover:text-blue-500 dark:hover:text-zinc-50':
                       true,
-                    'text-blue-500 dark:text-blue-500': isActive,
-                    'text-slate-900 dark:text-slate-300': !isActive,
+                    'text-blue-500 dark:text-zinc-50': isActive,
+                    'text-zinc-700 dark:text-zinc-400': !isActive,
                   })}
                 >
                   <div className="flex items-center">
                     <span
                       className={clsx({
-                        'w-[2px] self-stretch bg-blue-500 transition origin-left group-hover:scale-x-100':
+                        'w-[2px] self-stretch bg-blue-500 transition origin-left group-hover:scale-x-100 dark:bg-zinc-50':
                           true,
                         'scale-x-100': isActive,
                         'scale-x-0': !isActive,
@@ -59,7 +59,7 @@ export default function AdminNav() {
                       fixedWidth
                       className="ml-3"
                     />
-                    <span className="ml-5 mr-10">{link.text}</span>
+                    <span className="ml-5 mr-10 text-sm">{link.text}</span>
                   </div>
                 </Link>
               </li>

@@ -34,7 +34,7 @@ export const InputSearch = forwardRef<
   return (
     <div
       className={classNameWithDefaults(
-        'group/search flex gap-2 text-sm items-center transition-[border,outline] bg-white border outline outline-0 outline-blue-200 border-zinc-200 rounded-md w-full p-3 py-1 focus-within:outline-4 focus-within:border-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:focus-within:border-blue-900 dark:outline-blue-800',
+        'h-8 group/search flex gap-2 text-sm items-center transition-[border,outline] bg-white border outline outline-0 outline-blue-200 border-zinc-200 rounded-md w-full p-3 py-1 focus-within:outline-4 focus-within:border-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:focus-within:border-blue-900 dark:outline-blue-800',
         className
       )}
     >
@@ -47,7 +47,7 @@ export const InputSearch = forwardRef<
       <input
         {...props}
         ref={ref}
-        className="min-w-0 outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200"
+        className="flex-grow min-w-0 outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-500 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200"
       />
     </div>
   );

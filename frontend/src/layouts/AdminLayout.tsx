@@ -1,4 +1,4 @@
-import AdminNav from '@/widgets/AdminNav';
+import { AdminNav } from '@/widgets/AdminNav';
 import { PropsWithChildren } from 'react';
 import { BaseLayout } from './BaseLayout';
 

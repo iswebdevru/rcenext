@@ -2,7 +2,6 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { clsx } from '@/shared/lib/ui';
 import { HamburgerButton } from '@/shared/ui/Button';
-// import { useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
