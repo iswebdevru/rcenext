@@ -21,6 +21,7 @@ export const authOptions: AuthOptions = {
       id: 'credentials',
       authorize: async credentials => {
         try {
+          console.log(API_LOGIN);
           const data = await fetcher.post<Token, any>(API_LOGIN, {
             body: credentials,
           });
@@ -35,6 +36,8 @@ export const authOptions: AuthOptions = {
             },
           };
         } catch (e) {
+          console.log(e);
+
           return null;
         }
       },

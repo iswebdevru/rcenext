@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   webpack: config => {
     // Enable polling based on env variable being set
-    if (process.env.NEXT_ENABLE_POLLING) {
+    if (process.env.NODE_ENV === 'development') {
       config.watchOptions = {
         poll: 500,
         aggregateTimeout: 300,

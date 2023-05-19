@@ -24,3 +24,5 @@ services:
       - /usr/src/app/.next
       - /usr/src/app/node_modules
     command: npm run dev
+    depends_on:
+      - rest-api

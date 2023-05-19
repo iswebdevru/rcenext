@@ -14,7 +14,7 @@ export const InputText = forwardRef<
       ref={ref}
       className={classNameWithDefaults(
         clsx({
-          'transition-[outline,border] text-black min-w-0 dark:text-zinc-200 bg-white outline outline-blue-200 outline-0 h-8 rounded-md text-sm border border-zinc-200 px-3 py-1 w-full focus:outline-4 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:focus:border-blue-700 dark:outline-blue-700':
+          'transition-[outline,border] text-black min-w-0 dark:text-zinc-200 bg-white outline outline-blue-200 outline-0 h-8 rounded-md text-sm border border-zinc-200 px-3 py-1 w-full placeholder:text-zinc-300 dark:placeholder:text-zinc-600 focus:outline-4 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-700 dark:focus:border-blue-700 dark:outline-blue-700':
             true,
           'valid:border-green-600 invalid:border-red-500 dark:valid:border-green-600 dark:invalid:border-red-500':
             wasFocused,

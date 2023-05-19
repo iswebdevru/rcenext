@@ -14,7 +14,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           clsx({
             'transition-[background,color,border-color] border rounded-md px-3 py-1 text-sm font-semibold':
               true,
-            'bg-blue-600 border-blue-600 text-white enabled:hover:bg-blue-800 enabled:hover:border-blue-800  disabled:bg-blue-200 disabled:border-blue-200':
+            'bg-blue-600 border-blue-600 text-white enabled:hover:bg-blue-800 enabled:hover:border-blue-800 disabled:text-blue-50 disabled:bg-blue-200 disabled:border-blue-200 dark:disabled:bg-zinc-700 dark:disabled:border-zinc-700 dark:disabled:text-zinc-600':
               variant === 'primary',
             'bg-white border-red-600 text-red-600 enabled:hover:bg-red-600 enabled:hover:text-white disabled:text-red-300 disabled:border-red-200':
               variant === 'danger-outline',
