@@ -78,6 +78,14 @@ module.exports = {
             'background-color': 'rgb(71 85 105)',
           },
         },
+        'option-appear': {
+          '0%': {
+            opacity: 0.5,
+          },
+          '100%': {
+            opacity: 1,
+          },
+        },
       },
       animation: {
         blink: 'blink 0.3s ease 1 both',
@@ -89,6 +97,7 @@ module.exports = {
           'blink 0.3s ease 1 both, table-data-blink-light 0.6s ease 1 both',
         'table-data-blink-dark':
           'blink 0.3s ease 1 both, table-data-blink-dark 0.6s ease 1 both',
+        'option-appear': 'option-appear 0.3s ease 1 both',
       },
     },
   },

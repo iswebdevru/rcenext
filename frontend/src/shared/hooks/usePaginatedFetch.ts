@@ -6,6 +6,9 @@ import { usePagination } from './usePagination';
 export function usePaginatedFetch<T>(key: string | null) {
   const { setSize, ...swrData } = useSWRInfinite<Paginated<T>>(
     (pageIndex, prevPageData) => {
+      if (key === null) {
+        return null;
+      }
       if (pageIndex === 0) {
         return key;
       }
