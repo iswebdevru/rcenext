@@ -2,13 +2,17 @@ import { WEEK_TYPES } from '@/shared/constants';
 import { SelectBeta, SelectBetaOption } from './SelectBeta';
 import { Button } from '../Button';
 import { useState } from 'react';
+import { WeekType } from '@/shared/api';
 
-export type SelectWeekTypeProps = {
-  weekTypeId: string;
-  onSelect: (id: string) => void;
+export type SelectWeekTypeProps<T extends WeekType> = {
+  weekTypeId: T;
+  onSelect: (id: WeekType) => void;
 };
 
-export function SelectWeekType({ weekTypeId, onSelect }: SelectWeekTypeProps) {
+export function SelectWeekType<T extends WeekType>({
+  weekTypeId,
+  onSelect,
+}: SelectWeekTypeProps<T>) {
   const [isRevealed, setIsRevealed] = useState(false);
   return (
     <SelectBeta

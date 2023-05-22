@@ -19,8 +19,8 @@ export function InputDate({ date, setDate }: CalendarProps) {
         className={clsx({
           'absolute left-1/2 -translate-x-1/2 top-full mt-3 transition-[opacity,transform] duration-200':
             true,
-          'asdf scale-100 opacity-1 translate-y-0': isRevealed,
-          'visibility-hidden pointer-events-none -translate-y-12 scale-75 opacity-0':
+          'asdf scale-100 opacity-1 translate-y-0 z-10': isRevealed,
+          'invisible pointer-events-none -translate-y-12 scale-75 opacity-0':
             !isRevealed,
         })}
       >

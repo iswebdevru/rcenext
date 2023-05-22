@@ -1,4 +1,6 @@
-export const WEEK_TYPES = new Map([
+import { WeekDay, WeekType } from './api';
+
+export const WEEK_TYPES = new Map<WeekType, string>([
   ['ЧИСЛ', 'Числитель'],
   ['ЗНАМ', 'Знаменатель'],
 ]);
@@ -28,7 +30,7 @@ export const HUMAN_MONTHS = [
   'декабря',
 ];
 
-export const WEEK_DAYS = new Map([
+export const WEEK_DAYS = new Map<WeekDay, string>([
   ['ПН', 'Понедельник'],
   ['ВТ', 'Вторник'],
   ['СР', 'Среда'],

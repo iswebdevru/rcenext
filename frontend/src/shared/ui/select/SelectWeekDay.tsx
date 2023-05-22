@@ -2,13 +2,17 @@ import { useState } from 'react';
 import { SelectBeta, SelectBetaOption } from './SelectBeta';
 import { Button } from '../Button';
 import { WEEK_DAYS } from '@/shared/constants';
+import { WeekDay } from '@/shared/api';
 
-export type SelectWeekDayProps = {
-  weekDayId: string;
-  onSelect: (weekDayId: string) => void;
+export type SelectWeekDayProps<T extends WeekDay> = {
+  weekDayId: T;
+  onSelect: (weekDayId: WeekDay) => void;
 };
 
-export function SelectWeekDay({ weekDayId, onSelect }: SelectWeekDayProps) {
+export function SelectWeekDay<T extends WeekDay>({
+  weekDayId,
+  onSelect,
+}: SelectWeekDayProps<T>) {
   const [isRevealed, setIsRevealed] = useState(false);
   return (
     <SelectBeta

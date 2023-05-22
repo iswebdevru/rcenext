@@ -14,11 +14,11 @@ import { GroupSelect } from '@/features/groups/GroupSelect';
 
 export default function Classes() {
   const [date, setDate] = useState(new Date());
-  const [isMobileFiltersOpened, setIsMobileFiltersOpened] = useState(false);
   const [collegeBlock, setCollegeBlock] = useState<CollegeBlock>(-1);
   const [isMixed, setIsMixed] = useState(true);
   const [groupSearch, setGroupSearch] = useState('');
   const mobileFiltersViewRef = useRef<HTMLDivElement>(null);
+  const [isMobileFiltersOpened, setIsMobileFiltersOpened] = useState(false);
 
   const weekType = getWeekType(date);
 

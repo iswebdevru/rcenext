@@ -32,7 +32,7 @@ export function SelectBeta({
           'absolute left-0 top-full w-full mt-2 border rounded-md bg-white shadow-sm border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-600 transition-[opacity,transform] duration-200':
             true,
           'z-10 opacity-1 translate-y-0': isRevealed,
-          'pointer-events-none visibility-hidden opacity-0 scale-75 -translate-y-8':
+          'pointer-events-none invisible opacity-0 scale-75 -translate-y-8':
             !isRevealed,
         })}
       >
