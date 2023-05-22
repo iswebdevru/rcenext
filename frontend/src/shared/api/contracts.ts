@@ -12,6 +12,7 @@ export type Token = {
 };
 
 export type Teacher = {
+  id: number;
   url: Hyperlink;
   first_name: string;
   last_name: string;
@@ -22,6 +23,7 @@ export type Teacher = {
 };
 
 export type Subject = {
+  id: number;
   url: Hyperlink;
   name: string;
   created_at: string;
@@ -29,6 +31,7 @@ export type Subject = {
 };
 
 export type Group = {
+  id: number;
   url: Hyperlink;
   name: string;
   main_block: number;
@@ -48,6 +51,7 @@ export type ClassesSchedulePeriod = {
 };
 
 type CommonTimetableData = {
+  id: number;
   url: Hyperlink;
   group: Hyperlink;
   periods: ClassesSchedulePeriod[];

@@ -40,7 +40,7 @@ export function GroupSelect({
         .flat()
         .map((group, i, arr) => (
           <SelectBetaOption
-            key={group.url}
+            key={group.id}
             ref={i === arr.length - 1 ? lastElementRef : null}
             selected={group.name === searchStr}
             onSelect={() => {

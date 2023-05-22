@@ -6,6 +6,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
         fields = [
+            'id',
             'url',
             'name',
             'main_block',

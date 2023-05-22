@@ -6,6 +6,7 @@ class TeacherSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Teacher
         fields = [
+            'id',
             'url',
             'first_name',
             'last_name',

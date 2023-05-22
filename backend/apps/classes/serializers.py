@@ -68,6 +68,7 @@ class ClassesScheduleMainSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ClassesSchedule
         fields = [
+            'id',
             'url',
             'group',
             'is_main',
@@ -108,6 +109,7 @@ class ClassesScheduleChangesSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ClassesSchedule
         fields = [
+            'id',
             'url',
             'group',
             'is_main',
@@ -139,6 +141,7 @@ class ClassesScheduleMixedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ClassesSchedule
         fields = [
+            'id',
             'url',
             'group',
             'is_main',
