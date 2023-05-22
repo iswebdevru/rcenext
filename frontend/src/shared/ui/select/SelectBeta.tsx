@@ -61,7 +61,7 @@ export const SelectBetaOption = forwardRef<
       ref={ref}
     >
       <button
-        className="w-full px-3 py-2 text-sm text-left text-zinc-700 dark:text-zinc-200"
+        className="w-full px-3 py-2 overflow-hidden text-sm text-left select-none overflow-ellipsis whitespace-nowrap text-zinc-700 dark:text-zinc-200"
         onClick={onSelect}
       >
         {children}

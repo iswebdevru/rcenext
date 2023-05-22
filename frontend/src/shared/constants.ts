@@ -1,13 +1,7 @@
-export const WEEK_TYPES = [
-  {
-    id: 'ЧИСЛ',
-    value: 'Числитель',
-  },
-  {
-    id: 'ЗНАМ',
-    value: 'Знаменатель',
-  },
-] as const;
+export const WEEK_TYPES = new Map([
+  ['ЧИСЛ', 'Числитель'],
+  ['ЗНАМ', 'Знаменатель'],
+]);
 
 export const HUMAN_WEEKDAYS = [
   'Воскресенье',
@@ -34,11 +28,11 @@ export const HUMAN_MONTHS = [
   'декабря',
 ];
 
-export const WEEK_DAYS = [
-  { id: 'ПН', value: 'Понедельник' },
-  { id: 'ВТ', value: 'Вторник' },
-  { id: 'СР', value: 'Среда' },
-  { id: 'ЧТ', value: 'Четверг' },
-  { id: 'ПТ', value: 'Пятница' },
-  { id: 'СБ', value: 'Суббота' },
-] as const;
+export const WEEK_DAYS = new Map([
+  ['ПН', 'Понедельник'],
+  ['ВТ', 'Вторник'],
+  ['СР', 'Среда'],
+  ['ЧТ', 'Четверг'],
+  ['ПТ', 'Пятница'],
+  ['СБ', 'Суббота'],
+]);

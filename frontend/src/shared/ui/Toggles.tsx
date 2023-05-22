@@ -28,7 +28,7 @@ export function Toggles<T extends VariantId>({
   return (
     <TogglesContext.Provider value={{ ...providerProps } as any}>
       <div>
-        <ul className="flex flex-wrap gap-1 p-1">{children}</ul>
+        <ul className="flex flex-wrap gap-2 p-1">{children}</ul>
       </div>
     </TogglesContext.Provider>
   );
@@ -46,9 +46,9 @@ Toggles.Variant = function Variant({ value, children }: VariantProps) {
       <button
         disabled={value === selected}
         className={clsx({
-          'outline-none outline-1 outline-offset-0 select-none block w-full p-0.5 text-sm rounded-md font-semibold transition-[outline,color,background]':
+          'outline-none outline-1 outline-offset-0 select-none block w-full px-1.5 py-0.5 text-sm rounded-md font-semibold transition-[outline,color,background]':
             true,
-          'text-slate-700 focus-visible:outline-2 focus-visible:outline-slate-600 dark:text-slate-400 hover:text-blue-400 dark:hover:text-blue-50 focus-visible:text-slate-900 dark:focus-visible:text-slate-200':
+          'text-zinc-700 focus-visible:outline-2 focus-visible:outline-zinc-600 dark:text-zinc-400 hover:text-blue-400 dark:hover:text-blue-50 focus-visible:text-zinc-900 dark:focus-visible:text-zinc-200':
             value !== selected,
           'bg-blue-50 outline-1 outline-blue-400 text-blue-400 dark:bg-blue-700 dark:text-blue-50 dark:outline-transparent':
             value === selected,
