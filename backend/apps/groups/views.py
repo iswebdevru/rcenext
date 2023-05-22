@@ -8,9 +8,5 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filterset_fields = [
-        'specialization',
-        'course',
-        'index',
-        'is_commercial',
-    ]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name', 'main_block']

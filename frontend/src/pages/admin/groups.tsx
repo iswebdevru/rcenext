@@ -1,26 +1,16 @@
 import { Table } from '@/shared/ui/Table';
+import { usePaginatedFetch } from '@/shared/hooks';
 import { AdminLayout } from '@/layouts';
-import {
-  displayGroupName,
-  groupRegExp,
-  parseGroupName,
-} from '@/entities/groups';
 import { GroupsCreator } from '@/features/groups';
 import GroupsUpdater from '@/features/groups/GroupsUpdater';
-import { usePaginatedFetch } from '@/shared/hooks';
 import { API_GROUPS, deleteEntities, Group } from '@/shared/api';
 import { useState } from 'react';
 
 export default function Groups() {
   const [search, setSearch] = useState('');
-  const normalizedSearch = groupRegExp.test(search)
-    ? Object.values(parseGroupName(search))
-        .map(v => (!v ? 0 : v))
-        .join(' ')
-    : search;
 
   const { data, lastElementRef, mutate } = usePaginatedFetch<Group>(
-    `${API_GROUPS}?search=${normalizedSearch}`
+    `${API_GROUPS}?search=${search}`
   );
 
   const deleteGroups = async (urls: string[]) => {
@@ -62,7 +52,7 @@ export default function Groups() {
                   <Table.Data>
                     <Table.SelectRowCheckbox />
                   </Table.Data>
-                  <Table.Data>{displayGroupName(group)}</Table.Data>
+                  <Table.Data>{group.name}</Table.Data>
                   <Table.Data>{group.main_block}</Table.Data>
                   <Table.Data>
                     <Table.ButtonEdit />

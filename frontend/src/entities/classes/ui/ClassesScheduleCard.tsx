@@ -1,4 +1,3 @@
-import { displayGroupName } from '@/entities/groups';
 import {
   ClassesScheduleMixed,
   ClassesSchedulePeriod,
@@ -59,7 +58,7 @@ export const ClassesScheduleCard = forwardRef<
             <th className="px-3 py-2 text-left" colSpan={3}>
               <div className="flex items-center justify-between text-sm">
                 <span className="font-semibold text-slate-900 font dark:text-slate-200">
-                  {group ? displayGroupName(group) : null}
+                  {group ? group.name : null}
                 </span>
                 <div>{controlPanel}</div>
               </div>

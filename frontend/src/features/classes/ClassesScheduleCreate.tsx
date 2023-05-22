@@ -2,7 +2,6 @@ import { FormEventHandler, useState } from 'react';
 import { Button } from '@/shared/ui/Button';
 import { InputText } from '@/shared/ui/Input';
 import { Select } from '@/shared/ui/select';
-import { displayGroupName } from '@/entities/groups';
 import { usePaginatedFetch } from '@/shared/hooks';
 import {
   API_GROUPS,
@@ -29,7 +28,7 @@ function SelectGroup(props: SelectGroupProps) {
         .flat()
         .map(group => (
           <Select.Option key={group.url} value={group.url} ref={lastElementRef}>
-            {displayGroupName(group)}
+            {group.name}
           </Select.Option>
         ))}
     </Select>

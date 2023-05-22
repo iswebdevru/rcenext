@@ -2,7 +2,6 @@ import { useRef, useState } from 'react';
 import { HUMAN_MONTHS } from '@/shared/constants';
 import { getWeekType, WEEKDAYS_MAP } from '@/shared/lib/date';
 import { Calendar } from '@/shared/ui/calendar';
-import { InputSearch } from '@/shared/ui/Input';
 import { Toggles } from '@/shared/ui/Toggles';
 import { BaseLayout } from '@/layouts';
 import { CollegeBlock, CollegeBlockToggles } from '@/entities/classes';
@@ -11,6 +10,7 @@ import { Button } from '@/shared/ui/Button';
 import { clsx } from '@/shared/lib/ui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
+import { GroupSelect } from '@/features/groups/GroupSelect';
 
 export default function Classes() {
   const [date, setDate] = useState(new Date());
@@ -59,7 +59,6 @@ export default function Classes() {
               />
             </>
           ) : null}
-          {/* <button onClick={() => setOpened(p => !p)}>oopene</button> */}
         </div>
         <div className="flex-shrink-0">
           <div
@@ -80,7 +79,7 @@ export default function Classes() {
           >
             <div
               className={clsx({
-                'flex flex-col h-full max-w-xs gap-3 px-4 py-6 sm:px-6 sm:py-8 ml-auto overflow-y-auto bg-white dark:bg-zinc-900 dark:lg:bg-transparent lg:bg-transparent transition-[transform,opacity,box-shadow,opacity] duration-300 lg:px-2 lg:py-0 lg:scale-y-100 lg:translate-x-0 lg:shadow-none lg:opacity-100':
+                'flex flex-col h-full max-w-xs gap-3 px-4 py-6 sm:px-6 sm:py-8 ml-auto overflow-y-auto lg:overflow-y-visible bg-white dark:bg-zinc-900 dark:lg:bg-transparent lg:bg-transparent transition-[transform,opacity,box-shadow,opacity] duration-300 lg:px-2 lg:py-0 lg:scale-y-100 lg:translate-x-0 lg:shadow-none lg:opacity-100':
                   true,
                 'translate-x-0 scale-y-100 shadow-md opacity-100':
                   isMobileFiltersOpened,
@@ -98,10 +97,10 @@ export default function Classes() {
                 <Toggles.Variant value={false}>Основное</Toggles.Variant>
                 <Toggles.Variant value={true}>С изменениями</Toggles.Variant>
               </Toggles>
-              <InputSearch
-                placeholder="Группа"
-                value={groupSearch}
-                onChange={e => setGroupSearch(e.currentTarget.value)}
+              <GroupSelect
+                searchStr={groupSearch}
+                onSearchStrChange={e => setGroupSearch(e.target.value)}
+                onSelect={group => setGroupSearch(group.name)}
               />
               <Button
                 variant="primary"

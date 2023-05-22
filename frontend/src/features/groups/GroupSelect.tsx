@@ -1,13 +1,20 @@
-import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { ChangeEventHandler, useState } from 'react';
 import { usePaginatedFetch } from '@/shared/hooks';
 import { InputSearch } from '@/shared/ui/Input';
 import { SelectBeta, SelectBetaOption } from '@/shared/ui/select';
 import { API_GROUPS, Group } from '@/shared/api';
 
-export function GroupSearch() {
-  const router = useRouter();
-  const [searchStr, setSearchStr] = useState('');
+export type GroupSelectProps = {
+  onSelect: (group: Group) => void;
+  searchStr: string;
+  onSearchStrChange: ChangeEventHandler<HTMLInputElement>;
+};
+
+export function GroupSelect({
+  searchStr,
+  onSearchStrChange,
+  onSelect,
+}: GroupSelectProps) {
   const [isRevealed, setIsRevealed] = useState(false);
   const { data: groups, lastElementRef } = usePaginatedFetch<Group>(
     isRevealed ? `${API_GROUPS}?search=${searchStr}` : null
@@ -24,7 +31,7 @@ export function GroupSearch() {
           placeholder="Группа"
           onFocus={() => setIsRevealed(true)}
           value={searchStr}
-          onChange={e => setSearchStr(e.target.value)}
+          onChange={onSearchStrChange}
         />
       }
     >
@@ -35,10 +42,10 @@ export function GroupSearch() {
           <SelectBetaOption
             key={group.url}
             ref={i === arr.length - 1 ? lastElementRef : null}
-            selected={false}
+            selected={group.name === searchStr}
             onSelect={() => {
+              onSelect(group);
               closeWindow();
-              router.push('/classes');
             }}
           >
             {group.name}

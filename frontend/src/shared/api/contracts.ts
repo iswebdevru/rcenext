@@ -30,11 +30,8 @@ export type Subject = {
 
 export type Group = {
   url: Hyperlink;
-  specialization: string;
-  course: number;
-  index: number;
+  name: string;
   main_block: number;
-  is_commercial: boolean;
   created_at: string;
   updated_at: string;
 };

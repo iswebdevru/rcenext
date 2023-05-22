@@ -1,5 +1,4 @@
 import useSWR from 'swr';
-import { displayGroupName, parseGroupName } from '@/entities/groups';
 import { fetcher, Group, partiallyUpdateEntity } from '@/shared/api';
 import { InputText } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
@@ -10,7 +9,7 @@ export default function GroupsUpdater({
   refresh,
 }: TableUpdaterComponentProps<string>) {
   const groupNameRef = useRef<HTMLInputElement>(null);
-  const mainBlock = useRef<HTMLInputElement>(null);
+  const mainBlockRef = useRef<HTMLInputElement>(null);
   const { data: group, mutate } = useSWR<Group>(url, fetcher);
 
   if (!group) {
@@ -20,8 +19,8 @@ export default function GroupsUpdater({
   const onSave = () =>
     partiallyUpdateEntity(url, {
       body: {
-        ...parseGroupName(groupNameRef.current!.value),
-        main_block: parseInt(mainBlock.current!.value),
+        name: groupNameRef.current!.value,
+        main_block: parseInt(mainBlockRef.current!.value),
       },
     });
 
@@ -32,13 +31,13 @@ export default function GroupsUpdater({
         <InputText
           pattern="[А-ЯA-Z]+к?-[1-4]\d{2,}"
           ref={groupNameRef}
-          defaultValue={displayGroupName(group)}
+          defaultValue={group.name}
         />
       </Table.Data>
       <Table.Data>
         <InputText
           pattern="[1-9]+"
-          ref={mainBlock}
+          ref={mainBlockRef}
           defaultValue={group.main_block}
         />
       </Table.Data>

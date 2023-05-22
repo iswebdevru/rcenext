@@ -38,5 +38,4 @@ class ClassesScheduleMixedViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = [drf_filters.DjangoFilterBackend,
                        ClassesScheduleMixedFilterBackend,
                        GroupBlockFilterBackend]
-    filterset_fields = ['group__specialization', 'group__course',
-                        'group__index', 'group__is_commercial']
+    filterset_fields = ['group__name']
