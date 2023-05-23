@@ -6,18 +6,13 @@ from apps.teachers.views import TeacherViewSet
 from apps.subjects.views import SubjectViewSet
 from apps.groups.views import GroupViewSet
 from apps.login.views import LoginView
-from apps.classes.views import ClassesScheduleMainViewSet, ClassesScheduleChangesViewSet, ClassesScheduleMixedViewSet
+from apps.classes.views import ClassesScheduleViewSet
 
 router = DefaultRouter()
 router.register('teachers', TeacherViewSet)
 router.register('subjects', SubjectViewSet)
 router.register('groups', GroupViewSet)
-router.register('classes-main', ClassesScheduleMainViewSet,
-                basename="timetable-main")
-router.register('classes-changes', ClassesScheduleChangesViewSet,
-                basename="timetable-changes")
-router.register('classes', ClassesScheduleMixedViewSet,
-                basename="timetable-mixed")
+router.register('classes', ClassesScheduleViewSet)
 
 urlpatterns = router.urls
 urlpatterns += [

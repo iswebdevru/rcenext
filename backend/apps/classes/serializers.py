@@ -1,13 +1,33 @@
 from rest_framework import serializers
+from apps.teachers.models import Teacher
 from .models import ClassesSchedule, ClassesSchedulePeriod
-from .service import main_dates_map, week_days, week_types, get_day_info
+
+
+class ClassesScheduleCreateTypeSerializer(serializers.Serializer):
+    type = serializers.ChoiceField(
+        ['main', 'changes']
+    )
+
+
+class ClassesScheduleTypeSerializer(serializers.Serializer):
+    type = serializers.ChoiceField(
+        ['main', 'changes', 'mixed'], default='mixed'
+    )
+
+
+class ClassesScheduleMainTypeSerializer(serializers.Serializer):
+    week_day = serializers.ChoiceField(ClassesSchedule.WeekDay.choices)
+    week_type = serializers.ChoiceField(ClassesSchedule.WeekType.choices)
 
 
 def create_period(period_data, timetable):
     teachers = period_data.pop('teachers')
-    period_record = ClassesSchedulePeriod.objects.create(
-        **period_data, timetable=timetable
+    period_record, _ = ClassesSchedulePeriod.objects.update_or_create(
+        index=period_data.pop('index'),
+        timetable=timetable,
+        defaults=period_data,
     )
+    period_record.teachers.clear()
     period_record.teachers.add(*teachers)
 
 
@@ -17,6 +37,9 @@ def create_periods(periods_data, timetable):
 
 
 class ClassesSchedulePeriodSerializer(serializers.HyperlinkedModelSerializer):
+    teachers = serializers.HyperlinkedRelatedField(
+        many=True, allow_null=True, queryset=Teacher.objects.all(), view_name='teacher-detail')
+
     class Meta:
         model = ClassesSchedulePeriod
         fields = [
@@ -24,133 +47,97 @@ class ClassesSchedulePeriodSerializer(serializers.HyperlinkedModelSerializer):
             'subject',
             'teachers',
             'cabinet',
-            'note'
         ]
-
-
-class ClassesScheduleMainSerializer(serializers.HyperlinkedModelSerializer):
-    periods = ClassesSchedulePeriodSerializer(many=True)
-    week_type = serializers.ChoiceField(week_types, write_only=True)
-    week_day = serializers.ChoiceField(week_days, write_only=True)
-
-    def to_internal_value(self, data):
-        native_value = super().to_internal_value(data)
-        week_type = native_value.pop('week_type')
-        week_day = native_value.pop('week_day')
-        native_value['date'] = main_dates_map[week_type][week_day]
-        return native_value
-
-    def to_representation(self, instance):
-        primitive_value = super().to_representation(instance)
-        week_type, week_day = get_day_info(instance.date)
-        primitive_value['week_type'] = week_type
-        primitive_value['week_day'] = week_day
-        return primitive_value
-
-    def create(self, validated_data):
-        periods = validated_data.pop('periods')
-        timetable = ClassesSchedule.objects.create(
-            **validated_data, is_main=True
-        )
-        create_periods(periods, timetable)
-        return timetable
-
-    def update(self, instance, validated_data):
-        instance.group = validated_data.pop('group', instance.group)
-        instance.note = validated_data.pop('note', instance.note)
-        instance.date = validated_data.pop('date', instance.date)
-        periods = validated_data.pop('periods')
-        instance.periods.all().delete()
-        create_periods(periods, instance)
-        instance.save()
-        return instance
-
-    class Meta:
-        model = ClassesSchedule
-        fields = [
-            'id',
-            'url',
-            'group',
-            'is_main',
-            'note',
-            'periods',
-            'week_day',
-            'week_type',
-            'created_at',
-            'updated_at',
-        ]
-        read_only_fields = ('is_main',)
-        extra_kwargs = {
-            'url': {'view_name': 'timetable-main-detail'}
-        }
-
-
-class ClassesScheduleChangesSerializer(serializers.HyperlinkedModelSerializer):
-    periods = ClassesSchedulePeriodSerializer(many=True)
-
-    def create(self, validated_data):
-        periods = validated_data.pop('periods')
-        timetable = ClassesSchedule.objects.create(
-            **validated_data, is_main=False)
-        create_periods(periods, timetable)
-        return timetable
-
-    def update(self, instance, validated_data):
-        instance.group = validated_data.pop('group', instance.group)
-        instance.date = validated_data.pop('date', instance.date)
-        instance.note = validated_data.pop('note', instance.note)
-        instance.date = validated_data.pop('date', instance.date)
-        periods = validated_data.pop('periods')
-        instance.periods.all().delete()
-        create_periods(periods, instance)
-        instance.save()
-        return instance
-
-    class Meta:
-        model = ClassesSchedule
-        fields = [
-            'id',
-            'url',
-            'group',
-            'is_main',
-            'periods',
-            'date',
-            'note',
-            'created_at',
-            'updated_at',
-        ]
-        read_only_fields = ('is_main',)
-        extra_kwargs = {
-            'url': {'view_name': 'timetable-changes-detail'}
-        }
 
 
 class ClassesScheduleMixedSerializer(serializers.HyperlinkedModelSerializer):
-    periods = ClassesSchedulePeriodSerializer(many=True)
+    view = serializers.ChoiceField(
+        ClassesSchedule.ViewMode.choices, required=False)
+    date = serializers.DateField(required=False)
+    week_day = serializers.ChoiceField(
+        ClassesSchedule.WeekDay.choices, required=False)
+    week_type = serializers.ChoiceField(
+        ClassesSchedule.WeekType.choices, required=False)
+    message = serializers.CharField(required=False)
+    periods = ClassesSchedulePeriodSerializer(
+        many=True, required=False)
+
+    def to_internal_value(self, data):
+        validated_data = super().to_internal_value(data)
+        if validated_data['type'] == 'main':
+            validated_data['view'] = 'table'
+            if not validated_data.get('periods'):
+                raise serializers.ValidationError({
+                    'periods': 'This field is required.'
+                })
+            if not validated_data.get('week_day'):
+                raise serializers.ValidationError({
+                    'week_day': 'This field is required.'
+                })
+            if not validated_data.get('week_type'):
+                raise serializers.ValidationError({
+                    'week_type': 'This field is required.'
+                })
+            if validated_data.get('message'):
+                validated_data.pop('message')
+            if validated_data.get('date'):
+                validated_data.pop('date')
+            return validated_data
+        view = validated_data.get('view')
+        if not view:
+            raise serializers.ValidationError({
+                'view': 'This field is required.'
+            })
+        if not validated_data.get('date'):
+            raise serializers.ValidationError({
+                'date': 'This field is required.'
+            })
+        if view == 'table':
+            if not validated_data.get('periods'):
+                raise serializers.ValidationError({
+                    'periods': 'This field is required.'
+                })
+            if validated_data.get('message'):
+                validated_data.pop('message')
+            return validated_data
+        if not validated_data.get('message'):
+            raise serializers.ValidationError({
+                'message': 'This field is required.'
+            })
+        if validated_data.get('periods'):
+            validated_data.pop('periods')
+        return validated_data
 
     def to_representation(self, instance):
-        primitive_value = super().to_representation(instance)
-        if not instance.is_main:
-            return primitive_value
-        primitive_value.pop('date')
-        week_type, week_day = get_day_info(instance.date)
-        primitive_value['week_type'] = week_type
-        primitive_value['week_day'] = week_day
-        return primitive_value
+        representation = super().to_representation(instance)
+        if instance.type == 'main':
+            representation.pop('date')
+            representation.pop('message')
+            return representation
+        representation.pop('week_day')
+        representation.pop('week_type')
+        if instance.view == 'table':
+            representation.pop('message')
+            return representation
+        representation.pop('periods')
+        return representation
+
+    def create(self, validated_data):
+        periods = validated_data.pop('periods')
+        timetable, _ = ClassesSchedule.objects.update_or_create(
+            group=validated_data.pop('group'),
+            date=validated_data.pop('date', None),
+            week_day=validated_data.pop('week_day', None),
+            week_type=validated_data.pop('week_type', None),
+            defaults=validated_data
+        )
+        if validated_data['view'] == 'table':
+            create_periods(periods, timetable)
+        return timetable
 
     class Meta:
         model = ClassesSchedule
-        fields = [
-            'id',
-            'url',
-            'group',
-            'is_main',
-            'periods',
-            'note',
-            'date',
-            'created_at',
-            'updated_at',
-        ]
-        extra_kwargs = {
-            'url': {'view_name': 'timetable-mixed-detail'}
-        }
+        fields = ['id', 'url', 'type', 'group',
+                  'view', 'date', 'week_day',
+                  'week_type', 'periods', 'message'
+                  ]

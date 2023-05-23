@@ -6,14 +6,16 @@ import { Toggles } from '@/shared/ui/Toggles';
 import { AdminLayout } from '@/layouts';
 import { usePaginatedFetch } from '@/shared/hooks';
 import { API_GROUPS, Group, WeekDay, WeekType } from '@/shared/api';
-import { ClassesForm } from '@/features/classes/ClassesForm';
 import { ClassesType } from '@/entities/classes';
+import { ClassesForm } from '@/features/classes';
 
 export default function Classes() {
   const [classesType, setClassesType] = useState<ClassesType>('changes');
-  const [weekTypeId, setWeekTypeId] = useState<WeekType>('ЧИСЛ');
+  const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
   const [selectedWeekDayId, setSelectedWeekDayId] = useState<WeekDay>('ПН');
   const [date, setDate] = useState(new Date());
+
+  // const [classesStore, setClassesStore] = useState<ClassesStore>(new Map());
 
   const { data: groups, lastElementRef } = usePaginatedFetch<Group>(API_GROUPS);
 
@@ -36,8 +38,8 @@ export default function Classes() {
                 </div>
                 <div>
                   <SelectWeekType
-                    weekTypeId={weekTypeId}
-                    onSelect={setWeekTypeId}
+                    weekTypeId={weekType}
+                    onSelect={setWeekType}
                   />
                 </div>
               </div>
@@ -55,9 +57,10 @@ export default function Classes() {
             .map((group, i, a) => (
               <ClassesForm
                 key={group.id}
-                groupURL={group.url}
-                ref={a.length - 1 === i ? lastElementRef : null}
+                group={group.url}
                 classesType={classesType}
+                classesData={null}
+                ref={a.length - 1 === i ? lastElementRef : null}
               />
             ))}
         </div>

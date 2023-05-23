@@ -95,56 +95,48 @@ const defaultClassesTimetable: ClassesSchedulePeriod[] = [
   {
     index: 0,
     cabinet: '',
-    note: '',
     teachers: [],
     subject: '',
   },
   {
     index: 1,
     cabinet: '',
-    note: '',
     teachers: [],
     subject: '',
   },
   {
     index: 2,
     cabinet: '',
-    note: '',
     teachers: [],
     subject: '',
   },
   {
     index: 3,
     cabinet: '',
-    note: '',
     teachers: [],
     subject: '',
   },
   {
     index: 4,
     cabinet: '',
-    note: '',
     teachers: [],
     subject: '',
   },
   {
     index: 5,
     cabinet: '',
-    note: '',
     teachers: [],
     subject: '',
   },
   {
     index: 6,
     cabinet: '',
-    note: '',
     teachers: [],
     subject: '',
   },
   {
     index: 7,
     cabinet: '',
-    note: '',
     teachers: [],
     subject: '',
   },
@@ -240,17 +232,6 @@ export function ClassesScheduleCreate({
                         cabinet: e.currentTarget.value,
                       })
                     }
-                  />
-                </td>
-                <td className="w-[15%] px-2 py-2 ">
-                  <InputText
-                    placeholder="Примечание"
-                    value={period.note}
-                    onChange={e => {
-                      updatePeriods(period.index, {
-                        note: e.currentTarget.value,
-                      });
-                    }}
                   />
                 </td>
               </tr>

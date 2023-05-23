@@ -29,11 +29,6 @@ function ClassesScheduleCardPeriod({ period }: ClassesScheduleCardPeriod) {
       <td className="p-2">
         <div className="flex flex-wrap justify-between">
           <span className="break-all">{subject ? subject.name : null}</span>
-          {period.note ? (
-            <span className="grid p-1 text-xs leading-none rounded-md text-slate-700 dark:text-slate-300 place-items-center bg-slate-200 dark:bg-slate-700">
-              {period.note}
-            </span>
-          ) : null}
         </div>
       </td>
       <td className="p-2 text-center break-all">{period.cabinet}</td>
@@ -64,9 +59,11 @@ export const ClassesScheduleCard = forwardRef<
               </div>
             </th>
           </tr>
-          {schedule.periods.map(period => (
-            <ClassesScheduleCardPeriod key={period.index} period={period} />
-          ))}
+          {schedule.view === 'table'
+            ? schedule.periods.map(period => (
+                <ClassesScheduleCardPeriod key={period.index} period={period} />
+              ))
+            : null}
         </tbody>
       </table>
     </div>

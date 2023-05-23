@@ -6,7 +6,7 @@ import { SelectBeta, SelectBetaOption } from '@/shared/ui/select';
 
 export type SubjectSelect = {
   selectedSubjectURL: Hyperlink | null;
-  onSelect: (subjectURL: Hyperlink) => void;
+  onSelect: (subjectURL: Hyperlink | null) => void;
 };
 
 /**
@@ -58,7 +58,7 @@ export function SubjectSelect({ selectedSubjectURL, onSelect }: SubjectSelect) {
             key={subject.id}
             selected={subject.url === selectedSubjectURL}
             onSelect={() => {
-              onSelect(subject.url);
+              onSelect(selectedSubjectURL === subject.url ? null : subject.url);
               setIsRevealed(false);
             }}
             ref={a.length - 1 === i ? lastElementRef : null}

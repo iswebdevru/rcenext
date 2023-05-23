@@ -47,28 +47,38 @@ export type ClassesSchedulePeriod = {
   subject: Hyperlink;
   teachers: Hyperlink[];
   cabinet: string;
-  note?: string;
 };
 
-type CommonTimetableData = {
+type ClassesScheduleCommon = {
   id: number;
   url: Hyperlink;
   group: Hyperlink;
-  periods: ClassesSchedulePeriod[];
-  note: string | null;
-  created_at: string;
-  updated_at: string;
 };
 
 export type ClassesScheduleMain = {
-  is_main: true;
-  week_type: WeekType;
+  type: 'main';
+  view: 'table';
+  periods: ClassesSchedulePeriod[];
   week_day: WeekDay;
-} & CommonTimetableData;
+  week_type: WeekType;
+} & ClassesScheduleCommon;
 
-export type ClassesScheduleChanges = {
-  is_main: false;
+export type ClassesScheduleChangesTable = {
+  type: 'changes';
+  view: 'table';
   date: string;
-} & CommonTimetableData;
+  periods: ClassesSchedulePeriod[];
+} & ClassesScheduleCommon;
+
+export type ClassesScheduleChangesMessage = {
+  type: 'changes';
+  view: 'message';
+  date: string;
+  message: string;
+} & ClassesScheduleCommon;
+
+export type ClassesScheduleChanges =
+  | ClassesScheduleChangesTable
+  | ClassesScheduleChangesMessage;
 
 export type ClassesScheduleMixed = ClassesScheduleMain | ClassesScheduleChanges;
