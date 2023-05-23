@@ -72,7 +72,7 @@ class ClassesSchedulePeriod(TimestampModel):
     class Meta:
         constraints = [
             models.constraints.UniqueConstraint(
-                'timetable__id',
+                'timetable',
                 'index',
                 name="Номер пары должен быть уникальным",
             ),
