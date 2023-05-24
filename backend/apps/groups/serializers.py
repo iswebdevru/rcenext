@@ -3,6 +3,8 @@ from .models import Group
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    classes = serializers.HyperlinkedIdentityField(view_name="group-classes")
+
     class Meta:
         model = Group
         fields = [
@@ -10,6 +12,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'name',
             'main_block',
+            'classes',
             'created_at',
             'updated_at',
         ]
