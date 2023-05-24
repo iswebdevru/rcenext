@@ -74,7 +74,7 @@ fetcher.any = async <B>(
     extra.onUnauthorized(res);
   }
   if (!res.ok) {
-    throw new Error('Ошибка');
+    throw new Error('Error', { cause: { status: res.status } });
   }
   return res;
 };

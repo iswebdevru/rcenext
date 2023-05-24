@@ -6,18 +6,25 @@ import { Toggles } from '@/shared/ui/Toggles';
 import { AdminLayout } from '@/layouts';
 import { usePaginatedFetch } from '@/shared/hooks';
 import { API_GROUPS, Group, WeekDay, WeekType } from '@/shared/api';
-import { ClassesType } from '@/entities/classes';
+import {
+  ClassesType,
+  getMainStoreKey,
+  useClassesStore,
+} from '@/entities/classes';
 import { ClassesForm } from '@/features/classes';
+import { formatDate } from '@/shared/lib/date';
 
 export default function Classes() {
   const [classesType, setClassesType] = useState<ClassesType>('changes');
   const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
-  const [selectedWeekDayId, setSelectedWeekDayId] = useState<WeekDay>('ПН');
+  const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
   const [date, setDate] = useState(new Date());
 
-  // const [classesStore, setClassesStore] = useState<ClassesStore>(new Map());
+  const [classesStore, dispatch] = useClassesStore();
 
   const { data: groups, lastElementRef } = usePaginatedFetch<Group>(API_GROUPS);
+
+  const strDate = formatDate(date);
 
   return (
     <AdminLayout>
@@ -31,10 +38,7 @@ export default function Classes() {
             {classesType === 'main' ? (
               <div className="flex gap-2">
                 <div>
-                  <SelectWeekDay
-                    weekDayId={selectedWeekDayId}
-                    onSelect={setSelectedWeekDayId}
-                  />
+                  <SelectWeekDay weekDayId={weekDay} onSelect={setWeekDay} />
                 </div>
                 <div>
                   <SelectWeekType
@@ -54,15 +58,46 @@ export default function Classes() {
         <div className="grid grid-cols-5 gap-2">
           {groups
             ?.flatMap(page => page.results)
-            .map((group, i, a) => (
-              <ClassesForm
-                key={group.id}
-                group={group.url}
-                classesType={classesType}
-                classesData={null}
-                ref={a.length - 1 === i ? lastElementRef : null}
-              />
-            ))}
+            .map((group, i, a) =>
+              classesType === 'main' ? (
+                <ClassesForm
+                  key={group.id}
+                  type="main"
+                  dispatch={action => {
+                    dispatch({
+                      classesType: 'main',
+                      weekDay,
+                      weekType,
+                      groupId: group.id,
+                      ...action,
+                    });
+                  }}
+                  group={group}
+                  classes={classesStore.main
+                    .get(getMainStoreKey(weekType, weekDay))
+                    ?.get(group.id)}
+                  searchParams={`?week_day=${weekDay}&week_type=${weekType}`}
+                  ref={a.length - 1 === i ? lastElementRef : null}
+                />
+              ) : (
+                <ClassesForm
+                  key={group.id}
+                  type="changes"
+                  dispatch={action => {
+                    dispatch({
+                      classesType: 'changes',
+                      date: strDate,
+                      groupId: group.id,
+                      ...action,
+                    });
+                  }}
+                  group={group}
+                  classes={classesStore.changes.get(strDate)?.get(group.id)}
+                  searchParams={`?date=${strDate}`}
+                  ref={a.length - 1 === i ? lastElementRef : null}
+                />
+              )
+            )}
         </div>
       </div>
     </AdminLayout>

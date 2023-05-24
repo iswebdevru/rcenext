@@ -35,6 +35,7 @@ export type Group = {
   url: Hyperlink;
   name: string;
   main_block: number;
+  classes: Hyperlink;
   created_at: string;
   updated_at: string;
 };
