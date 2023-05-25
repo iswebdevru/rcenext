@@ -25,6 +25,7 @@ class GroupViewSet(viewsets.ModelViewSet):
                 ClassesScheduleMixedSerializer(
                     get_object_or_404(
                         ClassesSchedule,
+                        type=ClassesSchedule.ScheduleType.CHANGES,
                         group__id=pk,
                         date=query_params['date']
                     ),
@@ -39,6 +40,7 @@ class GroupViewSet(viewsets.ModelViewSet):
                     get_object_or_404(
                         ClassesSchedule,
                         group__id=pk,
+                        type=ClassesSchedule.ScheduleType.MAIN,
                         week_day=query_params['week_day'],
                         week_type=query_params['week_type']
                     ),
@@ -52,6 +54,7 @@ class GroupViewSet(viewsets.ModelViewSet):
                 ClassesScheduleMixedSerializer(
                     ClassesSchedule.objects.get(
                         group__id=pk,
+                        type=ClassesSchedule.ScheduleType.CHANGES,
                         date=query_params['date']
                     ),
                     context={
@@ -65,6 +68,7 @@ class GroupViewSet(viewsets.ModelViewSet):
                     get_object_or_404(
                         ClassesSchedule,
                         group__id=pk,
+                        type=ClassesSchedule.ScheduleType.MAIN,
                         week_day=query_params['week_day'],
                         week_type=query_params['week_type']
                     ),

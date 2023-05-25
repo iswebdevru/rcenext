@@ -4,7 +4,9 @@ import { Calendar, CalendarProps } from './Calendar';
 import { clsx } from '@/shared/lib/ui';
 import { useClickOutside } from '@/shared/hooks';
 
-export function InputDate({ date, setDate }: CalendarProps) {
+export type InputDateProps = CalendarProps;
+
+export function InputDate({ date, setDate, disabled }: InputDateProps) {
   const componentRef = useRef<HTMLDivElement>(null);
   const [isRevealed, setIsRevealed] = useState(false);
 
@@ -12,7 +14,7 @@ export function InputDate({ date, setDate }: CalendarProps) {
 
   return (
     <div className="relative" ref={componentRef}>
-      <Button onClick={() => setIsRevealed(true)}>
+      <Button onClick={() => setIsRevealed(true)} disabled={disabled}>
         {date.toLocaleDateString()}
       </Button>
       <div

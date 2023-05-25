@@ -1,2 +1,2 @@
 export * from './ClassesScheduleCreate';
-export * from './ClassesForm';
+export * from './ClassesEditor';

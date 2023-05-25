@@ -5,13 +5,23 @@ import { SelectWeekType, SelectWeekDay } from '@/shared/ui/select';
 import { Toggles } from '@/shared/ui/Toggles';
 import { AdminLayout } from '@/layouts';
 import { usePaginatedFetch } from '@/shared/hooks';
-import { API_GROUPS, Group, WeekDay, WeekType } from '@/shared/api';
+import {
+  API_CLASSES,
+  API_GROUPS,
+  ClassesScheduleMixed,
+  Group,
+  WeekDay,
+  WeekType,
+  createEntity,
+} from '@/shared/api';
 import {
   ClassesType,
-  getMainStoreKey,
+  getStoreKey,
+  hasInitAndDraftDiff,
   useClassesStore,
+  validateClassesDataDraft,
 } from '@/entities/classes';
-import { ClassesForm } from '@/features/classes';
+import { ClassesEditor } from '@/features/classes';
 import { formatDate } from '@/shared/lib/date';
 
 export default function Classes() {
@@ -19,12 +29,80 @@ export default function Classes() {
   const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
   const [date, setDate] = useState(new Date());
-
   const [classesStore, dispatch] = useClassesStore();
+  const [isSaving, setIsSaving] = useState(false);
 
   const { data: groups, lastElementRef } = usePaginatedFetch<Group>(API_GROUPS);
 
   const strDate = formatDate(date);
+
+  const storeKey = getStoreKey({
+    classesType,
+    weekDay,
+    weekType,
+    date: strDate,
+  });
+  const classesDayStore = classesStore[classesType].get(storeKey);
+
+  const validatedClassesDataList = classesDayStore
+    ? [...classesDayStore.entries()]
+        .filter(
+          ([_, classesData]) =>
+            hasInitAndDraftDiff(classesData) &&
+            validateClassesDataDraft(classesData.draft)
+        )
+        .map(([group, data]) => ({ group, draft: data.draft }))
+    : [];
+  const canSave = validatedClassesDataList.length > 0;
+
+  async function handleSave() {
+    if (!canSave) {
+      return;
+    }
+    setIsSaving(true);
+    dispatch({
+      type: 'remove',
+      payload: validatedClassesDataList.map(({ group }) => group),
+      classesType,
+      weekDay,
+      weekType,
+      date: strDate,
+    });
+    const updated = await Promise.all(
+      validatedClassesDataList.map(({ group, draft }) => {
+        return createEntity<ClassesScheduleMixed, unknown>(API_CLASSES, {
+          body: {
+            type: classesType,
+            view: draft.view,
+            date: strDate,
+            week_day: weekDay,
+            week_type: weekType,
+            group,
+            message: draft.view === 'message' ? draft.message : undefined,
+            periods:
+              draft.view === 'table'
+                ? draft.periods.filter(period => period.subject !== null)
+                : undefined,
+          },
+        });
+      })
+    );
+    updated.forEach(data => {
+      if (!data) {
+        return;
+      }
+      dispatch({
+        type: 'init-defined',
+        classesType,
+        group: data.group,
+        weekDay,
+        weekType,
+        date: strDate,
+        payload: data,
+      });
+    });
+    setIsSaving(false);
+  }
 
   return (
     <AdminLayout>
@@ -48,11 +126,19 @@ export default function Classes() {
                 </div>
               </div>
             ) : (
-              <InputDate date={date} setDate={setDate} />
+              <InputDate disabled={isSaving} date={date} setDate={setDate} />
             )}
 
-            <Button className="ml-auto">Удалить</Button>
-            <Button variant="primary">Сохранить</Button>
+            <Button className="ml-auto" disabled={isSaving}>
+              Удалить
+            </Button>
+            <Button
+              variant="primary"
+              disabled={!canSave || isSaving}
+              onClick={handleSave}
+            >
+              Сохранить
+            </Button>
           </div>
         </div>
         <div className="grid grid-cols-5 gap-2">
@@ -60,39 +146,37 @@ export default function Classes() {
             ?.flatMap(page => page.results)
             .map((group, i, a) =>
               classesType === 'main' ? (
-                <ClassesForm
-                  key={group.id}
-                  type="main"
+                <ClassesEditor
+                  key={`${weekType}${weekDay}${group.id}`}
+                  type={classesType}
                   dispatch={action => {
                     dispatch({
                       classesType: 'main',
                       weekDay,
                       weekType,
-                      groupId: group.id,
+                      group: group.url,
                       ...action,
                     });
                   }}
                   group={group}
-                  classes={classesStore.main
-                    .get(getMainStoreKey(weekType, weekDay))
-                    ?.get(group.id)}
-                  searchParams={`?week_day=${weekDay}&week_type=${weekType}`}
+                  classes={classesDayStore?.get(group.url)}
+                  searchParams={`?type=${classesType}&week_day=${weekDay}&week_type=${weekType}`}
                   ref={a.length - 1 === i ? lastElementRef : null}
                 />
               ) : (
-                <ClassesForm
-                  key={group.id}
-                  type="changes"
+                <ClassesEditor
+                  key={`${strDate}${group.id}`}
+                  type={classesType}
                   dispatch={action => {
                     dispatch({
                       classesType: 'changes',
                       date: strDate,
-                      groupId: group.id,
+                      group: group.url,
                       ...action,
                     });
                   }}
                   group={group}
-                  classes={classesStore.changes.get(strDate)?.get(group.id)}
+                  classes={classesDayStore?.get(group.url)}
                   searchParams={`?date=${strDate}`}
                   ref={a.length - 1 === i ? lastElementRef : null}
                 />

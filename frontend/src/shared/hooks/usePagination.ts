@@ -21,7 +21,7 @@ export function usePagination<E extends Element = Element>(
         );
       }
       if (!elem) {
-        observer.current.disconnect();
+        // observer.current.disconnect();
       } else {
         observer.current.observe(elem);
       }

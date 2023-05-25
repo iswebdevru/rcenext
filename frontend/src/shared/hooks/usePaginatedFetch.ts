@@ -20,6 +20,7 @@ export function usePaginatedFetch<T>(key: string | null) {
     fetcher,
     {
       keepPreviousData: true,
+      persistSize: true, // FUCK YOU FUCKING FUCK
     }
   );
   const toNext = useCallback(() => setSize(p => p + 1), [setSize]);

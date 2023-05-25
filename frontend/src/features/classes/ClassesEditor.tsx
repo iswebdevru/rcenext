@@ -13,29 +13,32 @@ import { useClickOutside } from '@/shared/hooks';
 import { Button } from '@/shared/ui/Button';
 import {
   ClassesDataWithHistory,
-  ClassesStoreGuessedAction,
+  ClassesPartialPeriod,
+  ClassesStoreGroupAction,
   ClassesType,
 } from '@/entities/classes';
+import { LoaderRect } from '@/shared/ui/Loader';
 
 export const classPeriods = [0, 1, 2, 3, 4, 5, 6, 7] as const;
 
-export type ClassesFormProps = {
+export type ClassesEditorProps = {
   type: ClassesType;
   group: Group;
   searchParams: string;
   classes?: ClassesDataWithHistory;
-  dispatch: Dispatch<ClassesStoreGuessedAction>;
+  dispatch: Dispatch<ClassesStoreGroupAction>;
 };
 
-export const ClassesForm = forwardRef<HTMLDivElement, ClassesFormProps>(
-  function ClassesFormComponent(
+export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
+  function ClassesEditorComponent(
     { type, group, searchParams, classes, dispatch },
     ref
   ) {
     useSWRImmutable<ClassesScheduleChanges>(
-      `${group.classes}${searchParams}`,
+      classes ? null : `${group.classes}${searchParams}`,
       fetcher,
       {
+        revalidateOnMount: true,
         shouldRetryOnError: false,
         onError() {
           dispatch({
@@ -50,9 +53,10 @@ export const ClassesForm = forwardRef<HTMLDivElement, ClassesFormProps>(
         },
       }
     );
+
     return (
       <div
-        className="bg-white border rounded-md border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700"
+        className="flex flex-col bg-white border rounded-md border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700"
         ref={ref}
       >
         <div className="flex items-center justify-between px-2 py-1">
@@ -66,65 +70,21 @@ export const ClassesForm = forwardRef<HTMLDivElement, ClassesFormProps>(
             />
           ) : (
             <div className="overflow-hidden rounded-lg w-7 h-7">
-              <Loader />
+              <LoaderRect />
             </div>
           )}
         </div>
         {classes ? (
           classes.draft.view === 'table' ? (
-            <div className="border-t shrink-0 border-zinc-200 dark:border-zinc-700">
-              <table className="w-full">
-                <tbody>
-                  <tr className="border-b border-zinc-200 dark:border-zinc-700">
-                    <th className="text-zinc-900 font-semibold border-r border-zinc-200 px-1 py-0.5 text-sm w-7 dark:border-zinc-700">
-                      №
-                    </th>
-                    <th className="text-zinc-900 font-semibold text-left border-r border-zinc-200 px-1 text-sm py-0.5 dark:border-zinc-700">
-                      Предмет
-                    </th>
-                    <th className="text-zinc-900 font-semibold text-left px-1 text-sm py-0.5 w-1/6">
-                      Каб.
-                    </th>
-                  </tr>
-                  {classPeriods.map(period => (
-                    <tr
-                      key={period}
-                      className="border-b border-zinc-200 last:border-b-0 dark:border-zinc-700"
-                    >
-                      <td className="border-r border-zinc-200 text-center text-sm px-1 py-0.5 dark:border-zinc-700">
-                        {period}
-                      </td>
-                      <td className="border-r border-zinc-200 dark:border-zinc-700">
-                        <SubjectSelect
-                          selectedSubjectURL={
-                            classes!.draft.periods[period].subject
-                          }
-                          onSelect={selectedSubjectURL => {
-                            // setPeriods(p => ({
-                            //   ...p,
-                            //   [period]: {
-                            //     ...p[period],
-                            //     subjectURL: selectedSubjectURL,
-                            //   },
-                            // }));
-                          }}
-                        />
-                      </td>
-                      <td className="text-sm">
-                        <input
-                          type="text"
-                          className="w-full px-1 py-0.5 text-sm"
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ClassesTableView
+              periods={classes.draft.periods}
+              dispatch={dispatch}
+            />
           ) : (
-            <div className="p-2 border-t shrink-0 border-zinc-200 dark:border-zinc-700">
-              <textarea className="w-full resize-none" name="" id=""></textarea>
-            </div>
+            <ClassesMessageView
+              message={classes.draft.message}
+              dispatch={dispatch}
+            />
           )
         ) : (
           <TableLoader />
@@ -237,47 +197,61 @@ const ModeButton = forwardRef<HTMLButtonElement, ModeButtonProps>(
   }
 );
 
-function TableLoader() {
+type ClassesTableViewProps = {
+  periods: ClassesPartialPeriod[];
+  dispatch: Dispatch<ClassesStoreGroupAction>;
+};
+
+function ClassesTableView({ periods, dispatch }: ClassesTableViewProps) {
   return (
     <div className="border-t shrink-0 border-zinc-200 dark:border-zinc-700">
       <table className="w-full">
         <tbody>
           <tr className="border-b border-zinc-200 dark:border-zinc-700">
-            <th className="px-1 py-1 text-sm font-semibold border-r text-zinc-900 border-zinc-200 w-7 dark:border-zinc-700">
-              <div className="h-5 overflow-hidden rounded-md">
-                <Loader />
-              </div>
+            <th className="text-zinc-900 font-semibold border-r border-zinc-200 px-1 py-0.5 text-sm w-7 dark:border-zinc-700">
+              №
             </th>
-            <th className="px-1 py-1 text-sm font-semibold text-left border-r text-zinc-900 border-zinc-200 dark:border-zinc-700">
-              <div className="h-5 overflow-hidden rounded-md">
-                <Loader />
-              </div>
+            <th className="text-zinc-900 font-semibold text-left border-r border-zinc-200 px-1 text-sm py-0.5 dark:border-zinc-700">
+              Предмет
             </th>
-            <th className="w-1/6 px-1 py-1 text-sm font-semibold text-left text-zinc-900">
-              <div className="h-5 overflow-hidden rounded-md">
-                <Loader />
-              </div>
+            <th className="text-zinc-900 font-semibold text-left px-1 text-sm py-0.5 w-1/6">
+              Каб.
             </th>
           </tr>
-          {classPeriods.map(period => (
+          {periods.map(period => (
             <tr
-              key={period}
+              key={period.index}
               className="border-b border-zinc-200 last:border-b-0 dark:border-zinc-700"
             >
-              <td className="px-1 py-1 border-r border-zinc-200 dark:border-zinc-700">
-                <div className="h-5 overflow-hidden rounded-md">
-                  <Loader />
-                </div>
+              <td className="border-r border-zinc-200 text-center text-sm px-1 py-0.5 dark:border-zinc-700">
+                {period.index}
               </td>
-              <td className="px-1 py-1 border-r border-zinc-200 dark:border-zinc-700">
-                <div className="h-5 overflow-hidden rounded-md">
-                  <Loader />
-                </div>
+              <td className="border-r border-zinc-200 dark:border-zinc-700">
+                <SubjectSelect
+                  selectedSubjectURL={period.subject}
+                  onSelect={subject =>
+                    dispatch({
+                      type: 'change-period',
+                      payload: { index: period.index, subject },
+                    })
+                  }
+                />
               </td>
-              <td className="px-1 py-1 dark:border-zinc-700">
-                <div className="h-5 overflow-hidden rounded-md">
-                  <Loader />
-                </div>
+              <td className="text-sm">
+                <input
+                  type="text"
+                  className="w-full px-1 py-0.5 text-sm"
+                  value={period.cabinet}
+                  onChange={e => {
+                    dispatch({
+                      type: 'change-period',
+                      payload: {
+                        index: period.index,
+                        cabinet: e.currentTarget.value,
+                      },
+                    });
+                  }}
+                />
               </td>
             </tr>
           ))}
@@ -287,8 +261,72 @@ function TableLoader() {
   );
 }
 
-function Loader() {
+type ClassesMessageViewProps = {
+  message: string;
+  dispatch: Dispatch<ClassesStoreGroupAction>;
+};
+
+function ClassesMessageView({ message, dispatch }: ClassesMessageViewProps) {
   return (
-    <div className="w-full h-full bg-zinc-200 animate-pulse dark:bg-zinc-700"></div>
+    <div className="flex-grow p-2 border-t shrink-0 border-zinc-200 dark:border-zinc-700">
+      <textarea
+        className="w-full h-full resize-none"
+        value={message}
+        onChange={e => {
+          dispatch({ type: 'change-message', payload: e.currentTarget.value });
+        }}
+        placeholder="Сообщение вместо расписания"
+      />
+    </div>
+  );
+}
+
+function TableLoader() {
+  return (
+    <div className="border-t shrink-0 border-zinc-200 dark:border-zinc-700">
+      <table className="w-full">
+        <tbody>
+          <tr className="border-b border-zinc-200 dark:border-zinc-700">
+            <th className="px-1.5 py-1 text-sm font-semibold border-r text-zinc-900 border-zinc-200 w-7 dark:border-zinc-700">
+              <div className="h-4 overflow-hidden rounded-md">
+                <LoaderRect />
+              </div>
+            </th>
+            <th className="px-1.5 py-1 text-sm font-semibold text-left border-r text-zinc-900 border-zinc-200 dark:border-zinc-700">
+              <div className="h-4 overflow-hidden rounded-md">
+                <LoaderRect />
+              </div>
+            </th>
+            <th className="w-1/6 px-1.5 py-1 text-sm font-semibold text-left text-zinc-900">
+              <div className="h-4 overflow-hidden rounded-md">
+                <LoaderRect />
+              </div>
+            </th>
+          </tr>
+          {classPeriods.map(period => (
+            <tr
+              key={period}
+              className="border-b border-zinc-200 last:border-b-0 dark:border-zinc-700"
+            >
+              <td className="px-1.5 py-1 border-r border-zinc-200 dark:border-zinc-700">
+                <div className="h-4 overflow-hidden rounded-md">
+                  <LoaderRect />
+                </div>
+              </td>
+              <td className="px-1.5 py-1 border-r border-zinc-200 dark:border-zinc-700">
+                <div className="h-4 overflow-hidden rounded-md">
+                  <LoaderRect />
+                </div>
+              </td>
+              <td className="px-1.5 py-1 dark:border-zinc-700">
+                <div className="h-4 overflow-hidden rounded-md">
+                  <LoaderRect />
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

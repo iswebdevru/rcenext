@@ -123,7 +123,7 @@ class ClassesScheduleMixedSerializer(serializers.HyperlinkedModelSerializer):
         return representation
 
     def create(self, validated_data):
-        periods = validated_data.pop('periods')
+        periods = validated_data.pop('periods', [])
         timetable, _ = ClassesSchedule.objects.update_or_create(
             group=validated_data.pop('group'),
             date=validated_data.pop('date', None),

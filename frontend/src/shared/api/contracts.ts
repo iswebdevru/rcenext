@@ -56,30 +56,27 @@ type ClassesScheduleCommon = {
   group: Hyperlink;
 };
 
+export type ClassesScheduleTableView = {
+  view: 'table';
+  periods: ClassesSchedulePeriod[];
+};
+
+export type ClassesScheduleMessageView = {
+  view: 'message';
+  message: string;
+};
+
 export type ClassesScheduleMain = {
   type: 'main';
-  view: 'table';
-  periods: ClassesSchedulePeriod[];
   week_day: WeekDay;
   week_type: WeekType;
-} & ClassesScheduleCommon;
+} & (ClassesScheduleTableView | ClassesScheduleMessageView) &
+  ClassesScheduleCommon;
 
-export type ClassesScheduleChangesTable = {
+export type ClassesScheduleChanges = {
   type: 'changes';
-  view: 'table';
   date: string;
-  periods: ClassesSchedulePeriod[];
-} & ClassesScheduleCommon;
-
-export type ClassesScheduleChangesMessage = {
-  type: 'changes';
-  view: 'message';
-  date: string;
-  message: string;
-} & ClassesScheduleCommon;
-
-export type ClassesScheduleChanges =
-  | ClassesScheduleChangesTable
-  | ClassesScheduleChangesMessage;
+} & (ClassesScheduleTableView | ClassesScheduleMessageView) &
+  ClassesScheduleCommon;
 
 export type ClassesScheduleMixed = ClassesScheduleMain | ClassesScheduleChanges;

@@ -6,10 +6,11 @@ export type CalendarProps = {
   date: Date;
   setDate: Dispatch<SetStateAction<Date>>;
   className?: string;
+  disabled?: boolean;
 };
 
 export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
-  function CalendarComponent({ date, setDate, className }, ref) {
+  function CalendarComponent({ date, setDate, className, disabled }, ref) {
     const currentMonth = date.getMonth() as keyof typeof HUMAN_READABLE_MONTHS;
     const currentDate = date.getDate();
     const currentYear = date.getFullYear();
@@ -29,6 +30,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
           </p>
           <div className="flex gap-4">
             <button
+              disabled={disabled}
               className="text-2xl font-bold"
               onClick={() => {
                 const newDate = new Date(date);
@@ -39,6 +41,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
               {'<'}
             </button>
             <button
+              disabled={disabled}
               className="text-2xl font-bold"
               onClick={() => {
                 const newDate = new Date(date);
@@ -82,7 +85,8 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
               key={`${day.date}-${day.month}`}
               disabled={
                 day.month !== currentMonth ||
-                (day.month === currentMonth && day.date === currentDate)
+                (day.month === currentMonth && day.date === currentDate) ||
+                disabled
               }
               className={clsx({
                 'rounded-lg outline-none outline-1 outline-offset-0 select-none outline leading-none aspect-square text-center p-1.5 transition-[outline,color,background]':

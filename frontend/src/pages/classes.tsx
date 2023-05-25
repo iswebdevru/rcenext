@@ -1,26 +1,46 @@
 import { useRef, useState } from 'react';
 import { HUMAN_MONTHS } from '@/shared/constants';
-import { getWeekType, WEEKDAYS_MAP } from '@/shared/lib/date';
+import { WEEKDAYS_MAP, formatDate, getWeekType } from '@/shared/lib/date';
 import { Calendar } from '@/shared/ui/calendar';
 import { Toggles } from '@/shared/ui/Toggles';
 import { BaseLayout } from '@/layouts';
-import { CollegeBlock, CollegeBlockToggles } from '@/entities/classes';
-import { ClassesScheduleGrid } from '@/widgets/classes';
+import {
+  ClassesScheduleCard,
+  CollegeBlock,
+  CollegeBlockToggles,
+} from '@/entities/classes';
 import { Button } from '@/shared/ui/Button';
 import { clsx } from '@/shared/lib/ui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { GroupSelect } from '@/features/groups/GroupSelect';
+import { API_CLASSES, ClassesScheduleMixed } from '@/shared/api';
+import { usePaginatedFetch } from '@/shared/hooks';
+import { LoaderCircle } from '@/shared/ui/Loader';
 
 export default function Classes() {
   const [date, setDate] = useState(new Date());
   const [collegeBlock, setCollegeBlock] = useState<CollegeBlock>(-1);
-  const [isMixed, setIsMixed] = useState(true);
+  const [classesType, setClassesType] = useState<'mixed' | 'main'>('mixed');
   const [groupSearch, setGroupSearch] = useState('');
+
   const mobileFiltersViewRef = useRef<HTMLDivElement>(null);
   const [isMobileFiltersOpened, setIsMobileFiltersOpened] = useState(false);
 
   const weekType = getWeekType(date);
+  const weekDay = WEEKDAYS_MAP[date.getDay()];
+
+  const query = `${API_CLASSES}?type=${classesType}${
+    classesType === 'main'
+      ? `&week_type=${weekType}&week_day=${weekDay}`
+      : `&date=${formatDate(date)}`
+  }&search=${groupSearch}&block=${collegeBlock}`;
+
+  const {
+    data: classesSchedule,
+    lastElementRef,
+    isValidating,
+  } = usePaginatedFetch<ClassesScheduleMixed>(query);
 
   return (
     <BaseLayout>
@@ -31,33 +51,21 @@ export default function Classes() {
             {HUMAN_MONTHS[date.getMonth()]} (
             {weekType === 'ЧИСЛ' ? 'Числитель' : 'Знаменатель'})
           </h1>
-          {collegeBlock === -1 || collegeBlock === 1 ? (
-            <>
-              <h2 className="mb-4 font-bold text-slate-900 dark:text-slate-200">
-                1-5 корпус
-              </h2>
-              <ClassesScheduleGrid
-                kind={isMixed ? 'mixed' : 'main'}
-                collegeBlock={1}
-                date={date}
-                weekDay={WEEKDAYS_MAP[date.getDay()]}
-                weekType={weekType}
-              />
-            </>
-          ) : null}
-          {collegeBlock === -1 || collegeBlock === 6 ? (
-            <>
-              <h2 className="mb-4 font-bold text-slate-900 dark:text-slate-200">
-                6 корпус
-              </h2>
-              <ClassesScheduleGrid
-                kind={isMixed ? 'mixed' : 'main'}
-                collegeBlock={6}
-                date={date}
-                weekDay={WEEKDAYS_MAP[date.getDay()]}
-                weekType={weekType}
-              />
-            </>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+            {classesSchedule
+              ?.flatMap(page => page.results)
+              .map((schedule, i, a) => (
+                <ClassesScheduleCard
+                  key={schedule.id}
+                  schedule={schedule}
+                  ref={a.length - 1 === i ? lastElementRef : null}
+                />
+              ))}
+          </div>
+          {isValidating ? (
+            <div className="flex justify-center mt-4">
+              <LoaderCircle />
+            </div>
           ) : null}
         </div>
         <div className="flex-shrink-0">
@@ -93,9 +101,9 @@ export default function Classes() {
                 value={collegeBlock}
                 setValue={setCollegeBlock}
               />
-              <Toggles value={isMixed} setValue={setIsMixed}>
-                <Toggles.Variant value={false}>Основное</Toggles.Variant>
-                <Toggles.Variant value={true}>С изменениями</Toggles.Variant>
+              <Toggles value={classesType} setValue={setClassesType}>
+                <Toggles.Variant value="main">Основное</Toggles.Variant>
+                <Toggles.Variant value="mixed">С изменениями</Toggles.Variant>
               </Toggles>
               <GroupSelect
                 searchStr={groupSearch}
