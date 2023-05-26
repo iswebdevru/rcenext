@@ -1,10 +1,10 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useRef, useState } from 'react';
-import { useRouter } from 'next/router';
-import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
+import { signOut, useSession } from 'next-auth/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { clsx } from '@/shared/lib/ui';
 import { HamburgerButton } from '@/shared/ui/Button';
 import { GroupSearch } from '@/features/groups';
@@ -16,6 +16,7 @@ const ThemeTogglerWithNoSSR = dynamic(
 
 export type HeaderProps = {
   wide?: boolean;
+  fixed?: boolean;
 };
 
 const baseLinks = [
@@ -25,7 +26,7 @@ const baseLinks = [
   { href: '/for-teachers', text: 'Преподавателям' },
 ] as const;
 
-export default function Header({ wide }: HeaderProps) {
+export default function Header({ wide, fixed = false }: HeaderProps) {
   const router = useRouter();
   const [isMenuOpened, setIsMenuOpen] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -36,58 +37,68 @@ export default function Header({ wide }: HeaderProps) {
     : baseLinks;
 
   return (
-    <header className="relative z-10 bg-white border-b h-14 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700">
+    <header>
       <div
         className={clsx({
-          'flex items-center h-full': true,
-          container: !wide,
-          'px-6': !!wide,
+          'z-10 bg-white border-b border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700':
+            true,
+          '': true,
+          relative: !fixed,
+          'fixed left-0 top-0 w-full': fixed,
         })}
       >
-        <Link
-          href="/"
-          className="text-sm font-bold text-blue-400 dark:text-white"
+        <div
+          className={clsx({
+            'flex items-center h-14': true,
+            container: !wide,
+            'px-6': !!wide,
+          })}
         >
-          Расписание РКЭ
-        </Link>
-        <nav className="hidden ml-16 xl:block">
-          <ul className="flex gap-10">
-            {links.map(link => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="text-sm font-semibold transition-colors text-slate-700 hover:text-blue-600 dark:text-zinc-200 dark:hover:text-zinc-400"
-                >
-                  {link.text}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="hidden ml-auto sm:block">
-          <GroupSearch />
-        </div>
-        <div className="w-[1px] h-6 ml-6 bg-zinc-200 dark:bg-zinc-700 hidden sm:block"></div>
-        <div className="items-center hidden ml-6 lg:flex">
-          <ThemeTogglerWithNoSSR />
-        </div>
-        {session.data ? (
-          <div className="items-center hidden ml-6 lg:flex">
-            <LogoutButton />
+          <Link
+            href="/"
+            className="text-sm font-bold text-blue-400 dark:text-white"
+          >
+            Расписание РКЭ
+          </Link>
+          <nav className="hidden ml-16 xl:block">
+            <ul className="flex gap-10">
+              {links.map(link => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm font-semibold transition-colors text-slate-700 hover:text-blue-600 dark:text-zinc-200 dark:hover:text-zinc-400"
+                  >
+                    {link.text}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div className="hidden ml-auto sm:block">
+            <GroupSearch />
           </div>
-        ) : null}
-        <HamburgerButton
-          className="block ml-auto sm:ml-6 xl:hidden"
-          onClick={() => setIsMenuOpen(p => !p)}
-        />
+          <div className="w-[1px] h-6 ml-6 bg-zinc-200 dark:bg-zinc-700 hidden sm:block"></div>
+          <div className="items-center hidden ml-6 lg:flex">
+            <ThemeTogglerWithNoSSR />
+          </div>
+          {session.data ? (
+            <div className="items-center hidden ml-6 lg:flex">
+              <LogoutButton />
+            </div>
+          ) : null}
+          <HamburgerButton
+            className="block ml-auto w-9 sm:ml-6 xl:hidden"
+            onClick={() => setIsMenuOpen(p => !p)}
+          />
+        </div>
       </div>
       {/* Mobile view */}
       <div
         className={clsx({
-          'xl:hidden block fixed z-30 left-0 top-0 w-full h-full bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300':
+          'xl:hidden block fixed z-50 left-0 top-0 w-full h-full bg-black transition-colors duration-300':
             true,
-          'opacity-100': isMenuOpened,
-          'opacity-0 pointer-events-none': !isMenuOpened,
+          'bg-opacity-50': isMenuOpened,
+          'bg-opacity-0 invisible': !isMenuOpened,
         })}
         onClick={e => {
           if (
@@ -100,10 +111,10 @@ export default function Header({ wide }: HeaderProps) {
       >
         <div
           className={clsx({
-            'flex flex-col h-full max-w-[260px] sm:max-w-xs gap-6 px-6 py-8 bg-white dark:bg-zinc-900 transition-[transform,opacity] duration-300':
+            'flex flex-col overflow-y-auto h-full max-w-[260px] sm:max-w-xs gap-6 px-6 py-8 bg-white dark:bg-zinc-900 transition-[transform,opacity] duration-300':
               true,
-            '-translate-x-full scale-y-150 opacity-80': !isMenuOpened,
-            'translate-x-0 scale-y-100 opacity-100': isMenuOpened,
+            '-translate-x-full opacity-0': !isMenuOpened,
+            'translate-x-0 opacity-100': isMenuOpened,
           })}
           ref={mobileMenuRef}
         >

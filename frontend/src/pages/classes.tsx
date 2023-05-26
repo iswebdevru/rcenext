@@ -71,10 +71,10 @@ export default function Classes() {
         <div className="flex-shrink-0">
           <div
             className={clsx({
-              'fixed top-0 left-0 z-20 w-full h-full bg-black lg:bg-opacity-100 lg:bg-transparent lg:static transition-colors duration-300 lg:pointer-events-auto':
+              'fixed top-0 left-0 z-20 w-full h-full bg-black transition-colors duration-300 lg:transition-none lg:static lg:opacity-100 lg:visible lg:bg-transparent':
                 true,
-              'bg-opacity-50 backdrop-blur-sm': isMobileFiltersOpened,
-              'bg-opacity-0 pointer-events-none': !isMobileFiltersOpened,
+              'bg-opacity-50': isMobileFiltersOpened,
+              'bg-opacity-0 invisible': !isMobileFiltersOpened,
             })}
             onClick={e => {
               if (
@@ -87,12 +87,10 @@ export default function Classes() {
           >
             <div
               className={clsx({
-                'flex flex-col h-full max-w-xs gap-3 px-4 py-6 sm:px-6 sm:py-8 ml-auto overflow-y-auto lg:overflow-y-visible bg-white dark:bg-zinc-900 dark:lg:bg-transparent lg:bg-transparent transition-[transform,opacity,box-shadow,opacity] duration-300 lg:px-2 lg:py-0 lg:scale-y-100 lg:translate-x-0 lg:shadow-none lg:opacity-100':
+                'flex flex-col h-full max-w-xs gap-3 px-4 py-6 sm:px-6 sm:py-8 ml-auto overflow-y-auto lg:overflow-y-visible bg-white dark:bg-zinc-900 dark:lg:bg-transparent lg:bg-transparent transition-[transform,opacity] duration-300 lg:transition-none lg:px-2 lg:py-0 lg:opacity-100 lg:scale-y-100 lg:translate-x-0':
                   true,
-                'translate-x-0 scale-y-100 shadow-md opacity-100':
-                  isMobileFiltersOpened,
-                'translate-x-full scale-y-150 shadow-sm opacity-80':
-                  !isMobileFiltersOpened,
+                'translate-x-0 opacity-100': isMobileFiltersOpened,
+                'translate-x-full opacity-0': !isMobileFiltersOpened,
               })}
               ref={mobileFiltersViewRef}
             >
@@ -120,15 +118,10 @@ export default function Classes() {
             </div>
           </div>
           <button
-            className="fixed flex items-center justify-center bg-blue-600 rounded-full shadow-md shadow-blue-300 w-11 h-11 bottom-6 right-6 lg:hidden dark:bg-blue-700 dark:shadow-blue-700"
+            className="fixed flex items-center justify-center text-white transition-colors bg-blue-500 rounded-full shadow-sm hover:text-zinc-100 hover:bg-blue-600 hover:shadow-md w-11 h-11 bottom-6 right-6 lg:hidden dark:bg-blue-700 dark:hover:bg-blue-900"
             onClick={() => setIsMobileFiltersOpened(true)}
           >
-            <FontAwesomeIcon
-              icon={faFilter}
-              fixedWidth
-              size="lg"
-              className="text-blue-50 dark:text-blue-100"
-            />
+            <FontAwesomeIcon icon={faFilter} fixedWidth size="lg" />
           </button>
         </div>
       </div>

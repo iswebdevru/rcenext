@@ -60,7 +60,9 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
         ref={ref}
       >
         <div className="flex items-center justify-between px-2 py-1">
-          <div className="text-sm font-bold">{group.name}</div>
+          <div className="text-sm font-bold text-zinc-700 dark:text-zinc-300">
+            {group.name}
+          </div>
           {classes ? (
             <Settings
               view={classes.draft.view}
@@ -207,14 +209,14 @@ function ClassesTableView({ periods, dispatch }: ClassesTableViewProps) {
     <div className="border-t shrink-0 border-zinc-200 dark:border-zinc-700">
       <table className="w-full">
         <tbody>
-          <tr className="border-b border-zinc-200 dark:border-zinc-700">
-            <th className="text-zinc-900 font-semibold border-r border-zinc-200 px-1 py-0.5 text-sm w-7 dark:border-zinc-700">
+          <tr className="border-b text-zinc-900 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700">
+            <th className="font-semibold border-r border-zinc-200 px-1 py-0.5 text-sm w-7 dark:border-zinc-700">
               №
             </th>
-            <th className="text-zinc-900 font-semibold text-left border-r border-zinc-200 px-1 text-sm py-0.5 dark:border-zinc-700">
+            <th className="font-semibold text-left border-r border-zinc-200 px-1 text-sm py-0.5 dark:border-zinc-700">
               Предмет
             </th>
-            <th className="text-zinc-900 font-semibold text-left px-1 text-sm py-0.5 w-1/6">
+            <th className="font-semibold text-left px-1 text-sm py-0.5 w-1/6">
               Каб.
             </th>
           </tr>
@@ -223,10 +225,10 @@ function ClassesTableView({ periods, dispatch }: ClassesTableViewProps) {
               key={period.index}
               className="border-b border-zinc-200 last:border-b-0 dark:border-zinc-700"
             >
-              <td className="border-r border-zinc-200 text-center text-sm px-1 py-0.5 dark:border-zinc-700">
+              <td className="text-zinc-500 border-r border-zinc-200 text-center text-sm px-1 py-0.5 dark:border-zinc-700">
                 {period.index}
               </td>
-              <td className="border-r border-zinc-200 dark:border-zinc-700">
+              <td className="border-r text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700">
                 <SubjectSelect
                   selectedSubjectURL={period.subject}
                   onSelect={subject =>
@@ -240,7 +242,7 @@ function ClassesTableView({ periods, dispatch }: ClassesTableViewProps) {
               <td className="text-sm">
                 <input
                   type="text"
-                  className="w-full px-1 py-0.5 text-sm"
+                  className="w-full px-1 py-0.5 text-sm text-zinc-700 dark:text-zinc-300 bg-transparent"
                   value={period.cabinet}
                   onChange={e => {
                     dispatch({

@@ -34,7 +34,7 @@ export function SubjectSelect({ selectedSubjectURL, onSelect }: SubjectSelect) {
             type="text"
             value={searchStr}
             onChange={e => setSearchStr(e.target.value)}
-            className="w-full px-1 py-0.5 text-sm"
+            className="w-full px-1 py-0.5 text-sm bg-transparent"
             hidden={!isRevealed}
             ref={inputRef}
           />

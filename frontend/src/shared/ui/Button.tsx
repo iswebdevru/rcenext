@@ -37,10 +37,14 @@ const HAMBURGER_HEIGHT = 100;
 const HAMBURGER_LINE_HEIGHT = 10;
 const HAMBURGER_GAP = (HAMBURGER_HEIGHT - HAMBURGER_LINE_HEIGHT * 3) / 2;
 
+export type HamburgerButtonProps = {
+  variant?: 'zinc' | 'contrast';
+} & ComponentPropsWithRef<'button'>;
+
 export const HamburgerButton = forwardRef<
   HTMLButtonElement,
-  ComponentPropsWithRef<'button'>
->(function HamburgerButton({ className, ...props }, ref) {
+  HamburgerButtonProps
+>(function HamburgerButton({ className, variant = 'zinc', ...props }, ref) {
   return (
     <button
       {...props}
@@ -48,7 +52,13 @@ export const HamburgerButton = forwardRef<
       className={classNameWithDefaults('group/hamburger', className)}
     >
       <svg
-        className="transition-colors w-9 fill-zinc-700 group-hover/hamburger:fill-zinc-400 dark:fill-zinc-200 dark:group-hover/hamburger:fill-zinc-200"
+        className={clsx({
+          'w-full transition-colors': true,
+          'fill-zinc-700 group-hover/hamburger:fill-zinc-400 dark:fill-zinc-200 dark:group-hover/hamburger:fill-zinc-200':
+            variant === 'zinc',
+          'fill-white group-hover/hamburger:fill-zinc-100':
+            variant === 'contrast',
+        })}
         viewBox={`0 0 ${HAMBURGER_WIDTH + 10} ${HAMBURGER_HEIGHT + 4}`}
       >
         <rect
