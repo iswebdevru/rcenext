@@ -16,6 +16,7 @@ import {
   ClassesPartialPeriod,
   ClassesStoreGroupAction,
   ClassesType,
+  hasInitAndDraftDiff,
 } from '@/entities/classes';
 import { LoaderRect } from '@/shared/ui/Loader';
 
@@ -54,6 +55,8 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
       }
     );
 
+    const isChanged = classes ? hasInitAndDraftDiff(classes) : false;
+
     return (
       <div
         className="flex flex-col bg-white border rounded-md border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700"
@@ -63,6 +66,11 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
           <div className="text-sm font-bold text-zinc-700 dark:text-zinc-300">
             {group.name}
           </div>
+          {isChanged ? (
+            <div className="ml-auto mr-4 text-xs bg-blue-100 text-blue-500 dark:bg-zinc-700 dark:text-zinc-200 rounded-md px-1.5 py-0.5">
+              Изменено
+            </div>
+          ) : null}
           {classes ? (
             <Settings
               view={classes.draft.view}

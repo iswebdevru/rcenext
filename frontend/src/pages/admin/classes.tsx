@@ -107,7 +107,7 @@ export default function Classes() {
   return (
     <AdminLayout>
       <div className="p-4">
-        <div className="p-4 mb-4 bg-white border rounded-md border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700">
+        <div className="px-4 py-3 mb-4 bg-white border rounded-md border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700">
           <div className="flex items-start gap-4">
             <Toggles value={classesType} setValue={setClassesType}>
               <Toggles.Variant value="main">Основное</Toggles.Variant>
@@ -129,7 +129,11 @@ export default function Classes() {
               <InputDate disabled={isSaving} date={date} setDate={setDate} />
             )}
 
-            <Button className="ml-auto" disabled={isSaving}>
+            <Button
+              className="ml-auto"
+              disabled={isSaving}
+              variant="danger-outline"
+            >
               Удалить
             </Button>
             <Button
