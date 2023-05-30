@@ -11,6 +11,7 @@ services:
       - rest-api-static-files:/usr/src/app/static
     extra_hosts:
       - 'host.docker.internal:host-gateway'
+    restart: always
   static-server:
     build:
       context: ./static-server
@@ -23,6 +24,7 @@ services:
       - rest-api
     depends_on:
       - rest-api
+    restart: always
   frontend:
     build:
       context: ./frontend
@@ -31,6 +33,7 @@ services:
       - '/home/wardxela/env/rcenextfrontend'
     ports:
       - '4202:3000'
+    restart: always
 
 volumes:
   rest-api-static-files:
