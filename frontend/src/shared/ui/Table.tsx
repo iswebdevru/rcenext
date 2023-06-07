@@ -6,7 +6,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  ChangeEventHandler,
   Children,
   ComponentPropsWithRef,
   createContext,
@@ -111,12 +110,14 @@ export function Table<T extends Id>({ children }: PropsWithChildren) {
 
 export type TableHeaderProps<T extends Id> = {
   onDelete: (ids: T[]) => Promise<unknown> | unknown;
-  onSearchChange?: ChangeEventHandler<HTMLInputElement>;
+  search: string;
+  onSearchChange: (search: string) => void;
 };
 
 Table.ControlPanel = function TableControlPanel<T extends Id>({
   onDelete,
   onSearchChange,
+  search,
 }: TableHeaderProps<T>) {
   const notify = useNotificationEmitter();
   const [isDisabled, setIsDisabled] = useState(false);
@@ -173,8 +174,11 @@ Table.ControlPanel = function TableControlPanel<T extends Id>({
     setNewItems(prev => [{ id: uuid(), state: 'show' }, ...prev]);
 
   return (
-    <div className="flex gap-4 mb-4">
-      <InputSearch onChange={onSearchChange} />
+    <div className="mb-4 flex gap-4">
+      <InputSearch
+        onChange={e => onSearchChange(e.currentTarget.value)}
+        value={search}
+      />
       <Button
         type="button"
         variant="danger-outline"
@@ -225,7 +229,7 @@ Table.Body = function TableBody<T extends Id>({
 
   return (
     <div>
-      <div className="bg-white border rounded-md border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700">
+      <div className="rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
         <table className="w-full table-fixed">
           <tbody>
             {header}
@@ -323,11 +327,11 @@ Table.SelectRowCheckbox = function TableSelectRowCheckbox() {
 Table.ButtonEdit = function TableButtonEdit() {
   const { markEdited } = useContext(TableRowContext) as TableRowContextExisting;
   return (
-    <button className="p-1 group/edit-btn" onClick={markEdited}>
+    <button className="group/edit-btn p-1" onClick={markEdited}>
       <FontAwesomeIcon
         icon={faPenToSquare}
         fixedWidth
-        className="text-lg text-blue-500 transition-colors group-hover/edit-btn:text-blue-900 group-hover/edit-btn:scale-110"
+        className="text-lg text-blue-500 transition-colors group-hover/edit-btn:scale-110 group-hover/edit-btn:text-blue-900"
       />
     </button>
   );
@@ -377,26 +381,26 @@ Table.ButtonCancel = function TableButtonCancel() {
   if (ctx.kind === 'existing') {
     return (
       <button
-        className="flex items-center justify-center p-1 group/editor-cancel"
+        className="group/editor-cancel flex items-center justify-center p-1"
         onClick={ctx?.toReadOnlyView}
       >
         <FontAwesomeIcon
           icon={faRotateBack}
           fixedWidth
-          className="text-lg text-neutral-600 group-hover/editor-cancel:text-yellow-500 group-hover/editor-cancel:scale-110"
+          className="text-lg text-neutral-600 group-hover/editor-cancel:scale-110 group-hover/editor-cancel:text-yellow-500"
         />
       </button>
     );
   }
   return (
     <button
-      className="flex items-center justify-center p-1 group/editor-del shrink-0"
+      className="group/editor-del flex shrink-0 items-center justify-center p-1"
       onClick={ctx?.close}
     >
       <FontAwesomeIcon
         icon={faXmark}
         fixedWidth
-        className="text-lg text-neutral-600 group-hover/editor-del:text-red-500 group-hover/editor-del:scale-110"
+        className="text-lg text-neutral-600 group-hover/editor-del:scale-110 group-hover/editor-del:text-red-500"
       />
     </button>
   );
@@ -432,13 +436,13 @@ Table.ButtonCreate = function TableButtonCreate({
 
   return (
     <button
-      className="flex items-center justify-center p-1 group/editor-save shrink-0"
+      className="group/editor-save flex shrink-0 items-center justify-center p-1"
       onClick={handleCreate}
     >
       <FontAwesomeIcon
         icon={faCheck}
         fixedWidth
-        className="text-lg text-neutral-600 group-hover/editor-save:text-green-500 group-hover/editor-save:scale-110"
+        className="text-lg text-neutral-600 group-hover/editor-save:scale-110 group-hover/editor-save:text-green-500"
       ></FontAwesomeIcon>
     </button>
   );
@@ -471,13 +475,13 @@ Table.ButtonUpdate = function TableButtonUpdate({
 
   return (
     <button
-      className="flex items-center justify-center p-1 group/editor-save shrink-0"
+      className="group/editor-save flex shrink-0 items-center justify-center p-1"
       onClick={handleUpdate}
     >
       <FontAwesomeIcon
         icon={faCheck}
         fixedWidth
-        className="text-lg text-neutral-600 group-hover/editor-save:text-green-500 group-hover/editor-save:scale-110"
+        className="text-lg text-neutral-600 group-hover/editor-save:scale-110 group-hover/editor-save:text-green-500"
       ></FontAwesomeIcon>
     </button>
   );
@@ -497,7 +501,7 @@ Table.Row = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
       ref={ref}
       className={classNameWithDefaults(
         clsx({
-          'border-b border-zinc-200 dark:border-zinc-700 group/row last:border-b-0 rounded-md transition-[background]':
+          'group/row rounded-md border-b border-zinc-200 transition-[background] last:border-b-0 dark:border-zinc-700':
             true,
         }),
         className
@@ -509,7 +513,7 @@ Table.Row = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
 Table.DataLoader = function TableDataPlaceholder() {
   return (
     <Table.Data>
-      <div className="w-full h-8 rounded-md bg-neutral-200 animate-pulse"></div>
+      <div className="h-8 w-full animate-pulse rounded-md bg-neutral-200"></div>
     </Table.Data>
   );
 };
@@ -522,7 +526,7 @@ Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
       <td
         className={classNameWithDefaults(
           clsx({
-            'text-black dark:text-zinc-200 text-sm group-last/row:first:rounded-bl-md group-last:last:rounded-br-md p-0':
+            'p-0 text-sm text-black group-last/row:first:rounded-bl-md group-last:last:rounded-br-md dark:text-zinc-200':
               true,
             'bg-zinc-50 dark:bg-zinc-700':
               ctx?.kind === 'existing' && ctx.isSelected,
@@ -552,8 +556,8 @@ Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
 
 Table.Head = function TableHead({ children }: PropsWithChildren) {
   return (
-    <th className="text-sm text-left first:w-[61px] last:w-[114px] text-slate-900 dark:text-slate-100 font-semibold">
-      <div className="flex items-center h-12 px-6 py-3">{children}</div>
+    <th className="text-left text-sm font-semibold text-slate-900 first:w-[61px] last:w-[114px] dark:text-slate-100">
+      <div className="flex h-12 items-center px-6 py-3">{children}</div>
     </th>
   );
 };

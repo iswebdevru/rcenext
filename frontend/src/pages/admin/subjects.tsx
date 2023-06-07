@@ -1,15 +1,16 @@
 import { SubjectsCreator, SubjectsUpdater } from '@/features/subjects';
 import { AdminLayout } from '@/layouts';
 import { API_SUBJECTS, deleteEntities, Subject } from '@/shared/api';
-import { usePaginatedFetch } from '@/shared/hooks';
+import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { Table } from '@/shared/ui/Table';
 import { useState } from 'react';
 
 export default function Subjects() {
   const [searchFilter, setSearchFilter] = useState('');
+  const searchFilterDebounced = useDebounce(searchFilter);
 
   const { data, lastElementRef, mutate } = usePaginatedFetch<Subject>(
-    `${API_SUBJECTS}?search=${searchFilter}`
+    `${API_SUBJECTS}?search=${searchFilterDebounced}`
   );
 
   const deleteSubjects = async (urls: string[]) => {
@@ -23,7 +24,8 @@ export default function Subjects() {
         <Table>
           <Table.ControlPanel
             onDelete={deleteSubjects}
-            onSearchChange={e => setSearchFilter(e.target.value)}
+            search={searchFilter}
+            onSearchChange={setSearchFilter}
           />
           <Table.Body<string>
             creator={() => <SubjectsCreator refresh={mutate} />}

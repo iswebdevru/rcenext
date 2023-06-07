@@ -5,14 +5,15 @@ import {
   TeacherSubject,
   TeachersUpdater,
 } from '@/features/teachers';
-import { usePaginatedFetch } from '@/shared/hooks';
+import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { API_TEACHERS, deleteEntities, Teacher } from '@/shared/api';
 import { useState } from 'react';
 
 export default function Teachers() {
   const [searchFilter, setSearchFilter] = useState('');
+  const searchFilterDebounced = useDebounce(searchFilter);
   const { data, lastElementRef, mutate } = usePaginatedFetch<Teacher>(
-    `${API_TEACHERS}?search=${searchFilter}`
+    `${API_TEACHERS}?search=${searchFilterDebounced}`
   );
 
   const deleteTeachers = async (urls: string[]) => {
@@ -26,7 +27,8 @@ export default function Teachers() {
         <Table>
           <Table.ControlPanel
             onDelete={deleteTeachers}
-            onSearchChange={e => setSearchFilter(e.target.value)}
+            search={searchFilter}
+            onSearchChange={setSearchFilter}
           />
           <Table.Body<string>
             creator={() => <TeachersCreator refresh={mutate} />}

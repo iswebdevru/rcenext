@@ -1,5 +1,5 @@
 import { Table } from '@/shared/ui/Table';
-import { usePaginatedFetch } from '@/shared/hooks';
+import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { AdminLayout } from '@/layouts';
 import { GroupsCreator } from '@/features/groups';
 import GroupsUpdater from '@/features/groups/GroupsUpdater';
@@ -7,10 +7,11 @@ import { API_GROUPS, deleteEntities, Group } from '@/shared/api';
 import { useState } from 'react';
 
 export default function Groups() {
-  const [search, setSearch] = useState('');
+  const [searchFilter, setSearchFilter] = useState('');
+  const searchFilterDebounce = useDebounce(searchFilter);
 
   const { data, lastElementRef, mutate } = usePaginatedFetch<Group>(
-    `${API_GROUPS}?search=${search}`
+    `${API_GROUPS}?search=${searchFilterDebounce}`
   );
 
   const deleteGroups = async (urls: string[]) => {
@@ -24,7 +25,8 @@ export default function Groups() {
         <Table<string>>
           <Table.ControlPanel
             onDelete={deleteGroups}
-            onSearchChange={e => setSearch(e.target.value)}
+            search={searchFilter}
+            onSearchChange={setSearchFilter}
           />
           <Table.Body<string>
             creator={() => <GroupsCreator refresh={mutate} />}
