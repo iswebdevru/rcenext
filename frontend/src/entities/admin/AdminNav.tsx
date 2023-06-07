@@ -36,7 +36,7 @@ export function AdminNav() {
 
   return (
     <>
-      <div className="fixed left-0 hidden h-full py-10 bg-white border-r w-52 lg:block top-14 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700">
+      <div className="fixed left-0 top-14 hidden h-full w-52 border-r border-zinc-200 bg-white py-10 dark:border-zinc-700 dark:bg-zinc-800 lg:block">
         <nav>
           <ul>
             {links.map(link => (
@@ -49,19 +49,19 @@ export function AdminNav() {
           </ul>
         </nav>
       </div>
-      <div className="fixed z-10 block lg:hidden bottom-12 left-12">
+      <div className="fixed bottom-12 left-12 z-10 block lg:hidden">
         <HamburgerButton
           onClick={() => setIsMobileViewOpened(true)}
-          className="p-3 transition-colors bg-blue-500 rounded-full shadow-sm w-14 h-14 dark:bg-blue-700 hover:bg-blue-600 dark:hover:bg-blue-900 hover:shadow-lg"
+          className="h-14 w-14 rounded-full bg-blue-500 p-3 shadow-sm transition-colors hover:bg-blue-600 hover:shadow-lg dark:bg-blue-700 dark:hover:bg-blue-900"
           variant="contrast"
         />
       </div>
       <div
         className={clsx({
-          'fixed top-0 left-0 z-10 block w-full h-full transition-colors bg-black lg:hidden':
+          'fixed top-0 left-0 z-10 block h-full w-full bg-black transition-colors lg:hidden':
             true,
           'bg-opacity-50': isMobileViewOpened,
-          'bg-opacity-0 invisible': !isMobileViewOpened,
+          'invisible bg-opacity-0': !isMobileViewOpened,
         })}
         onClick={e => {
           if (
@@ -74,10 +74,10 @@ export function AdminNav() {
       >
         <div
           className={clsx({
-            'h-full py-16 overflow-y-auto bg-white dark:bg-zinc-900 w-52 transition-[opacity,transform] duration-300':
+            'h-full w-52 overflow-y-auto bg-white py-16 transition-[opacity,transform] duration-300 dark:bg-zinc-900':
               true,
-            'opacity-0 -translate-x-full': !isMobileViewOpened,
-            'opacity-100 translate-x-0': isMobileViewOpened,
+            '-translate-x-full opacity-0': !isMobileViewOpened,
+            'translate-x-0 opacity-100': isMobileViewOpened,
           })}
           ref={mobileViewRef}
         >
@@ -110,7 +110,7 @@ function AdminNavLink({ href, isActive, text, icon }: AdminNavLinkProps) {
       <Link
         href={href}
         className={clsx({
-          'group transition-color hover:text-blue-500 dark:hover:text-zinc-50':
+          'transition-color group hover:text-blue-500 dark:hover:text-zinc-50':
             true,
           'text-blue-500 dark:text-zinc-50': isActive,
           'text-zinc-700 dark:text-zinc-400': !isActive,
@@ -119,7 +119,7 @@ function AdminNavLink({ href, isActive, text, icon }: AdminNavLinkProps) {
         <div className="flex items-center">
           <span
             className={clsx({
-              'w-[3px] rounded-r-md self-stretch bg-blue-500 transition origin-left group-hover:scale-x-100 dark:bg-zinc-50':
+              'w-[3px] origin-left self-stretch rounded-r-md bg-blue-500 transition group-hover:scale-x-100 dark:bg-zinc-50':
                 true,
               'scale-x-100': isActive,
               'scale-x-0': !isActive,

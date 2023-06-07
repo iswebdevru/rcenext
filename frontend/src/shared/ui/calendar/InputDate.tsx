@@ -6,7 +6,11 @@ import { useClickOutside } from '@/shared/hooks';
 
 export type InputDateProps = CalendarProps;
 
-export function InputDate({ date, setDate, disabled }: InputDateProps) {
+export function InputDate({
+  date,
+  onDateChange: setDate,
+  disabled,
+}: InputDateProps) {
   const componentRef = useRef<HTMLDivElement>(null);
   const [isRevealed, setIsRevealed] = useState(false);
 
@@ -19,17 +23,17 @@ export function InputDate({ date, setDate, disabled }: InputDateProps) {
       </Button>
       <div
         className={clsx({
-          'absolute left-1/2 -translate-x-1/2 top-full mt-3 transition-[opacity,transform] duration-200':
+          'absolute left-1/2 top-full mt-3 -translate-x-1/2 transition-[opacity,transform] duration-200':
             true,
-          'asdf scale-100 opacity-1 translate-y-0 z-10': isRevealed,
-          'invisible pointer-events-none -translate-y-12 scale-75 opacity-0':
+          'asdf opacity-1 z-10 translate-y-0 scale-100': isRevealed,
+          'pointer-events-none invisible -translate-y-12 scale-75 opacity-0':
             !isRevealed,
         })}
       >
         <Calendar
           date={date}
           className="min-w-[280px] shadow-sm"
-          setDate={setDate}
+          onDateChange={setDate}
         />
       </div>
     </div>

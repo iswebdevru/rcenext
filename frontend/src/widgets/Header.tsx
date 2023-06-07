@@ -20,7 +20,7 @@ export type HeaderProps = {
 };
 
 const baseLinks = [
-  { href: '/classes', text: 'Занятия' },
+  { href: '/', text: 'Занятия' },
   { href: '/practice', text: 'Практика' },
   { href: '/bells', text: 'Звонки' },
   { href: '/for-teachers', text: 'Преподавателям' },
@@ -40,7 +40,7 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
     <header>
       <div
         className={clsx({
-          'z-10 bg-white border-b border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700':
+          'z-10 border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800':
             true,
           '': true,
           relative: !fixed,
@@ -49,7 +49,7 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
       >
         <div
           className={clsx({
-            'flex items-center h-14': true,
+            'flex h-14 items-center': true,
             container: !wide,
             'px-6': !!wide,
           })}
@@ -60,13 +60,13 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
           >
             Расписание РКЭ
           </Link>
-          <nav className="hidden ml-16 xl:block">
+          <nav className="ml-16 hidden xl:block">
             <ul className="flex gap-10">
               {links.map(link => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm font-semibold transition-colors text-slate-700 hover:text-blue-600 dark:text-zinc-200 dark:hover:text-zinc-400"
+                    className="text-sm font-semibold text-slate-700 transition-colors hover:text-blue-600 dark:text-zinc-200 dark:hover:text-zinc-400"
                   >
                     {link.text}
                   </Link>
@@ -74,20 +74,20 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
               ))}
             </ul>
           </nav>
-          <div className="hidden ml-auto sm:block">
+          <div className="ml-auto hidden sm:block">
             <GroupSearch />
           </div>
-          <div className="w-[1px] h-6 ml-6 bg-zinc-200 dark:bg-zinc-700 hidden sm:block"></div>
-          <div className="items-center hidden ml-6 lg:flex">
+          <div className="ml-6 hidden h-6 w-[1px] bg-zinc-200 dark:bg-zinc-700 sm:block"></div>
+          <div className="ml-6 hidden items-center lg:flex">
             <ThemeTogglerWithNoSSR />
           </div>
           {session.data ? (
-            <div className="items-center hidden ml-6 lg:flex">
+            <div className="ml-6 hidden items-center lg:flex">
               <LogoutButton />
             </div>
           ) : null}
           <HamburgerButton
-            className="block ml-auto w-9 sm:ml-6 xl:hidden"
+            className="ml-auto block w-9 sm:ml-6 xl:hidden"
             onClick={() => setIsMenuOpen(p => !p)}
           />
         </div>
@@ -95,10 +95,10 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
       {/* Mobile view */}
       <div
         className={clsx({
-          'xl:hidden block fixed z-50 left-0 top-0 w-full h-full bg-black transition-colors duration-300':
+          'fixed left-0 top-0 z-50 block h-full w-full bg-black transition-colors duration-300 xl:hidden':
             true,
           'bg-opacity-50': isMenuOpened,
-          'bg-opacity-0 invisible': !isMenuOpened,
+          'invisible bg-opacity-0': !isMenuOpened,
         })}
         onClick={e => {
           if (
@@ -111,7 +111,7 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
       >
         <div
           className={clsx({
-            'flex flex-col overflow-y-auto h-full max-w-[260px] sm:max-w-xs gap-6 px-6 py-8 bg-white dark:bg-zinc-900 transition-[transform,opacity] duration-300':
+            'flex h-full max-w-[260px] flex-col gap-6 overflow-y-auto bg-white px-6 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-900 sm:max-w-xs':
               true,
             '-translate-x-full opacity-0': !isMenuOpened,
             'translate-x-0 opacity-100': isMenuOpened,
@@ -131,9 +131,9 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
                   <Link
                     href={link.href}
                     className={clsx({
-                      'text-sm block w-full px-4 py-2 font-semibold transition-colors':
+                      'block w-full px-4 py-2 text-sm font-semibold transition-colors':
                         true,
-                      'rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-900 dark:text-neutral-200':
+                      'rounded-lg bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-neutral-200':
                         link.href === router.asPath,
                       'text-slate-500 dark:text-neutral-200':
                         link.href !== router.asPath,
@@ -145,7 +145,7 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
               ))}
             </ul>
           </nav>
-          <div className="flex justify-between gap-4 mt-auto lg:hidden">
+          <div className="mt-auto flex justify-between gap-4 lg:hidden">
             <ThemeTogglerWithNoSSR />
             {session.data ? <LogoutButton /> : null}
           </div>
@@ -159,7 +159,7 @@ function LogoutButton() {
   return (
     <button
       onClick={() => signOut()}
-      className="items-center transition-colors text-slate-900 hover:text-slate-500 dark:text-zinc-500 dark:hover:text-zinc-200"
+      className="items-center text-slate-900 transition-colors hover:text-slate-500 dark:text-zinc-500 dark:hover:text-zinc-200"
     >
       <FontAwesomeIcon
         icon={faRightFromBracket}

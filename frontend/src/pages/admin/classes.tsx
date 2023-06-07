@@ -25,17 +25,15 @@ import { ClassesEditor } from '@/features/classes';
 import { formatDate } from '@/shared/lib/date';
 
 export default function Classes() {
-  const [classesType, setClassesType] = useState<ClassesType>('changes');
+  // State
+  const [classesType, setClassesType] =
+    useState<Exclude<ClassesType, 'mixed'>>('changes');
   const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
   const [date, setDate] = useState(new Date());
   const [classesStore, dispatch] = useClassesStore();
   const [isSaving, setIsSaving] = useState(false);
-
-  const { data: groups, lastElementRef } = usePaginatedFetch<Group>(API_GROUPS);
-
   const strDate = formatDate(date);
-
   const storeKey = getStoreKey({
     classesType,
     weekDay,
@@ -43,6 +41,8 @@ export default function Classes() {
     date: strDate,
   });
   const classesDayStore = classesStore[classesType].get(storeKey);
+
+  const { data: groups, lastElementRef } = usePaginatedFetch<Group>(API_GROUPS);
 
   const validatedClassesDataList = classesDayStore
     ? [...classesDayStore.entries()]
@@ -107,9 +107,9 @@ export default function Classes() {
   return (
     <AdminLayout>
       <div className="p-4">
-        <div className="px-4 py-3 mb-4 bg-white border rounded-md border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700">
+        <div className="mb-4 rounded-md border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
           <div className="flex items-start gap-4">
-            <Toggles value={classesType} setValue={setClassesType}>
+            <Toggles value={classesType} onToggle={setClassesType}>
               <Toggles.Variant value="main">Основное</Toggles.Variant>
               <Toggles.Variant value="changes">Изменения</Toggles.Variant>
             </Toggles>
@@ -126,7 +126,11 @@ export default function Classes() {
                 </div>
               </div>
             ) : (
-              <InputDate disabled={isSaving} date={date} setDate={setDate} />
+              <InputDate
+                disabled={isSaving}
+                date={date}
+                onDateChange={setDate}
+              />
             )}
 
             <Button

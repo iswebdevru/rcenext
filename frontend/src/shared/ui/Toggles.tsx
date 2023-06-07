@@ -9,14 +9,14 @@ import {
 
 export type VariantId = string | number | boolean;
 
-export type TogglesProps<T> = {
+export type TogglesProps<T extends VariantId> = {
   value: T;
-  setValue: Dispatch<SetStateAction<T>>;
+  onToggle: (value: T) => void;
 } & PropsWithChildren;
 
 type TogglesContext = {
   value: VariantId;
-  setValue: Dispatch<SetStateAction<VariantId>>;
+  onToggle: Dispatch<SetStateAction<VariantId>>;
 };
 
 const TogglesContext = createContext<TogglesContext>(undefined as any);
@@ -39,21 +39,21 @@ export type VariantProps = {
 } & PropsWithChildren;
 
 Toggles.Variant = function Variant({ value, children }: VariantProps) {
-  const { setValue, value: selected } = useContext(TogglesContext);
+  const { onToggle, value: selected } = useContext(TogglesContext);
 
   return (
     <li className="group grow">
       <button
         disabled={value === selected}
         className={clsx({
-          'outline-none outline-1 outline-offset-0 select-none block w-full px-1.5 py-0.5 text-sm rounded-md font-semibold transition-[outline,color,background]':
+          'block w-full select-none rounded-md px-1.5 py-0.5 text-sm font-semibold outline-none outline-1 outline-offset-0 transition-[outline,color,background]':
             true,
-          'text-zinc-700 focus-visible:outline-2 focus-visible:outline-zinc-600 dark:text-zinc-400 hover:text-blue-400 dark:hover:text-blue-50 focus-visible:text-zinc-900 dark:focus-visible:text-zinc-200':
+          'text-zinc-700 hover:text-blue-400 focus-visible:text-zinc-900 focus-visible:outline-2 focus-visible:outline-zinc-600 dark:text-zinc-400 dark:hover:text-blue-50 dark:focus-visible:text-zinc-200':
             value !== selected,
-          'bg-blue-50 outline-1 outline-blue-400 text-blue-400 dark:bg-blue-700 dark:text-blue-50 dark:outline-transparent':
+          'bg-blue-50 text-blue-400 outline-1 outline-blue-400 dark:bg-blue-700 dark:text-blue-50 dark:outline-transparent':
             value === selected,
         })}
-        onClick={() => setValue(value)}
+        onClick={() => onToggle(value)}
       >
         {children}
       </button>

@@ -1,11 +1,6 @@
 import { ClassesDataWithHistory, ClassesPartialPeriod } from './types';
 
-export type ClassesType = 'main' | 'changes';
-
-export const CLASSES_TYPES = new Map<ClassesType, string>([
-  ['main', 'Основное'],
-  ['changes', 'Изменения'],
-]);
+export type ClassesType = 'main' | 'changes' | 'mixed';
 
 export const defaultPeriods: ClassesPartialPeriod[] = [
   { index: 0, subject: null, cabinet: '', teachers: [] },

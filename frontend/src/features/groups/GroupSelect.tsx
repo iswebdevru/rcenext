@@ -1,23 +1,26 @@
-import { ChangeEventHandler, useState } from 'react';
-import { usePaginatedFetch } from '@/shared/hooks';
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { InputSearch } from '@/shared/ui/Input';
 import { SelectBeta, SelectBetaOption } from '@/shared/ui/select';
 import { API_GROUPS, Group } from '@/shared/api';
 
 export type GroupSelectProps = {
   onSelect: (group: Group) => void;
-  searchStr: string;
-  onSearchStrChange: ChangeEventHandler<HTMLInputElement>;
+  groupSearch: string;
+  groupSearchDebounced: string;
+  onGroupSearchChange: (groupSearch: string) => void;
 };
 
 export function GroupSelect({
-  searchStr,
-  onSearchStrChange,
+  groupSearch,
+  groupSearchDebounced,
+  onGroupSearchChange,
   onSelect,
 }: GroupSelectProps) {
   const [isRevealed, setIsRevealed] = useState(false);
-  const { data: groups, lastElementRef } = usePaginatedFetch<Group>(
-    isRevealed ? `${API_GROUPS}?search=${searchStr}` : null
+  const { data, lastElementRef } = usePaginatedFetch<Group>(
+    isRevealed ? `${API_GROUPS}?search=${groupSearchDebounced}` : null
   );
 
   const closeWindow = () => setIsRevealed(false);
@@ -30,19 +33,18 @@ export function GroupSelect({
         <InputSearch
           placeholder="Группа"
           onFocus={() => setIsRevealed(true)}
-          value={searchStr}
-          onChange={onSearchStrChange}
+          value={groupSearch}
+          onChange={e => onGroupSearchChange(e.currentTarget.value)}
         />
       }
     >
-      {groups
-        ?.map(page => page.results)
-        .flat()
+      {data
+        ?.flatMap(page => page.results)
         .map((group, i, arr) => (
           <SelectBetaOption
             key={group.id}
             ref={i === arr.length - 1 ? lastElementRef : null}
-            selected={group.name === searchStr}
+            selected={group.name === groupSearch}
             onSelect={() => {
               onSelect(group);
               closeWindow();
@@ -52,5 +54,19 @@ export function GroupSelect({
           </SelectBetaOption>
         ))}
     </SelectBeta>
+  );
+}
+
+export function GroupSearch() {
+  const router = useRouter();
+  const [groupSearch, setGroupSearch] = useState('');
+  const groupSearchDebounced = useDebounce(groupSearch);
+  return (
+    <GroupSelect
+      groupSearch={groupSearch}
+      groupSearchDebounced={groupSearchDebounced}
+      onGroupSearchChange={setGroupSearch}
+      onSelect={() => router.push('/')}
+    />
   );
 }
