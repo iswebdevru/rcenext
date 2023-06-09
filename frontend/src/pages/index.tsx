@@ -7,7 +7,7 @@ import {
   ClassesType,
   getClassesQueryParams,
 } from '@/entities/classes';
-import { ClassesScheduleMixed } from '@/shared/api';
+import { API_CLASSES, ClassesScheduleMixed } from '@/shared/api';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { LoaderCircle } from '@/shared/ui/Loader';
 import { ClassesFilters } from '@/features/classes';
@@ -25,7 +25,7 @@ export default function Classes() {
   // Debounced
   const groupSearchDebounced = useDebounce(groupSearch);
 
-  const classesUrl = getClassesQueryParams({
+  const queryParams = getClassesQueryParams({
     classesType,
     weekDay,
     weekType,
@@ -38,7 +38,7 @@ export default function Classes() {
     data: classesSchedule,
     lastElementRef,
     isValidating,
-  } = usePaginatedFetch<ClassesScheduleMixed>(classesUrl);
+  } = usePaginatedFetch<ClassesScheduleMixed>(`${API_CLASSES}${queryParams}`);
 
   return (
     <BaseLayout>
