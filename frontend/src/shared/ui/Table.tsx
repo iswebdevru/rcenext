@@ -2,7 +2,6 @@ import {
   faCheck,
   faPenToSquare,
   faRotateBack,
-  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -13,7 +12,6 @@ import {
   forwardRef,
   PropsWithChildren,
   ReactElement,
-  ReactNode,
   SetStateAction,
   useContext,
   useEffect,
@@ -22,15 +20,7 @@ import {
 import { classNameWithDefaults, clsx, russianEnding } from '../lib/ui';
 import { Button } from './Button';
 import { InputSearch } from './Input';
-import React from 'react';
-import { v4 as uuid } from 'uuid';
-import { wait } from '../lib/time';
 import { useNotificationEmitter } from './Notification';
-
-/**
- * TODO: save();
- *
- */
 
 export type Id = string | number;
 
@@ -44,100 +34,68 @@ export type TableUpdaterComponentProps<T> = {
 
 type AsyncAction = () => Promise<unknown> | unknown;
 
-type ExistingItem = {
-  state: 'show' | 'edit' | 'hide' | 'idle';
-  isSelected: boolean;
-};
-
-type NewItem = {
-  id: string;
-  state: 'show' | 'hide';
-};
-
-type TableRowContextExisting = {
-  kind: 'existing';
-  state: 'show' | 'edit' | 'hide' | 'idle';
+type TableRowContext = {
   isSelected: boolean;
   toggleSelect: () => void;
-  markEdited: () => void;
-  toReadOnlyView: () => void;
-};
-type TableRowContextNew = {
-  kind: 'new';
-  state: 'show' | 'hide';
-  close: () => Promise<void>;
+  toggleEdit: () => void;
 };
 
-const TableRowContext = createContext<
-  TableRowContextExisting | TableRowContextNew | undefined
->(undefined);
+const TableRowContext = createContext<TableRowContext | undefined>(undefined);
 
 type TableContext<T extends Id> = {
-  displayedItems: T[];
-  setDisplayedItems: Dispatch<SetStateAction<T[]>>;
-  existingItems: Map<T, ExistingItem>;
-  setExistingItems: Dispatch<SetStateAction<Map<T, ExistingItem>>>;
-  newItems: NewItem[];
-  setNewItems: Dispatch<SetStateAction<NewItem[]>>;
+  visibleItems: T[];
+  setVisibleItems: Dispatch<SetStateAction<T[]>>;
+  selectedItems: Set<Id>;
+  setSelectedItems: Dispatch<SetStateAction<Set<Id>>>;
+  editingItems: Set<Id>;
+  setEditingItems: Dispatch<SetStateAction<Set<Id>>>;
 };
 
 const TableContext = createContext<TableContext<any>>(undefined as any);
 
-const TTD = 200;
-
 export function Table<T extends Id>({ children }: PropsWithChildren) {
-  const [displayedItems, setDisplayedItems] = useState<T[]>([]);
-  const [existingItems, setExistingItems] = useState<Map<T, ExistingItem>>(
-    new Map()
-  );
-  const [newItems, setNewItems] = useState<NewItem[]>([]);
+  const [visibleItems, setVisibleItems] = useState<T[]>([]);
+  const [selectedItems, setSelectedItems] = useState<Set<Id>>(new Set());
+  const [editingItems, setEditingItems] = useState<Set<Id>>(new Set());
 
   return (
     <TableContext.Provider
       value={{
-        displayedItems,
-        setDisplayedItems,
-        existingItems,
-        setExistingItems,
-        newItems,
-        setNewItems,
+        visibleItems,
+        setVisibleItems,
+        selectedItems,
+        setSelectedItems,
+        editingItems,
+        setEditingItems,
       }}
     >
-      {children}
+      <div className="rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+        {children}
+      </div>
     </TableContext.Provider>
   );
 }
 
-export type TableHeaderProps<T extends Id> = {
+export type TableControlsProps<T extends Id> = {
   onDelete: (ids: T[]) => Promise<unknown> | unknown;
   search: string;
   onSearchChange: (search: string) => void;
 };
 
-Table.ControlPanel = function TableControlPanel<T extends Id>({
+Table.Controls = function TableControls<T extends Id>({
   onDelete,
   onSearchChange,
   search,
-}: TableHeaderProps<T>) {
+}: TableControlsProps<T>) {
   const notify = useNotificationEmitter();
   const [isDisabled, setIsDisabled] = useState(false);
-  const { displayedItems, setNewItems, existingItems, setExistingItems } =
+  const { visibleItems, selectedItems, setSelectedItems } =
     useContext<TableContext<T>>(TableContext);
 
-  const itemsToDelete = displayedItems.filter(
-    id => existingItems.get(id)?.isSelected
-  );
+  const itemsToDelete = visibleItems.filter(id => selectedItems.has(id));
 
   const handleDelete = async () => {
     setIsDisabled(true);
-    setExistingItems(prev => {
-      const updated = new Map(prev);
-      itemsToDelete.forEach(id => {
-        updated.set(id, { ...updated.get(id)!, state: 'hide' });
-      });
-      return updated;
-    });
-    await wait(TTD);
     try {
       await onDelete(itemsToDelete);
       notify({
@@ -147,19 +105,12 @@ Table.ControlPanel = function TableControlPanel<T extends Id>({
           ['ь', 'и', 'ей']
         )}`,
       });
-      setExistingItems(prev => {
-        const updated = new Map(prev);
+      setSelectedItems(prev => {
+        const updated = new Set(prev);
         itemsToDelete.forEach(id => updated.delete(id));
         return updated;
       });
     } catch (e) {
-      setExistingItems(prev => {
-        const updated = new Map(prev);
-        itemsToDelete.forEach(id => {
-          updated.set(id, { ...updated.get(id)!, state: 'show' });
-        });
-        return updated;
-      });
       notify({
         kind: 'error',
         text: `Ошибка: не удалось выполнить удаление ${
@@ -170,11 +121,8 @@ Table.ControlPanel = function TableControlPanel<T extends Id>({
     setIsDisabled(false);
   };
 
-  const handleAdd = () =>
-    setNewItems(prev => [{ id: uuid(), state: 'show' }, ...prev]);
-
   return (
-    <div className="mb-4 flex gap-4">
+    <div className="flex gap-4 border-b border-zinc-200 p-4 dark:border-zinc-700">
       <InputSearch
         onChange={e => onSearchChange(e.currentTarget.value)}
         value={search}
@@ -188,146 +136,100 @@ Table.ControlPanel = function TableControlPanel<T extends Id>({
       >
         Удалить
       </Button>
-      <Button type="button" variant="primary" onClick={handleAdd}>
-        Добавить
-      </Button>
     </div>
   );
+};
+
+Table.Main = function TableMain({ children }: PropsWithChildren) {
+  return <table className="w-full table-fixed">{children}</table>;
+};
+
+Table.Head = function TableHead({ children }: PropsWithChildren) {
+  return <thead className="group/thead">{children}</thead>;
 };
 
 export type TableBodyProps<T extends Id> = {
   children?:
     | ReactElement<TableRowProps<T>>
     | ReactElement<TableRowProps<any>>[];
-  header: ReactNode;
   updater: (id: T) => ReactElement;
-  creator: () => ReactElement;
 };
 
 Table.Body = function TableBody<T extends Id>({
   children,
   updater,
-  creator,
-  header,
 }: TableBodyProps<T>) {
   const {
-    setDisplayedItems,
-    existingItems,
-    setExistingItems,
-    newItems,
-    setNewItems,
+    setVisibleItems,
+    selectedItems,
+    setSelectedItems,
+    editingItems,
+    setEditingItems,
   } = useContext(TableContext);
 
   useEffect(() => {
-    setDisplayedItems(() => {
+    setVisibleItems(() => {
       if (!children) {
         return [];
       }
       return Children.map(children, child => child.props.rowId);
     });
-  }, [children, setDisplayedItems]);
+  }, [children, setVisibleItems]);
 
   return (
-    <div>
-      <div className="rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
-        <table className="w-full table-fixed">
-          <tbody>
-            {header}
-            {newItems.map(item => (
+    <tbody>
+      {children
+        ? Children.map(children, child => {
+            const id = child.props.rowId;
+            const isEditing = editingItems.has(id);
+            const isSelected = selectedItems.has(id);
+            return (
               <TableRowContext.Provider
-                key={item.id}
+                key={id}
                 value={{
-                  kind: 'new',
-                  state: item.state,
-                  close: async () => {
-                    setNewItems(p =>
-                      p.map(v => {
-                        if (v.id !== item.id) {
-                          return v;
-                        }
-                        return { ...v, state: 'hide' };
-                      })
-                    );
-                    await wait(TTD);
-                    setNewItems(p => p.filter(v => v.id !== item.id));
-                  },
+                  isSelected,
+                  toggleSelect: () =>
+                    setSelectedItems(prev => {
+                      const updated = new Set(prev);
+                      if (updated.has(id)) {
+                        updated.delete(id);
+                      } else {
+                        updated.add(id);
+                      }
+                      return updated;
+                    }),
+                  toggleEdit: () =>
+                    setEditingItems(prev => {
+                      const updated = new Set(prev);
+                      if (updated.has(id)) {
+                        updated.delete(id);
+                      } else {
+                        updated.add(id);
+                      }
+                      return updated;
+                    }),
                 }}
               >
-                {creator()}
+                {isEditing ? updater(id) : child}
               </TableRowContext.Provider>
-            ))}
-            {children
-              ? Children.map(children, child => {
-                  const itemData = existingItems.get(child.props.rowId);
-                  return (
-                    <TableRowContext.Provider
-                      key={child.props.rowId}
-                      value={{
-                        kind: 'existing',
-                        state: itemData?.state ?? 'show',
-                        isSelected: itemData?.isSelected ?? false,
-                        toggleSelect: () =>
-                          setExistingItems(prev => {
-                            const updated = new Map(prev);
-                            const itemPrevData = updated.get(child.props.rowId);
-                            updated.set(child.props.rowId, {
-                              state: 'show',
-                              ...itemPrevData,
-                              isSelected: itemPrevData
-                                ? !itemPrevData.isSelected
-                                : true,
-                            });
-                            return updated;
-                          }),
-                        markEdited: () =>
-                          setExistingItems(prev => {
-                            const updated = new Map(prev);
-                            const itemPrevData = updated.get(child.props.rowId);
-                            updated.set(child.props.rowId, {
-                              isSelected: false,
-                              ...itemPrevData,
-                              state: 'edit',
-                            });
-                            return updated;
-                          }),
-                        toReadOnlyView: () =>
-                          setExistingItems(prev => {
-                            const updated = new Map(prev);
-                            const itemPrevData = updated.get(child.props.rowId);
-                            updated.set(child.props.rowId, {
-                              isSelected: false,
-                              ...itemPrevData,
-                              state: 'idle',
-                            });
-                            return updated;
-                          }),
-                      }}
-                    >
-                      {itemData?.state === 'edit'
-                        ? updater(child.props.rowId)
-                        : child}
-                    </TableRowContext.Provider>
-                  );
-                })
-              : null}
-          </tbody>
-        </table>
-      </div>
-    </div>
+            );
+          })
+        : null}
+    </tbody>
   );
 };
 
 Table.SelectRowCheckbox = function TableSelectRowCheckbox() {
   const { isSelected, toggleSelect } = useContext(
     TableRowContext
-  ) as TableRowContextExisting;
+  ) as TableRowContext;
   return <input type="checkbox" checked={isSelected} onChange={toggleSelect} />;
 };
 
 Table.ButtonEdit = function TableButtonEdit() {
-  const { markEdited } = useContext(TableRowContext) as TableRowContextExisting;
+  const { toggleEdit } = useContext(TableRowContext) as TableRowContext;
   return (
-    <button className="group/edit-btn p-1" onClick={markEdited}>
+    <button className="group/edit-btn p-1" onClick={toggleEdit}>
       <FontAwesomeIcon
         icon={faPenToSquare}
         fixedWidth
@@ -338,36 +240,23 @@ Table.ButtonEdit = function TableButtonEdit() {
 };
 
 Table.SelectAllRowsCheckbox = function TableSelectAllRowsCheckbox() {
-  const { displayedItems, existingItems, setExistingItems } =
+  const { visibleItems, selectedItems, setSelectedItems } =
     useContext(TableContext);
 
   const allVisibleItemsSelected =
-    !!displayedItems.length &&
-    displayedItems.every(id => existingItems.get(id)?.isSelected);
+    !!visibleItems.length && visibleItems.every(id => selectedItems.has(id));
 
   return (
     <input
       type="checkbox"
       checked={allVisibleItemsSelected}
       onChange={() => {
-        setExistingItems(prev => {
-          const updated = new Map(prev);
+        setSelectedItems(prev => {
+          const updated = new Set(prev);
           if (allVisibleItemsSelected) {
-            displayedItems.forEach(id => {
-              updated.set(id, {
-                state: 'show',
-                ...prev.get(id),
-                isSelected: false,
-              });
-            });
+            visibleItems.forEach(id => updated.delete(id));
           } else {
-            displayedItems.forEach(id => {
-              updated.set(id, {
-                state: 'show',
-                ...prev.get(id),
-                isSelected: true,
-              });
-            });
+            visibleItems.forEach(id => updated.add(id));
           }
           return updated;
         });
@@ -378,29 +267,16 @@ Table.SelectAllRowsCheckbox = function TableSelectAllRowsCheckbox() {
 
 Table.ButtonCancel = function TableButtonCancel() {
   const ctx = useContext(TableRowContext)!;
-  if (ctx.kind === 'existing') {
-    return (
-      <button
-        className="group/editor-cancel flex items-center justify-center p-1"
-        onClick={ctx?.toReadOnlyView}
-      >
-        <FontAwesomeIcon
-          icon={faRotateBack}
-          fixedWidth
-          className="text-lg text-neutral-600 group-hover/editor-cancel:scale-110 group-hover/editor-cancel:text-yellow-500"
-        />
-      </button>
-    );
-  }
+
   return (
     <button
-      className="group/editor-del flex shrink-0 items-center justify-center p-1"
-      onClick={ctx?.close}
+      className="group/editor-cancel flex items-center justify-center p-1"
+      onClick={ctx?.toggleEdit}
     >
       <FontAwesomeIcon
-        icon={faXmark}
+        icon={faRotateBack}
         fixedWidth
-        className="text-lg text-neutral-600 group-hover/editor-del:scale-110 group-hover/editor-del:text-red-500"
+        className="text-lg text-neutral-600 group-hover/editor-cancel:scale-110 group-hover/editor-cancel:text-yellow-500"
       />
     </button>
   );
@@ -408,69 +284,18 @@ Table.ButtonCancel = function TableButtonCancel() {
 
 export type TableButtonCreateProps = {
   onSave: AsyncAction;
-  refresh: AsyncAction;
-};
-
-Table.ButtonCreate = function TableButtonCreate({
-  onSave,
-  refresh,
-}: TableButtonCreateProps) {
-  const notify = useNotificationEmitter();
-  const ctx = useContext(TableRowContext) as TableRowContextNew;
-
-  const handleCreate = async () => {
-    try {
-      await Promise.all([onSave(), ctx.close()]);
-      notify({
-        kind: 'success',
-        text: 'Запись успешно создана',
-      });
-      refresh();
-    } catch (e) {
-      notify({
-        kind: 'error',
-        text: `Ошибка: не удалось сохранить запись`,
-      });
-    }
-  };
-
-  return (
-    <button
-      className="group/editor-save flex shrink-0 items-center justify-center p-1"
-      onClick={handleCreate}
-    >
-      <FontAwesomeIcon
-        icon={faCheck}
-        fixedWidth
-        className="text-lg text-neutral-600 group-hover/editor-save:scale-110 group-hover/editor-save:text-green-500"
-      ></FontAwesomeIcon>
-    </button>
-  );
 };
 
 export type TableButtonUpdateProps = TableButtonCreateProps;
 
 Table.ButtonUpdate = function TableButtonUpdate({
   onSave,
-  refresh,
 }: TableButtonUpdateProps) {
-  const notify = useNotificationEmitter();
-  const ctx = useContext(TableRowContext) as TableRowContextExisting;
+  const ctx = useContext(TableRowContext) as TableRowContext;
 
   const handleUpdate = async () => {
-    try {
-      await onSave();
-      notify({
-        kind: 'success',
-        text: 'Запись успешно обновлена',
-      });
-    } catch (e) {
-      notify({
-        kind: 'error',
-        text: `Ошибка: не удалось обновить запись`,
-      });
-    }
-    ctx.toReadOnlyView();
+    await onSave();
+    ctx.toggleEdit();
   };
 
   return (
@@ -501,7 +326,7 @@ Table.Row = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
       ref={ref}
       className={classNameWithDefaults(
         clsx({
-          'group/row rounded-md border-b border-zinc-200 transition-[background] last:border-b-0 dark:border-zinc-700':
+          'group/row rounded-md border-b border-zinc-200 transition-[background] last:border-0 group-[]/thead:border-b dark:border-zinc-700':
             true,
         }),
         className
@@ -512,14 +337,14 @@ Table.Row = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
 
 Table.DataLoader = function TableDataPlaceholder() {
   return (
-    <Table.Data>
+    <Table.DataCell>
       <div className="h-8 w-full animate-pulse rounded-md bg-neutral-200"></div>
-    </Table.Data>
+    </Table.DataCell>
   );
 };
 
-Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
-  function TableData({ className, children, ...props }, ref) {
+Table.DataCell = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
+  function TableDataCell({ className, children, ...props }, ref) {
     const ctx = useContext(TableRowContext);
 
     return (
@@ -528,10 +353,7 @@ Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
           clsx({
             'p-0 text-sm text-black group-last/row:first:rounded-bl-md group-last:last:rounded-br-md dark:text-zinc-200':
               true,
-            'bg-zinc-50 dark:bg-zinc-700':
-              ctx?.kind === 'existing' && ctx.isSelected,
-            'animate-table-data-blink-light dark:animate-table-data-blink-dark':
-              ctx?.state === 'edit' || ctx?.state === 'idle',
+            'bg-zinc-50 dark:bg-zinc-700': !!ctx?.isSelected,
           }),
           className
         )}
@@ -539,12 +361,7 @@ Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
       >
         <div
           className={clsx({
-            'flex items-center px-6': true,
-            'py-3': !ctx,
-            'animate-table-data-show': ctx?.state === 'show',
-            'animate-table-data-hide': ctx?.state === 'hide',
-            'max-h-12 px-6 py-3':
-              ctx?.state === 'edit' || ctx?.state === 'idle',
+            'flex items-center px-6 py-3': true,
           })}
         >
           {children}
@@ -554,10 +371,37 @@ Table.Data = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
   }
 );
 
-Table.Head = function TableHead({ children }: PropsWithChildren) {
+Table.HeadCell = function TableHeadCell({ children }: PropsWithChildren) {
   return (
     <th className="text-left text-sm font-semibold text-slate-900 first:w-[61px] last:w-[114px] dark:text-slate-100">
       <div className="flex h-12 items-center px-6 py-3">{children}</div>
     </th>
   );
 };
+
+// Let's rethink <Table> component...
+
+/**
+ * <Table
+ *   updater={fn}
+ * >
+ *  <Table.Controls
+ *    onDelete={fn}
+ *    searchStr={string}
+ *    onSearchStrChange={string}
+ *  />
+ *  <Table.Head>
+ *    <Table.Row>
+ *      <Table.HeadCell />
+ *      <Table.HeadCell />
+ *      <Table.HeadCell />
+ *    </Table.Row>
+ *  </Table.Head>
+ *  <Table.Body>
+ *    <Table.RowEntity id={unique}>
+ *      <Table.DataCell />
+ *      <Table.DataCell />
+ *    </Table.RowEntity>
+ *  </Table.Body>
+ * </Table>
+ */

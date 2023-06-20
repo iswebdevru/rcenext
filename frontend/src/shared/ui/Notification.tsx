@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { v4 as uuid } from 'uuid';
 import { clsx } from '../lib/ui';
-import { wait } from '../lib/time';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCircleCheck,
@@ -27,8 +26,8 @@ type NotificationState = {
   remove: (id: string) => Promise<void>;
 };
 
-const TTL = 3000;
-const REMOVE_TIME = 500;
+// const TTL = 3000;
+// const REMOVE_TIME = 500;
 
 const iconsMap = {
   success: faCircleCheck,
@@ -49,7 +48,6 @@ const useNotification = create<NotificationState>((set, get) => ({
         },
       ],
     }));
-    await wait(TTL);
     await get().remove(id);
   },
   async remove(id) {
@@ -67,7 +65,6 @@ const useNotification = create<NotificationState>((set, get) => ({
             }
       ),
     }));
-    await wait(REMOVE_TIME);
     set(state => ({
       notifications: state.notifications.filter(n => n.id !== id),
     }));
@@ -83,7 +80,7 @@ function Notification({ data, onRemove }: NotificationProps) {
   return (
     <div
       className={clsx({
-        'flex items-center gap-4 p-2 border shadow-sm rounded-2xl animate-notification-add dark:bg-slate-800 dark:border-slate-700':
+        'flex animate-notification-add items-center gap-4 rounded-2xl border p-2 shadow-sm dark:border-slate-700 dark:bg-slate-800':
           true,
         'animate-notification-remove': data.isRemoving,
         'border-green-500 bg-green-50': data.kind === 'success',
@@ -92,7 +89,7 @@ function Notification({ data, onRemove }: NotificationProps) {
     >
       <div
         className={clsx({
-          'text-2xl text-white w-10 h-10 flex items-center justify-center rounded-2xl dark:bg-slate-700':
+          'flex h-10 w-10 items-center justify-center rounded-2xl text-2xl text-white dark:bg-slate-700':
             true,
           'bg-red-700 dark:text-red-400': data.kind === 'error',
           'bg-green-500 dark:text-green-500': data.kind === 'success',
@@ -104,7 +101,7 @@ function Notification({ data, onRemove }: NotificationProps) {
         <p className="text-slate-900 dark:text-slate-200">{data.text}</p>
       </div>
       <button
-        className="flex items-center justify-center w-10 h-10 ml-auto text-lg transition-colors rounded-2xl text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
+        className="ml-auto flex h-10 w-10 items-center justify-center rounded-2xl text-lg text-slate-500 transition-colors hover:text-slate-900 dark:hover:text-slate-200"
         onClick={onRemove}
         disabled={data.isRemoving}
       >
@@ -118,7 +115,7 @@ export function Notifications() {
   const notifications = useNotification(state => state.notifications);
   const remove = useNotification(state => state.remove);
   return (
-    <div className="fixed z-50 flex flex-col w-full max-w-sm gap-3 bottom-5 right-5">
+    <div className="fixed bottom-5 right-5 z-50 flex w-full max-w-sm flex-col gap-3">
       {notifications.map(notification => (
         <Notification
           key={notification.id}

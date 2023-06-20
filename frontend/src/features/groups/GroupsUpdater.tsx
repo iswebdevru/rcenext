@@ -26,28 +26,28 @@ export default function GroupsUpdater({
 
   return (
     <Table.Row>
-      <Table.Data />
-      <Table.Data>
+      <Table.DataCell />
+      <Table.DataCell>
         <InputText
           pattern="[А-ЯA-Z]+к?-[1-4]\d{2,}"
           ref={groupNameRef}
           defaultValue={group.name}
         />
-      </Table.Data>
-      <Table.Data>
+      </Table.DataCell>
+      <Table.DataCell>
         <InputText
           pattern="[1-9]+"
           ref={mainBlockRef}
           defaultValue={group.main_block}
         />
-      </Table.Data>
-      <Table.Data>
+      </Table.DataCell>
+      <Table.DataCell>
         <Table.ButtonUpdate
           onSave={onSave}
           refresh={() => Promise.all([refresh(), mutate()])}
         />
         <Table.ButtonCancel />
-      </Table.Data>
+      </Table.DataCell>
     </Table.Row>
   );
 }

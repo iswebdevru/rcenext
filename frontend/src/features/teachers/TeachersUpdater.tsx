@@ -28,8 +28,8 @@ export function TeachersUpdater({
     return null;
   }
 
-  const onSave = () =>
-    partiallyUpdateEntity(url, {
+  const onSave = async () => {
+    await partiallyUpdateEntity(url, {
       body: {
         first_name: firstNameRef.current?.value,
         last_name: lastNameRef.current?.value,
@@ -37,45 +37,44 @@ export function TeachersUpdater({
         subjects: selectedSubjects,
       },
     });
+    return Promise.all([refresh(), mutate()]);
+  };
 
   return (
     <Table.Row>
-      <Table.Data />
-      <Table.Data>
+      <Table.DataCell />
+      <Table.DataCell>
         <InputText
           defaultValue={teacher ? teacher.first_name : ''}
           ref={firstNameRef}
         />
-      </Table.Data>
-      <Table.Data>
+      </Table.DataCell>
+      <Table.DataCell>
         <InputText
           defaultValue={teacher ? teacher.last_name : ''}
           ref={lastNameRef}
         />
-      </Table.Data>
-      <Table.Data>
+      </Table.DataCell>
+      <Table.DataCell>
         <InputText
           defaultValue={teacher ? teacher.patronymic : ''}
           ref={patronymicRef}
         />
-      </Table.Data>
+      </Table.DataCell>
       {selectedSubjects ? (
-        <Table.Data>
+        <Table.DataCell>
           <SelectSubjects
             value={selectedSubjects}
             onChange={setSelectedSubjects}
           />
-        </Table.Data>
+        </Table.DataCell>
       ) : (
         <Table.DataLoader />
       )}
-      <Table.Data>
-        <Table.ButtonUpdate
-          onSave={onSave}
-          refresh={() => Promise.all([refresh(), mutate()])}
-        />
+      <Table.DataCell>
+        <Table.ButtonUpdate onSave={onSave} />
         <Table.ButtonCancel />
-      </Table.Data>
+      </Table.DataCell>
     </Table.Row>
   );
 }

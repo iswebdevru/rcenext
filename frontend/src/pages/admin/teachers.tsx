@@ -8,6 +8,7 @@ import {
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { API_TEACHERS, deleteEntities, Teacher } from '@/shared/api';
 import { useState } from 'react';
+import { Overlay, Portal } from '@/shared/ui/Modal';
 
 export default function Teachers() {
   const [searchFilter, setSearchFilter] = useState('');
@@ -24,56 +25,62 @@ export default function Teachers() {
   return (
     <AdminLayout>
       <div className="h-full p-6">
+        <Portal>
+          <Overlay>
+            <TeachersCreator refresh={mutate} />
+          </Overlay>
+        </Portal>
         <Table>
-          <Table.ControlPanel
+          <Table.Controls
             onDelete={deleteTeachers}
             search={searchFilter}
             onSearchChange={setSearchFilter}
           />
-          <Table.Body<string>
-            creator={() => <TeachersCreator refresh={mutate} />}
-            updater={url => <TeachersUpdater refresh={mutate} id={url} />}
-            header={
+          <Table.Main>
+            <Table.Head>
               <Table.Row>
-                <Table.Head>
+                <Table.HeadCell>
                   <Table.SelectAllRowsCheckbox />
-                </Table.Head>
-                <Table.Head>Имя</Table.Head>
-                <Table.Head>Фамилия</Table.Head>
-                <Table.Head>Отчество</Table.Head>
-                <Table.Head>Предметы</Table.Head>
-                <Table.Head />
+                </Table.HeadCell>
+                <Table.HeadCell>Имя</Table.HeadCell>
+                <Table.HeadCell>Фамилия</Table.HeadCell>
+                <Table.HeadCell>Отчество</Table.HeadCell>
+                <Table.HeadCell>Предметы</Table.HeadCell>
+                <Table.HeadCell />
               </Table.Row>
-            }
-          >
-            {data
-              ?.map(page => page.results)
-              .flat()
-              .map((teacher, i, a) => (
-                <Table.Row
-                  key={teacher.url}
-                  rowId={teacher.url}
-                  ref={a.length === i + 1 ? lastElementRef : null}
-                >
-                  <Table.Data>
-                    <Table.SelectRowCheckbox />
-                  </Table.Data>
-                  <Table.Data>{teacher.first_name}</Table.Data>
-                  <Table.Data>{teacher.last_name}</Table.Data>
-                  <Table.Data>{teacher.patronymic}</Table.Data>
-                  <Table.Data>
-                    <div className="flex flex-wrap">
-                      {teacher.subjects.map(subjectUrl => (
-                        <TeacherSubject key={subjectUrl} url={subjectUrl} />
-                      ))}
-                    </div>
-                  </Table.Data>
-                  <Table.Data>
-                    <Table.ButtonEdit />
-                  </Table.Data>
-                </Table.Row>
-              ))}
-          </Table.Body>
+            </Table.Head>
+            <Table.Body<string>
+              updater={url => <TeachersUpdater refresh={mutate} id={url} />}
+            >
+              {data
+                ?.map(page => page.results)
+                .flat()
+                .map((teacher, i, a) => (
+                  <Table.Row
+                    key={teacher.url}
+                    rowId={teacher.url}
+                    ref={a.length === i + 1 ? lastElementRef : null}
+                  >
+                    <Table.DataCell>
+                      <Table.SelectRowCheckbox />
+                    </Table.DataCell>
+                    <Table.DataCell>{teacher.first_name}</Table.DataCell>
+                    <Table.DataCell>{teacher.last_name}</Table.DataCell>
+                    <Table.DataCell>{teacher.patronymic}</Table.DataCell>
+                    <Table.DataCell>
+                      <div className="flex flex-wrap">
+                        {teacher.subjects.map(subjectUrl => (
+                          <TeacherSubject key={subjectUrl} url={subjectUrl} />
+                        ))}
+                      </div>
+                    </Table.DataCell>
+                    <Table.DataCell>
+                      <Table.ButtonEdit />
+                    </Table.DataCell>
+                  </Table.Row>
+                ))}
+            </Table.Body>
+          </Table.Main>
         </Table>
       </div>
     </AdminLayout>

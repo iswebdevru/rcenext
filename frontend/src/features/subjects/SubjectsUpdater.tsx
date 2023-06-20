@@ -24,17 +24,17 @@ export function SubjectsUpdater({
 
   return (
     <Table.Row>
-      <Table.Data />
-      <Table.Data>
+      <Table.DataCell />
+      <Table.DataCell>
         <InputText ref={nameRef} defaultValue={subject.name} />
-      </Table.Data>
-      <Table.Data>
+      </Table.DataCell>
+      <Table.DataCell>
         <Table.ButtonUpdate
           onSave={onSave}
           refresh={() => Promise.all([refresh(), mutate()])}
         />
         <Table.ButtonCancel />
-      </Table.Data>
+      </Table.DataCell>
     </Table.Row>
   );
 }

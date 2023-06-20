@@ -32,8 +32,6 @@ export function AdminNav() {
   const [isMobileViewOpened, setIsMobileViewOpened] = useState(false);
   const mobileViewRef = useRef<HTMLDivElement>(null);
 
-  console.log(isMobileViewOpened);
-
   return (
     <>
       <div className="fixed left-0 top-14 hidden h-full w-52 border-r border-zinc-200 bg-white py-10 dark:border-zinc-700 dark:bg-zinc-800 lg:block">

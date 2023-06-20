@@ -13,14 +13,14 @@ export function SubjectsCreator({ refresh }: TableCreatorComponentProps) {
 
   return (
     <Table.Row>
-      <Table.Data />
-      <Table.Data>
+      <Table.DataCell />
+      <Table.DataCell>
         <InputText ref={nameRef} required />
-      </Table.Data>
-      <Table.Data>
+      </Table.DataCell>
+      <Table.DataCell>
         <Table.ButtonCreate onSave={onSave} refresh={refresh} />
         <Table.ButtonCancel />
-      </Table.Data>
+      </Table.DataCell>
     </Table.Row>
   );
 }

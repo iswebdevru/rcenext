@@ -17,21 +17,21 @@ export function GroupsCreator({ refresh }: TableCreatorComponentProps) {
 
   return (
     <Table.Row>
-      <Table.Data />
-      <Table.Data>
+      <Table.DataCell />
+      <Table.DataCell>
         <InputText
           required
           pattern="[А-ЯA-Z]+к?-[1-4]\d{2,}"
           ref={groupNameRef}
         />
-      </Table.Data>
-      <Table.Data>
+      </Table.DataCell>
+      <Table.DataCell>
         <InputText required pattern="[1-9]+" ref={mainBlockRef} />
-      </Table.Data>
-      <Table.Data>
+      </Table.DataCell>
+      <Table.DataCell>
         <Table.ButtonCreate onSave={onSave} refresh={refresh} />
         <Table.ButtonCancel />
-      </Table.Data>
+      </Table.DataCell>
     </Table.Row>
   );
 }

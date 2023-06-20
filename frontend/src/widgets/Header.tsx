@@ -95,7 +95,7 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
       {/* Mobile view */}
       <div
         className={clsx({
-          'fixed left-0 top-0 z-50 block h-full w-full bg-black transition-colors duration-300 xl:hidden':
+          'fixed left-0 top-0 z-10 block h-full w-full bg-black transition-colors duration-300 xl:hidden':
             true,
           'bg-opacity-50': isMenuOpened,
           'invisible bg-opacity-0': !isMenuOpened,
@@ -159,7 +159,7 @@ function LogoutButton() {
   return (
     <button
       onClick={() => signOut()}
-      className="items-center text-slate-900 transition-colors hover:text-slate-500 dark:text-zinc-500 dark:hover:text-zinc-200"
+      className="items-center text-slate-700 transition-colors hover:text-slate-500 dark:text-zinc-500 dark:hover:text-zinc-200"
     >
       <FontAwesomeIcon
         icon={faRightFromBracket}

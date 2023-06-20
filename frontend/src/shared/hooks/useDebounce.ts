@@ -22,23 +22,7 @@ export function useDebounce<T>(value: T, ms: number = 250): T {
         clearTimeout(timeoutIdRef.current);
       }
     };
-  }, [value]);
+  }, [value, ms]);
 
   return derivedState;
 }
-
-// 't'
-// 'th'
-// 'thi'
-// 'this'
-
-// 'this i'
-// 'this is'
-// 'this is a'
-// 'this is am'
-// 'this is ame'
-
-// 'this is amer'
-// 'this is ameri'
-// 'this is americ'
-// 'this is america'

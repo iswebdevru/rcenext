@@ -23,7 +23,7 @@ export default function Groups() {
     <AdminLayout>
       <div className="h-full p-6">
         <Table<string>>
-          <Table.ControlPanel
+          <Table.Controls
             onDelete={deleteGroups}
             search={searchFilter}
             onSearchChange={setSearchFilter}
@@ -33,12 +33,12 @@ export default function Groups() {
             updater={url => <GroupsUpdater refresh={mutate} id={url} />}
             header={
               <Table.Row>
-                <Table.Head>
+                <Table.HeadCell>
                   <Table.SelectAllRowsCheckbox />
-                </Table.Head>
-                <Table.Head>Группа</Table.Head>
-                <Table.Head>Корпус</Table.Head>
-                <Table.Head />
+                </Table.HeadCell>
+                <Table.HeadCell>Группа</Table.HeadCell>
+                <Table.HeadCell>Корпус</Table.HeadCell>
+                <Table.HeadCell />
               </Table.Row>
             }
           >
@@ -51,14 +51,14 @@ export default function Groups() {
                   key={group.url}
                   rowId={group.url}
                 >
-                  <Table.Data>
+                  <Table.DataCell>
                     <Table.SelectRowCheckbox />
-                  </Table.Data>
-                  <Table.Data>{group.name}</Table.Data>
-                  <Table.Data>{group.main_block}</Table.Data>
-                  <Table.Data>
+                  </Table.DataCell>
+                  <Table.DataCell>{group.name}</Table.DataCell>
+                  <Table.DataCell>{group.main_block}</Table.DataCell>
+                  <Table.DataCell>
                     <Table.ButtonEdit />
-                  </Table.Data>
+                  </Table.DataCell>
                 </Table.Row>
               ))}
           </Table.Body>
