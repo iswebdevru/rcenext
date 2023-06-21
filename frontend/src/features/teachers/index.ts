@@ -1,3 +1,3 @@
 export * from './TeachersUpdater';
-export * from './TeachersCreator';
 export * from './TeacherSubject';
+export * from './TeachersFormCreate';

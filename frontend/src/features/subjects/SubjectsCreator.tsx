@@ -17,10 +17,6 @@ export function SubjectsCreator({ refresh }: TableCreatorComponentProps) {
       <Table.DataCell>
         <InputText ref={nameRef} required />
       </Table.DataCell>
-      <Table.DataCell>
-        <Table.ButtonCreate onSave={onSave} refresh={refresh} />
-        <Table.ButtonCancel />
-      </Table.DataCell>
     </Table.Row>
   );
 }

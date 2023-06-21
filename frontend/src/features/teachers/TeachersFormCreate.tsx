@@ -1,17 +1,25 @@
-import { useRef, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import { InputText } from '@/shared/ui/Input';
-import { TableCreatorComponentProps } from '@/shared/ui/Table';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 import { API_TEACHERS, createEntity } from '@/shared/api';
 import { Button } from '@/shared/ui/Button';
 
-export function TeachersCreator({ refresh }: TableCreatorComponentProps) {
+export type TeachersFormCreateProps = {
+  refresh: () => Promise<unknown>;
+  onClose: () => void;
+};
+
+export function TeachersFormCreate({
+  refresh,
+  onClose,
+}: TeachersFormCreateProps) {
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const patronymicRef = useRef<HTMLInputElement>(null);
   const [subjects, setSubjects] = useState<string[]>([]);
 
-  const onSave = async () => {
+  const onSave = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     await createEntity(API_TEACHERS, {
       body: {
         first_name: firstNameRef.current!.value,
@@ -20,6 +28,7 @@ export function TeachersCreator({ refresh }: TableCreatorComponentProps) {
         subjects: subjects,
       },
     });
+    onClose();
     return refresh();
   };
 
@@ -33,19 +42,19 @@ export function TeachersCreator({ refresh }: TableCreatorComponentProps) {
           <label className="text-sm text-zinc-700 block mb-1" htmlFor="">
             Имя
           </label>
-          <InputText ref={firstNameRef} required />
+          <InputText name="first_name" ref={firstNameRef} required />
         </div>
         <div className="col-span-2">
           <label className="text-sm text-zinc-700 block mb-1" htmlFor="">
             Фамилия
           </label>
-          <InputText ref={lastNameRef} required />
+          <InputText name="last_name" ref={lastNameRef} required />
         </div>
         <div className="col-span-2">
           <label className="text-sm text-zinc-700 block mb-1" htmlFor="">
             Отчество
           </label>
-          <InputText ref={patronymicRef} required />
+          <InputText name="patronymic" ref={patronymicRef} required />
         </div>
         <div className="col-span-4">
           <label className="text-sm text-zinc-700 block mb-1" htmlFor="">
@@ -55,7 +64,9 @@ export function TeachersCreator({ refresh }: TableCreatorComponentProps) {
         </div>
       </div>
       <div className="p-5 flex justify-end gap-5">
-        <Button type="button">Отменить</Button>
+        <Button type="button" onClick={onClose}>
+          Отменить
+        </Button>
         <Button type="submit" variant="primary">
           Сохранить
         </Button>

@@ -1,17 +1,20 @@
-import { AdminLayout } from '@/layouts';
+import { useState } from 'react';
 import { Table } from '@/shared/ui/Table';
-import {
-  TeachersCreator,
-  TeacherSubject,
-  TeachersUpdater,
-} from '@/features/teachers';
+import { Button } from '@/shared/ui/Button';
+import { Overlay, Portal } from '@/shared/ui/Modal';
+import { Title } from '@/shared/ui/Typography';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { API_TEACHERS, deleteEntities, Teacher } from '@/shared/api';
-import { useState } from 'react';
-import { Overlay, Portal } from '@/shared/ui/Modal';
+import {
+  TeacherSubject,
+  TeachersUpdater,
+  TeachersFormCreate,
+} from '@/features/teachers';
+import { AdminLayout } from '@/layouts';
 
 export default function Teachers() {
   const [searchFilter, setSearchFilter] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const searchFilterDebounced = useDebounce(searchFilter);
   const { data, lastElementRef, mutate } = usePaginatedFetch<Teacher>(
     `${API_TEACHERS}?search=${searchFilterDebounced}`
@@ -25,11 +28,24 @@ export default function Teachers() {
   return (
     <AdminLayout>
       <div className="h-full p-6">
-        <Portal>
-          <Overlay>
-            <TeachersCreator refresh={mutate} />
-          </Overlay>
-        </Portal>
+        <div className="flex justify-between items-center px-6 pb-6">
+          <Title>Преподаватели</Title>
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => setIsModalVisible(true)}
+          >
+            Добавить
+          </Button>
+          <Portal>
+            <Overlay isVisible={isModalVisible}>
+              <TeachersFormCreate
+                refresh={mutate}
+                onClose={() => setIsModalVisible(false)}
+              />
+            </Overlay>
+          </Portal>
+        </div>
         <Table>
           <Table.Controls
             onDelete={deleteTeachers}

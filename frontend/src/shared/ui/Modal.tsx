@@ -4,7 +4,7 @@ import { openSans } from './fonts';
 import { CSSTransition } from 'react-transition-group';
 
 /**
- * Low level API. The base primitive of every modal in application.
+ * Low level API. The base primitive of every modal in the application.
  * Inspired by "Айти Синяк"
  */
 export function Portal({ children }: PropsWithChildren) {
@@ -27,29 +27,32 @@ export function Portal({ children }: PropsWithChildren) {
   return createPortal(children, containerRef.current);
 }
 
-export function Overlay({ children }: PropsWithChildren) {
+export type OverlayProps = {
+  isVisible: boolean;
+} & PropsWithChildren;
+
+export function Overlay({ children, isVisible }: OverlayProps) {
   const nodeRef = useRef<HTMLDivElement>(null);
 
   return (
-    <CSSTransition nodeRef={nodeRef} timeout={200}>
+    <CSSTransition
+      nodeRef={nodeRef}
+      timeout={150}
+      in={isVisible}
+      unmountOnExit
+      classNames={{
+        enter: 'opacity-0',
+        enterActive: 'opacity-100 transition-opacity',
+        exit: 'opacity-1',
+        exitActive: 'opacity-0 transition-opacity',
+      }}
+    >
       <div
-        className="fixed left-0 top-0 w-full h-full bg-zinc-900 bg-opacity-80 z-20 grid place-items-center"
+        className="fixed left-0 top-0 w-full h-full bg-black bg-opacity-70 z-20 grid place-items-center"
         ref={nodeRef}
       >
         {children}
       </div>
     </CSSTransition>
-  );
-}
-
-export type ModalProps = {
-  isOpened: boolean;
-  onChange: (state: boolean) => void;
-} & PropsWithChildren;
-export function Modal({ children }: PropsWithChildren) {
-  return (
-    <Portal>
-      <Overlay>{children}</Overlay>
-    </Portal>
   );
 }
