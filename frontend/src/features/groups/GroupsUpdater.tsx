@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { fetcher, Group, partiallyUpdateEntity } from '@/shared/api';
-import { InputText } from '@/shared/ui/Input';
+import { Input } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 
@@ -28,14 +28,14 @@ export default function GroupsUpdater({
     <Table.Row>
       <Table.DataCell />
       <Table.DataCell>
-        <InputText
+        <Input
           pattern="[А-ЯA-Z]+к?-[1-4]\d{2,}"
           ref={groupNameRef}
           defaultValue={group.name}
         />
       </Table.DataCell>
       <Table.DataCell>
-        <InputText
+        <Input
           pattern="[1-9]+"
           ref={mainBlockRef}
           defaultValue={group.main_block}

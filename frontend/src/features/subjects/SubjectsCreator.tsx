@@ -1,5 +1,5 @@
 import { API_SUBJECTS, createEntity } from '@/shared/api';
-import { InputText } from '@/shared/ui/Input';
+import { Input } from '@/shared/ui/Input';
 import { Table, TableCreatorComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 
@@ -15,7 +15,7 @@ export function SubjectsCreator({ refresh }: TableCreatorComponentProps) {
     <Table.Row>
       <Table.DataCell />
       <Table.DataCell>
-        <InputText ref={nameRef} required />
+        <Input ref={nameRef} required />
       </Table.DataCell>
     </Table.Row>
   );

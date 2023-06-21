@@ -1,6 +1,6 @@
 import { BaseLayout } from '@/layouts';
 import { Button } from '@/shared/ui/Button';
-import { InputText } from '@/shared/ui/Input';
+import { Input } from '@/shared/ui/Input';
 import { GetServerSideProps } from 'next';
 import { getServerSession } from 'next-auth';
 import { signIn } from 'next-auth/react';
@@ -39,7 +39,7 @@ export default function Login() {
               >
                 Пользователь
               </label>
-              <InputText
+              <Input
                 id={loginLabelId}
                 placeholder="login"
                 value={username}
@@ -54,7 +54,7 @@ export default function Login() {
               >
                 Пароль
               </label>
-              <InputText
+              <Input
                 id={passwordLabelId}
                 value={password}
                 placeholder="password"

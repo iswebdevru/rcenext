@@ -1,5 +1,5 @@
 import { API_GROUPS, createEntity } from '@/shared/api';
-import { InputText } from '@/shared/ui/Input';
+import { Input } from '@/shared/ui/Input';
 import { Table, TableCreatorComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 
@@ -19,14 +19,10 @@ export function GroupsCreator({ refresh }: TableCreatorComponentProps) {
     <Table.Row>
       <Table.DataCell />
       <Table.DataCell>
-        <InputText
-          required
-          pattern="[А-ЯA-Z]+к?-[1-4]\d{2,}"
-          ref={groupNameRef}
-        />
+        <Input required pattern="[А-ЯA-Z]+к?-[1-4]\d{2,}" ref={groupNameRef} />
       </Table.DataCell>
       <Table.DataCell>
-        <InputText required pattern="[1-9]+" ref={mainBlockRef} />
+        <Input required pattern="[1-9]+" ref={mainBlockRef} />
       </Table.DataCell>
       <Table.DataCell>
         <Table.ButtonCreate onSave={onSave} refresh={refresh} />

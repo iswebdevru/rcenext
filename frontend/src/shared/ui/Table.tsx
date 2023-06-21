@@ -17,20 +17,16 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { classNameWithDefaults, clsx, russianEnding } from '../lib/ui';
+import { classNameWithDefaults, clsx } from '../lib/ui';
 import { Button } from './Button';
 import { InputSearch } from './Input';
-import { useNotificationEmitter } from './Notification';
 
 export type Id = string | number;
 
-export type TableCreatorComponentProps = {
-  refresh: AsyncAction;
-};
-
 export type TableUpdaterComponentProps<T> = {
   id: T;
-} & TableCreatorComponentProps;
+  refresh: AsyncAction;
+};
 
 type AsyncAction = () => Promise<unknown> | unknown;
 
@@ -87,7 +83,6 @@ Table.Controls = function TableControls<T extends Id>({
   onSearchChange,
   search,
 }: TableControlsProps<T>) {
-  const notify = useNotificationEmitter();
   const [isDisabled, setIsDisabled] = useState(false);
   const { visibleItems, selectedItems, setSelectedItems } =
     useContext<TableContext<T>>(TableContext);
@@ -96,28 +91,12 @@ Table.Controls = function TableControls<T extends Id>({
 
   const handleDelete = async () => {
     setIsDisabled(true);
-    try {
-      await onDelete(itemsToDelete);
-      notify({
-        kind: 'success',
-        text: `Удалено: ${itemsToDelete.length} запис${russianEnding(
-          itemsToDelete.length,
-          ['ь', 'и', 'ей']
-        )}`,
-      });
-      setSelectedItems(prev => {
-        const updated = new Set(prev);
-        itemsToDelete.forEach(id => updated.delete(id));
-        return updated;
-      });
-    } catch (e) {
-      notify({
-        kind: 'error',
-        text: `Ошибка: не удалось выполнить удаление ${
-          itemsToDelete.length
-        } запис${russianEnding(itemsToDelete.length, ['и', 'ей', 'ей'])}`,
-      });
-    }
+    await onDelete(itemsToDelete);
+    setSelectedItems(prev => {
+      const updated = new Set(prev);
+      itemsToDelete.forEach(id => updated.delete(id));
+      return updated;
+    });
     setIsDisabled(false);
   };
 

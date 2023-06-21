@@ -1,21 +1,26 @@
 import { useState } from 'react';
 import { Table } from '@/shared/ui/Table';
 import { Button } from '@/shared/ui/Button';
-import { Overlay, Portal } from '@/shared/ui/Modal';
+import { Modal, Overlay } from '@/shared/ui/Modal';
 import { Title } from '@/shared/ui/Typography';
-import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
+import {
+  useAnimationTransition,
+  useDebounce,
+  usePaginatedFetch,
+} from '@/shared/hooks';
 import { API_TEACHERS, deleteEntities, Teacher } from '@/shared/api';
 import {
   TeacherSubject,
   TeachersUpdater,
-  TeachersFormCreate,
+  TeacherCreateForm,
 } from '@/features/teachers';
 import { AdminLayout } from '@/layouts';
+import { Portal } from '@/shared/ui/Portal';
 
 export default function Teachers() {
   const [searchFilter, setSearchFilter] = useState('');
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const searchFilterDebounced = useDebounce(searchFilter);
+  const [{ status: modalStatus }, toggleModal] = useAnimationTransition();
   const { data, lastElementRef, mutate } = usePaginatedFetch<Teacher>(
     `${API_TEACHERS}?search=${searchFilterDebounced}`
   );
@@ -33,16 +38,22 @@ export default function Teachers() {
           <Button
             type="button"
             variant="primary"
-            onClick={() => setIsModalVisible(true)}
+            onClick={() => {
+              toggleModal(true);
+            }}
           >
             Добавить
           </Button>
           <Portal>
-            <Overlay isVisible={isModalVisible}>
-              <TeachersFormCreate
-                refresh={mutate}
-                onClose={() => setIsModalVisible(false)}
-              />
+            <Overlay status={modalStatus}>
+              <Modal status={modalStatus}>
+                <TeacherCreateForm
+                  refresh={mutate}
+                  onClose={() => {
+                    toggleModal(false);
+                  }}
+                />
+              </Modal>
             </Overlay>
           </Portal>
         </div>

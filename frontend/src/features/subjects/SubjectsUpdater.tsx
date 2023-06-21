@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { InputText } from '@/shared/ui/Input';
+import { Input } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { useRef } from 'react';
 import { fetcher, partiallyUpdateEntity, Subject } from '@/shared/api';
@@ -26,7 +26,7 @@ export function SubjectsUpdater({
     <Table.Row>
       <Table.DataCell />
       <Table.DataCell>
-        <InputText ref={nameRef} defaultValue={subject.name} />
+        <Input ref={nameRef} defaultValue={subject.name} />
       </Table.DataCell>
       <Table.DataCell>
         <Table.ButtonUpdate

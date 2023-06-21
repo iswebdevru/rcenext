@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { InputText } from '@/shared/ui/Input';
+import { Input } from '@/shared/ui/Input';
 import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 import { fetcher, partiallyUpdateEntity, Teacher } from '@/shared/api';
@@ -44,19 +44,19 @@ export function TeachersUpdater({
     <Table.Row>
       <Table.DataCell />
       <Table.DataCell>
-        <InputText
+        <Input
           defaultValue={teacher ? teacher.first_name : ''}
           ref={firstNameRef}
         />
       </Table.DataCell>
       <Table.DataCell>
-        <InputText
+        <Input
           defaultValue={teacher ? teacher.last_name : ''}
           ref={lastNameRef}
         />
       </Table.DataCell>
       <Table.DataCell>
-        <InputText
+        <Input
           defaultValue={teacher ? teacher.patronymic : ''}
           ref={patronymicRef}
         />
