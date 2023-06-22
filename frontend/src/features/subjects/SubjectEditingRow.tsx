@@ -1,13 +1,18 @@
+import { useRef } from 'react';
 import useSWR from 'swr';
 import { Input } from '@/shared/ui/Input';
-import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
-import { useRef } from 'react';
+import { Table } from '@/shared/ui/Table';
 import { fetcher, partiallyUpdateEntity, Subject } from '@/shared/api';
 
-export function SubjectsUpdater({
+export type SubjectEditingRowProps = {
+  id: string;
+  refresh: () => Promise<unknown>;
+};
+
+export function SubjectEditingRow({
   id: url,
   refresh,
-}: TableUpdaterComponentProps<string>) {
+}: SubjectEditingRowProps) {
   const nameRef = useRef<HTMLInputElement>(null);
   const { data: subject, mutate } = useSWR<Subject>(url, fetcher);
 
@@ -15,12 +20,14 @@ export function SubjectsUpdater({
     return null;
   }
 
-  const onSave = () =>
-    partiallyUpdateEntity(url, {
+  const onSave = async () => {
+    await partiallyUpdateEntity(url, {
       body: {
         name: nameRef.current?.value,
       },
     });
+    return Promise.all([refresh(), mutate()]);
+  };
 
   return (
     <Table.Row>
@@ -29,10 +36,7 @@ export function SubjectsUpdater({
         <Input ref={nameRef} defaultValue={subject.name} />
       </Table.DataCell>
       <Table.DataCell>
-        <Table.ButtonUpdate
-          onSave={onSave}
-          refresh={() => Promise.all([refresh(), mutate()])}
-        />
+        <Table.ButtonUpdate onSave={onSave} />
         <Table.ButtonCancel />
       </Table.DataCell>
     </Table.Row>

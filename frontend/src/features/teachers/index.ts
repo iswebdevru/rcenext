@@ -1,2 +1,2 @@
-export * from './TeachersUpdater';
+export * from './TeacherEditingRow';
 export * from './TeacherCreateForm';

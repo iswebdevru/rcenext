@@ -1,3 +1,3 @@
-export * from './GroupsCreator';
-export * from './GroupsUpdater';
+export * from './GroupCreateForm';
+export * from './GroupEditingRow';
 export * from './GroupSelect';

@@ -13,8 +13,7 @@ export function SelectSubjects({ onChange, value }: SelectSubjectsProps) {
   return (
     <Select<string> multiple value={value} onChange={onChange}>
       {data
-        ?.map(page => page.results)
-        .flat()
+        ?.flatMap(page => page.results)
         .map((subject, i, a) => (
           <Select.Option
             ref={a.length === i + 1 ? lastElementRef : null}

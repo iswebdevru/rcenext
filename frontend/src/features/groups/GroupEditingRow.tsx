@@ -1,13 +1,18 @@
+import { useRef } from 'react';
 import useSWR from 'swr';
 import { fetcher, Group, partiallyUpdateEntity } from '@/shared/api';
 import { Input } from '@/shared/ui/Input';
-import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
-import { useRef } from 'react';
+import { Table } from '@/shared/ui/Table';
 
-export default function GroupsUpdater({
+export type GroupEditingRowProps = {
+  id: string;
+  refresh: () => Promise<unknown>;
+};
+
+export default function GroupEditingRow({
   id: url,
   refresh,
-}: TableUpdaterComponentProps<string>) {
+}: GroupEditingRowProps) {
   const groupNameRef = useRef<HTMLInputElement>(null);
   const mainBlockRef = useRef<HTMLInputElement>(null);
   const { data: group, mutate } = useSWR<Group>(url, fetcher);
@@ -16,13 +21,15 @@ export default function GroupsUpdater({
     return null;
   }
 
-  const onSave = () =>
-    partiallyUpdateEntity(url, {
+  const onSave = async () => {
+    await partiallyUpdateEntity(url, {
       body: {
         name: groupNameRef.current!.value,
         main_block: parseInt(mainBlockRef.current!.value),
       },
     });
+    return Promise.all([refresh(), mutate()]);
+  };
 
   return (
     <Table.Row>
@@ -42,10 +49,7 @@ export default function GroupsUpdater({
         />
       </Table.DataCell>
       <Table.DataCell>
-        <Table.ButtonUpdate
-          onSave={onSave}
-          refresh={() => Promise.all([refresh(), mutate()])}
-        />
+        <Table.ButtonUpdate onSave={onSave} />
         <Table.ButtonCancel />
       </Table.DataCell>
     </Table.Row>

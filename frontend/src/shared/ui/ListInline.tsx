@@ -5,7 +5,7 @@ import useTransition from 'react-transition-state';
 import { clsx } from '../lib/ui';
 import { useClickOutside } from '../hooks';
 
-export function ListInline({ children }: PropsWithChildren) {
+export function ListInLine({ children }: PropsWithChildren) {
   const componentRef = useRef<HTMLDivElement>(null);
   const [{ status }, toggle] = useTransition({
     timeout: 150,
@@ -52,7 +52,7 @@ export function ListInline({ children }: PropsWithChildren) {
   );
 }
 
-ListInline.Item = function RevealingListItem({ children }: PropsWithChildren) {
+ListInLine.Item = function RevealingListItem({ children }: PropsWithChildren) {
   return (
     <li className="bg-slate-100 border border-slate-300 rounded-md px-1 py-0.5 text-ellipsis whitespace-nowrap overflow-hidden text-slate-600 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-200">
       {children}

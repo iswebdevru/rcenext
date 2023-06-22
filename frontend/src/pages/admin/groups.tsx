@@ -1,14 +1,27 @@
+import { useState } from 'react';
+import Head from 'next/head';
 import { Table } from '@/shared/ui/Table';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { AdminLayout } from '@/layouts';
-import { GroupsCreator } from '@/features/groups';
-import GroupsUpdater from '@/features/groups/GroupsUpdater';
+import { GroupCreateForm } from '@/features/groups';
+import GroupEditingRow from '@/features/groups/GroupEditingRow';
 import { API_GROUPS, deleteEntities, Group } from '@/shared/api';
-import { useState } from 'react';
+import { Title } from '@/shared/ui/Typography';
+import { Button } from '@/shared/ui/Button';
+import {
+  Modal,
+  Overlay,
+  useModalTransition,
+  useOverlayTransition,
+} from '@/shared/ui/Modal';
+import { Portal } from '@/shared/ui/Portal';
 
 export default function Groups() {
   const [searchFilter, setSearchFilter] = useState('');
   const searchFilterDebounce = useDebounce(searchFilter);
+
+  const [{ status: overlayStatus }, toggleOverlay] = useOverlayTransition();
+  const [{ status: modalStatus }, toggleModal] = useModalTransition();
 
   const { data, lastElementRef, mutate } = usePaginatedFetch<Group>(
     `${API_GROUPS}?search=${searchFilterDebounce}`
@@ -19,51 +32,83 @@ export default function Groups() {
     return mutate();
   };
 
+  const closeModal = () => {
+    toggleOverlay(false);
+    toggleModal(false);
+  };
+
   return (
-    <AdminLayout>
-      <div className="h-full p-6">
-        <Table<string>>
-          <Table.Controls
-            onDelete={deleteGroups}
-            search={searchFilter}
-            onSearchChange={setSearchFilter}
-          />
-          <Table.Body<string>
-            creator={() => <GroupsCreator refresh={mutate} />}
-            updater={url => <GroupsUpdater refresh={mutate} id={url} />}
-            header={
-              <Table.Row>
-                <Table.HeadCell>
-                  <Table.SelectAllRowsCheckbox />
-                </Table.HeadCell>
-                <Table.HeadCell>Группа</Table.HeadCell>
-                <Table.HeadCell>Корпус</Table.HeadCell>
-                <Table.HeadCell />
-              </Table.Row>
-            }
-          >
-            {data
-              ?.map(page => page.results)
-              .flat()
-              .map((group, i, a) => (
-                <Table.Row
-                  ref={a.length === i + 1 ? lastElementRef : null}
-                  key={group.url}
-                  rowId={group.url}
-                >
-                  <Table.DataCell>
-                    <Table.SelectRowCheckbox />
-                  </Table.DataCell>
-                  <Table.DataCell>{group.name}</Table.DataCell>
-                  <Table.DataCell>{group.main_block}</Table.DataCell>
-                  <Table.DataCell>
-                    <Table.ButtonEdit />
-                  </Table.DataCell>
+    <>
+      <Head>
+        <title>Группы</title>
+      </Head>
+      <AdminLayout>
+        <div className="h-full p-6">
+          <div className="flex justify-between items-center px-6 pb-6">
+            <Title>Группы</Title>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={() => {
+                toggleOverlay(true);
+                toggleModal(true);
+              }}
+            >
+              Добавить
+            </Button>
+            <Portal>
+              <Overlay status={overlayStatus} onClose={closeModal}>
+                <Modal status={modalStatus}>
+                  <GroupCreateForm refresh={mutate} onClose={closeModal} />
+                </Modal>
+              </Overlay>
+            </Portal>
+          </div>
+          <Table<string>>
+            <Table.Controls
+              onDelete={deleteGroups}
+              search={searchFilter}
+              onSearchChange={setSearchFilter}
+            />
+            <Table.Main>
+              <Table.Head>
+                <Table.Row>
+                  <Table.HeadCell>
+                    <Table.SelectAllRowsCheckbox />
+                  </Table.HeadCell>
+                  <Table.HeadCell>Группа</Table.HeadCell>
+                  <Table.HeadCell>Корпус</Table.HeadCell>
+                  <Table.HeadCell />
                 </Table.Row>
-              ))}
-          </Table.Body>
-        </Table>
-      </div>
-    </AdminLayout>
+              </Table.Head>
+              <Table.Body<string>
+                editingRow={url => (
+                  <GroupEditingRow refresh={mutate} id={url} />
+                )}
+              >
+                {data
+                  ?.flatMap(page => page.results)
+                  .map((group, i, a) => (
+                    <Table.Row
+                      ref={a.length === i + 1 ? lastElementRef : null}
+                      key={group.url}
+                      rowId={group.url}
+                    >
+                      <Table.DataCell>
+                        <Table.SelectRowCheckbox />
+                      </Table.DataCell>
+                      <Table.DataCell>{group.name}</Table.DataCell>
+                      <Table.DataCell>{group.main_block}</Table.DataCell>
+                      <Table.DataCell>
+                        <Table.ButtonEdit />
+                      </Table.DataCell>
+                    </Table.Row>
+                  ))}
+              </Table.Body>
+            </Table.Main>
+          </Table>
+        </div>
+      </AdminLayout>
+    </>
   );
 }

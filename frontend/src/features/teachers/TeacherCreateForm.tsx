@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Input, Field } from '@/shared/ui/Input';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 import { API_TEACHERS, createEntity } from '@/shared/api';
 import { Button } from '@/shared/ui/Button';
-import { useForm } from 'react-hook-form';
 
 export type TeachersFormCreateProps = {
   refresh: () => Promise<unknown>;

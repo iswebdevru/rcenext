@@ -1,14 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { Input } from '@/shared/ui/Input';
-import { Table, TableUpdaterComponentProps } from '@/shared/ui/Table';
-import { SelectSubjects } from '../subjects/SelectSubjects';
-import { fetcher, partiallyUpdateEntity, Teacher } from '@/shared/api';
 import useSWR from 'swr';
+import { Input } from '@/shared/ui/Input';
+import { Table } from '@/shared/ui/Table';
+import { SelectSubjects } from '../subjects/SelectSubjects'; // TODO: fix one-level cross import
+import { fetcher, partiallyUpdateEntity, Teacher } from '@/shared/api';
 
-export function TeachersUpdater({
+export type TeacherEditingRowProps = {
+  id: string;
+  refresh: () => Promise<unknown>;
+};
+
+export function TeacherEditingRow({
   id: url,
   refresh,
-}: TableUpdaterComponentProps<string>) {
+}: TeacherEditingRowProps) {
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const patronymicRef = useRef<HTMLInputElement>(null);

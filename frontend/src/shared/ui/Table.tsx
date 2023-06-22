@@ -23,11 +23,6 @@ import { InputSearch } from './Input';
 
 export type Id = string | number;
 
-export type TableUpdaterComponentProps<T> = {
-  id: T;
-  refresh: AsyncAction;
-};
-
 type AsyncAction = () => Promise<unknown> | unknown;
 
 type TableRowContext = {
@@ -131,12 +126,12 @@ export type TableBodyProps<T extends Id> = {
   children?:
     | ReactElement<TableRowProps<T>>
     | ReactElement<TableRowProps<any>>[];
-  updater: (id: T) => ReactElement;
+  editingRow: (id: T) => ReactElement;
 };
 
 Table.Body = function TableBody<T extends Id>({
   children,
-  updater,
+  editingRow,
 }: TableBodyProps<T>) {
   const {
     setVisibleItems,
@@ -189,7 +184,7 @@ Table.Body = function TableBody<T extends Id>({
                     }),
                 }}
               >
-                {isEditing ? updater(id) : child}
+                {isEditing ? editingRow(id) : child}
               </TableRowContext.Provider>
             );
           })
