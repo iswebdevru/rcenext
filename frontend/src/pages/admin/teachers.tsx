@@ -1,26 +1,26 @@
 import { useState } from 'react';
 import { Table } from '@/shared/ui/Table';
 import { Button } from '@/shared/ui/Button';
-import { Modal, Overlay } from '@/shared/ui/Modal';
+import {
+  Modal,
+  Overlay,
+  useModalTransition,
+  useOverlayTransition,
+} from '@/shared/ui/Modal';
 import { Title } from '@/shared/ui/Typography';
-import {
-  useAnimationTransition,
-  useDebounce,
-  usePaginatedFetch,
-} from '@/shared/hooks';
+import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { API_TEACHERS, deleteEntities, Teacher } from '@/shared/api';
-import {
-  TeacherSubject,
-  TeachersUpdater,
-  TeacherCreateForm,
-} from '@/features/teachers';
+import { TeachersUpdater, TeacherCreateForm } from '@/features/teachers';
 import { AdminLayout } from '@/layouts';
 import { Portal } from '@/shared/ui/Portal';
+import { SubjectTextView } from '@/entities/subjects';
+import { ListInline } from '@/shared/ui/ListInline';
 
 export default function Teachers() {
   const [searchFilter, setSearchFilter] = useState('');
   const searchFilterDebounced = useDebounce(searchFilter);
-  const [{ status: modalStatus }, toggleModal] = useAnimationTransition();
+  const [{ status: overlayStatus }, toggleOverlay] = useOverlayTransition();
+  const [{ status: modalStatus }, toggleModal] = useModalTransition();
   const { data, lastElementRef, mutate } = usePaginatedFetch<Teacher>(
     `${API_TEACHERS}?search=${searchFilterDebounced}`
   );
@@ -39,17 +39,19 @@ export default function Teachers() {
             type="button"
             variant="primary"
             onClick={() => {
+              toggleOverlay(true);
               toggleModal(true);
             }}
           >
             Добавить
           </Button>
           <Portal>
-            <Overlay status={modalStatus}>
+            <Overlay status={overlayStatus}>
               <Modal status={modalStatus}>
                 <TeacherCreateForm
                   refresh={mutate}
                   onClose={() => {
+                    toggleOverlay(false);
                     toggleModal(false);
                   }}
                 />
@@ -80,8 +82,7 @@ export default function Teachers() {
               updater={url => <TeachersUpdater refresh={mutate} id={url} />}
             >
               {data
-                ?.map(page => page.results)
-                .flat()
+                ?.flatMap(page => page.results)
                 .map((teacher, i, a) => (
                   <Table.Row
                     key={teacher.url}
@@ -95,11 +96,13 @@ export default function Teachers() {
                     <Table.DataCell>{teacher.last_name}</Table.DataCell>
                     <Table.DataCell>{teacher.patronymic}</Table.DataCell>
                     <Table.DataCell>
-                      <div className="flex flex-wrap">
+                      <ListInline>
                         {teacher.subjects.map(subjectUrl => (
-                          <TeacherSubject key={subjectUrl} url={subjectUrl} />
+                          <ListInline.Item key={subjectUrl}>
+                            <SubjectTextView url={subjectUrl} />
+                          </ListInline.Item>
                         ))}
-                      </div>
+                      </ListInline>
                     </Table.DataCell>
                     <Table.DataCell>
                       <Table.ButtonEdit />
