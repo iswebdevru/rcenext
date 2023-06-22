@@ -3,7 +3,7 @@ import { forwardRef } from 'react';
 import { getDaysAroundCurrentMonth, HUMAN_READABLE_MONTHS } from './lib';
 
 export type CalendarProps = {
-  date: Date;
+  date: Date | null;
   onDateChange: (date: Date) => void;
   className?: string;
   disabled?: boolean;
@@ -11,6 +11,10 @@ export type CalendarProps = {
 
 export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
   function CalendarComponent({ date, onDateChange, className, disabled }, ref) {
+    if (!date) {
+      return null;
+    }
+
     const currentMonth = date.getMonth() as keyof typeof HUMAN_READABLE_MONTHS;
     const currentDate = date.getDate();
     const currentYear = date.getFullYear();

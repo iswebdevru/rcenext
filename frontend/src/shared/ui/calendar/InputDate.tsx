@@ -3,7 +3,6 @@ import { Button } from '../Button';
 import { Calendar, CalendarProps } from './Calendar';
 import { clsx } from '@/shared/lib/ui';
 import { useClickOutside } from '@/shared/hooks';
-import { formatDate } from '@/shared/lib/date';
 
 export type InputDateProps = CalendarProps;
 
@@ -20,7 +19,7 @@ export function InputDate({
   return (
     <div className="relative" ref={componentRef}>
       <Button onClick={() => setIsRevealed(true)} disabled={disabled}>
-        {formatDate(date)}
+        {date?.toLocaleDateString()}
       </Button>
       <div
         className={clsx({

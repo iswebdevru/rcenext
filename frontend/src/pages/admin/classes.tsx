@@ -4,7 +4,7 @@ import { InputDate } from '@/shared/ui/calendar';
 import { SelectWeekType, SelectWeekDay } from '@/shared/ui/select';
 import { Toggles } from '@/shared/ui/Toggles';
 import { AdminLayout } from '@/layouts';
-import { usePaginatedFetch } from '@/shared/hooks';
+import { useDate, usePaginatedFetch } from '@/shared/hooks';
 import {
   API_CLASSES,
   API_GROUPS,
@@ -31,17 +31,21 @@ export default function Classes() {
     useState<Exclude<ClassesType, 'mixed'>>('changes');
   const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
-  const [date, setDate] = useState(() => new Date());
+  const [date, setDate] = useDate();
   const [classesStore, dispatch] = useClassesStore();
   const [isSaving, setIsSaving] = useState(false);
-  const strDate = formatDate(date);
-  const storeKey = getStoreKey({
-    classesType,
-    weekDay,
-    weekType,
-    date: strDate,
-  });
-  const classesDayStore = classesStore[classesType].get(storeKey);
+  const strDate = date ? formatDate(date) : '';
+  const storeKey = date
+    ? getStoreKey({
+        classesType,
+        weekDay,
+        weekType,
+        date: strDate,
+      })
+    : null;
+  const classesDayStore = storeKey
+    ? classesStore[classesType].get(storeKey)
+    : null;
   const { data: groups, lastElementRef } = usePaginatedFetch<Group>(API_GROUPS);
 
   const validatedClassesDataList = classesDayStore
