@@ -12,7 +12,7 @@ import { Title } from '@/shared/ui/Typography';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { API_TEACHERS, deleteEntities, Teacher } from '@/shared/api';
 import { Portal } from '@/shared/ui/Portal';
-import { ListInLine } from '@/shared/ui/ListInline';
+import { ListInLine } from '@/shared/ui/ListInLine';
 import { SubjectTextView } from '@/entities/subjects';
 import { TeacherEditingRow, TeacherCreateForm } from '@/features/teachers';
 import { AdminLayout } from '@/layouts';
