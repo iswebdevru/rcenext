@@ -31,7 +31,7 @@ export default function Classes() {
     useState<Exclude<ClassesType, 'mixed'>>('changes');
   const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(() => new Date());
   const [classesStore, dispatch] = useClassesStore();
   const [isSaving, setIsSaving] = useState(false);
   const strDate = formatDate(date);
@@ -42,7 +42,6 @@ export default function Classes() {
     date: strDate,
   });
   const classesDayStore = classesStore[classesType].get(storeKey);
-
   const { data: groups, lastElementRef } = usePaginatedFetch<Group>(API_GROUPS);
 
   const validatedClassesDataList = classesDayStore
