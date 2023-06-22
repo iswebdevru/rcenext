@@ -32,6 +32,7 @@ export function SubjectSelect({ selectedSubjectURL, onSelect }: SubjectSelect) {
         <>
           <input
             type="text"
+            name="subject"
             value={searchStr}
             onChange={e => setSearchStr(e.target.value)}
             className="w-full px-1 py-0.5 text-sm bg-transparent"

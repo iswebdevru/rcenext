@@ -250,6 +250,7 @@ function ClassesTableView({ periods, dispatch }: ClassesTableViewProps) {
               <td className="text-sm">
                 <input
                   type="text"
+                  name="cabinet"
                   className="w-full px-1 py-0.5 text-sm text-zinc-700 dark:text-zinc-300 bg-transparent"
                   value={period.cabinet}
                   onChange={e => {

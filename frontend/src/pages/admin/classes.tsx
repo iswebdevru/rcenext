@@ -23,6 +23,7 @@ import {
 } from '@/entities/classes';
 import { ClassesEditor } from '@/features/classes';
 import { formatDate } from '@/shared/lib/date';
+import Head from 'next/head';
 
 export default function Classes() {
   // State
@@ -105,93 +106,98 @@ export default function Classes() {
   }
 
   return (
-    <AdminLayout>
-      <div className="p-4">
-        <div className="mb-4 rounded-md border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
-          <div className="flex items-start gap-4">
-            <Toggles value={classesType} onToggle={setClassesType}>
-              <Toggles.Variant value="main">Основное</Toggles.Variant>
-              <Toggles.Variant value="changes">Изменения</Toggles.Variant>
-            </Toggles>
-            {classesType === 'main' ? (
-              <div className="flex gap-2">
-                <div>
-                  <SelectWeekDay weekDayId={weekDay} onSelect={setWeekDay} />
+    <>
+      <Head>
+        <title>Занятия</title>
+      </Head>
+      <AdminLayout>
+        <div className="p-4">
+          <div className="mb-4 rounded-md border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
+            <div className="flex items-start gap-4">
+              <Toggles value={classesType} onToggle={setClassesType}>
+                <Toggles.Variant value="main">Основное</Toggles.Variant>
+                <Toggles.Variant value="changes">Изменения</Toggles.Variant>
+              </Toggles>
+              {classesType === 'main' ? (
+                <div className="flex gap-2">
+                  <div>
+                    <SelectWeekDay weekDayId={weekDay} onSelect={setWeekDay} />
+                  </div>
+                  <div>
+                    <SelectWeekType
+                      weekTypeId={weekType}
+                      onSelect={setWeekType}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <SelectWeekType
-                    weekTypeId={weekType}
-                    onSelect={setWeekType}
-                  />
-                </div>
-              </div>
-            ) : (
-              <InputDate
-                disabled={isSaving}
-                date={date}
-                onDateChange={setDate}
-              />
-            )}
+              ) : (
+                <InputDate
+                  disabled={isSaving}
+                  date={date}
+                  onDateChange={setDate}
+                />
+              )}
 
-            <Button
-              className="ml-auto"
-              disabled={isSaving}
-              variant="danger-outline"
-            >
-              Удалить
-            </Button>
-            <Button
-              variant="primary"
-              disabled={!canSave || isSaving}
-              onClick={handleSave}
-            >
-              Сохранить
-            </Button>
+              <Button
+                className="ml-auto"
+                disabled={isSaving}
+                variant="danger-outline"
+              >
+                Удалить
+              </Button>
+              <Button
+                variant="primary"
+                disabled={!canSave || isSaving}
+                onClick={handleSave}
+              >
+                Сохранить
+              </Button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+            {groups
+              ?.flatMap(page => page.results)
+              .map((group, i, a) =>
+                classesType === 'main' ? (
+                  <ClassesEditor
+                    key={`${weekType}${weekDay}${group.id}`}
+                    type={classesType}
+                    dispatch={action => {
+                      dispatch({
+                        classesType: 'main',
+                        weekDay,
+                        weekType,
+                        group: group.url,
+                        ...action,
+                      });
+                    }}
+                    group={group}
+                    classes={classesDayStore?.get(group.url)}
+                    searchParams={`?type=${classesType}&week_day=${weekDay}&week_type=${weekType}`}
+                    ref={a.length - 1 === i ? lastElementRef : null}
+                  />
+                ) : (
+                  <ClassesEditor
+                    key={`${strDate}${group.id}`}
+                    type={classesType}
+                    dispatch={action => {
+                      dispatch({
+                        classesType: 'changes',
+                        date: strDate,
+                        group: group.url,
+                        ...action,
+                      });
+                    }}
+                    group={group}
+                    classes={classesDayStore?.get(group.url)}
+                    searchParams={`?date=${strDate}`}
+                    ref={a.length - 1 === i ? lastElementRef : null}
+                  />
+                )
+              )}
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-          {groups
-            ?.flatMap(page => page.results)
-            .map((group, i, a) =>
-              classesType === 'main' ? (
-                <ClassesEditor
-                  key={`${weekType}${weekDay}${group.id}`}
-                  type={classesType}
-                  dispatch={action => {
-                    dispatch({
-                      classesType: 'main',
-                      weekDay,
-                      weekType,
-                      group: group.url,
-                      ...action,
-                    });
-                  }}
-                  group={group}
-                  classes={classesDayStore?.get(group.url)}
-                  searchParams={`?type=${classesType}&week_day=${weekDay}&week_type=${weekType}`}
-                  ref={a.length - 1 === i ? lastElementRef : null}
-                />
-              ) : (
-                <ClassesEditor
-                  key={`${strDate}${group.id}`}
-                  type={classesType}
-                  dispatch={action => {
-                    dispatch({
-                      classesType: 'changes',
-                      date: strDate,
-                      group: group.url,
-                      ...action,
-                    });
-                  }}
-                  group={group}
-                  classes={classesDayStore?.get(group.url)}
-                  searchParams={`?date=${strDate}`}
-                  ref={a.length - 1 === i ? lastElementRef : null}
-                />
-              )
-            )}
-        </div>
-      </div>
-    </AdminLayout>
+      </AdminLayout>
+    </>
   );
 }

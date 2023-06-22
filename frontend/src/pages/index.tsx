@@ -11,6 +11,7 @@ import { API_CLASSES, ClassesScheduleMixed } from '@/shared/api';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { LoaderCircle } from '@/shared/ui/Loader';
 import { ClassesFilters } from '@/features/classes';
+import Head from 'next/head';
 
 export default function Classes() {
   // State
@@ -41,45 +42,50 @@ export default function Classes() {
   } = usePaginatedFetch<ClassesScheduleMixed>(`${API_CLASSES}${queryParams}`);
 
   return (
-    <BaseLayout>
-      <div className="container flex gap-4 pt-6">
-        <div className="grow">
-          <h1 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-200">
-            Расписание занятий на {date.getDate()}{' '}
-            {HUMAN_MONTHS[date.getMonth()]} (
-            {weekType === 'ЧИСЛ' ? 'Числитель' : 'Знаменатель'})
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-            {classesSchedule
-              ?.flatMap(page => page.results)
-              .map((schedule, i, a) => (
-                <ClassesScheduleCard
-                  key={schedule.id}
-                  schedule={schedule}
-                  ref={a.length - 1 === i ? lastElementRef : null}
-                />
-              ))}
-          </div>
-          {isValidating ? (
-            <div className="mt-4 flex justify-center">
-              <LoaderCircle />
+    <>
+      <Head>
+        <title>Расписание занятий</title>
+      </Head>
+      <BaseLayout>
+        <div className="container flex gap-4 pt-6">
+          <div className="grow">
+            <h1 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-200">
+              Расписание занятий на {date.getDate()}{' '}
+              {HUMAN_MONTHS[date.getMonth()]} (
+              {weekType === 'ЧИСЛ' ? 'Числитель' : 'Знаменатель'})
+            </h1>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+              {classesSchedule
+                ?.flatMap(page => page.results)
+                .map((schedule, i, a) => (
+                  <ClassesScheduleCard
+                    key={schedule.id}
+                    schedule={schedule}
+                    ref={a.length - 1 === i ? lastElementRef : null}
+                  />
+                ))}
             </div>
-          ) : null}
+            {isValidating ? (
+              <div className="mt-4 flex justify-center">
+                <LoaderCircle />
+              </div>
+            ) : null}
+          </div>
+          <div className="flex-shrink-0">
+            <ClassesFilters
+              date={date}
+              onDateChange={setDate}
+              classesType={classesType}
+              onClassesTypeChange={setClassesType}
+              collegeBlock={collegeBlock}
+              onCollegeBlockChange={setCollegeBlock}
+              groupSearch={groupSearch}
+              onGroupSearchChange={setGroupSearch}
+              groupSearchDebounced={groupSearchDebounced}
+            />
+          </div>
         </div>
-        <div className="flex-shrink-0">
-          <ClassesFilters
-            date={date}
-            onDateChange={setDate}
-            classesType={classesType}
-            onClassesTypeChange={setClassesType}
-            collegeBlock={collegeBlock}
-            onCollegeBlockChange={setCollegeBlock}
-            groupSearch={groupSearch}
-            onGroupSearchChange={setGroupSearch}
-            groupSearchDebounced={groupSearchDebounced}
-          />
-        </div>
-      </div>
-    </BaseLayout>
+      </BaseLayout>
+    </>
   );
 }

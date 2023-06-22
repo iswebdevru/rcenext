@@ -1,5 +1,13 @@
 import { AdminLayout } from '@/layouts';
+import Head from 'next/head';
 
 export default function index() {
-  return <AdminLayout>Admin</AdminLayout>;
+  return (
+    <>
+      <Head>
+        <title>Админ</title>
+      </Head>
+      <AdminLayout>Admin</AdminLayout>
+    </>
+  );
 }
