@@ -34,15 +34,13 @@ export function AdminNav() {
 
   return (
     <>
-      <div className="fixed left-0 top-14 hidden h-full w-52 border-r border-zinc-200 bg-white py-10 dark:border-zinc-700 dark:bg-zinc-800 lg:block">
+      <div className="fixed w-64 left-0 top-12 hidden h-full bg-white py-10 px-6 dark:bg-zinc-900 lg:block">
         <nav>
-          <ul>
+          <ul className="space-y-3">
             {links.map(link => (
-              <AdminNavLink
-                key={link.href}
-                {...link}
-                isActive={pathname === link.href}
-              />
+              <li key={link.href}>
+                <AdminNavLink {...link} isActive={pathname === link.href} />
+              </li>
             ))}
           </ul>
         </nav>
@@ -82,11 +80,9 @@ export function AdminNav() {
           <nav>
             <ul>
               {links.map(link => (
-                <AdminNavLink
-                  key={link.href}
-                  {...link}
-                  isActive={pathname === link.href}
-                />
+                <li key={link.href}>
+                  <AdminNavLink {...link} isActive={pathname === link.href} />
+                </li>
               ))}
             </ul>
           </nav>
@@ -104,29 +100,22 @@ type AdminNavLinkProps = {
 };
 function AdminNavLink({ href, isActive, text, icon }: AdminNavLinkProps) {
   return (
-    <li className="mb-6 font-semibold">
-      <Link
-        href={href}
-        className={clsx({
-          'transition-color group hover:text-blue-500 dark:hover:text-zinc-50':
-            true,
-          'text-blue-500 dark:text-zinc-50': isActive,
-          'text-zinc-700 dark:text-zinc-400': !isActive,
-        })}
-      >
-        <div className="flex items-center">
-          <span
-            className={clsx({
-              'w-[3px] origin-left self-stretch rounded-r-md bg-blue-500 transition group-hover:scale-x-100 dark:bg-zinc-50':
-                true,
-              'scale-x-100': isActive,
-              'scale-x-0': !isActive,
-            })}
-          ></span>
-          <FontAwesomeIcon icon={icon} size="lg" fixedWidth className="ml-3" />
-          <span className="ml-5 mr-10 text-sm">{text}</span>
+    <Link
+      href={href}
+      className={clsx({
+        'block font-semibold transition-color p-2 hover:text-blue-500 dark:hover:text-zinc-50':
+          true,
+        'text-blue-500 dark:text-white bg-slate-100 dark:bg-zinc-800 rounded-md':
+          isActive,
+        'text-slate-800 dark:text-zinc-400': !isActive,
+      })}
+    >
+      <div className="flex items-center gap-4">
+        <div className="grid items-place-center">
+          <FontAwesomeIcon icon={icon} fixedWidth className="text-lg" />
         </div>
-      </Link>
-    </li>
+        <span className="text-sm">{text}</span>
+      </div>
+    </Link>
   );
 }
