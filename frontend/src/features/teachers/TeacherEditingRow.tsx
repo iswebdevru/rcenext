@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { Input } from '@/shared/ui/Input';
+import { TextField } from '@/shared/ui/Input';
 import { Table } from '@/shared/ui/Table';
 import { SelectSubjects } from '../subjects/SelectSubjects'; // TODO: fix one-level cross import
 import { fetcher, partiallyUpdateEntity, Teacher } from '@/shared/api';
@@ -49,19 +49,19 @@ export function TeacherEditingRow({
     <Table.Row>
       <Table.DataCell />
       <Table.DataCell>
-        <Input
+        <TextField
           defaultValue={teacher ? teacher.first_name : ''}
           ref={firstNameRef}
         />
       </Table.DataCell>
       <Table.DataCell>
-        <Input
+        <TextField
           defaultValue={teacher ? teacher.last_name : ''}
           ref={lastNameRef}
         />
       </Table.DataCell>
       <Table.DataCell>
-        <Input
+        <TextField
           defaultValue={teacher ? teacher.patronymic : ''}
           ref={patronymicRef}
         />

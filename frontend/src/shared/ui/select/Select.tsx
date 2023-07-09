@@ -11,7 +11,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Input } from '../Input';
+import { TextField } from '../Input';
 
 type Id = string | number;
 
@@ -158,7 +158,7 @@ export function Select<T extends Id>({
         <div ref={dropDownRef} className="border">
           {searchString && onSearchStringChange ? (
             <div className="px-4 py-3 border-b">
-              <Input />
+              <TextField />
             </div>
           ) : null}
           <ul className="flex flex-col">{items}</ul>

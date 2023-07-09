@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Input, Field } from '@/shared/ui/Input';
+import { TextField, Field } from '@/shared/ui/Input';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 import { API_TEACHERS, createEntity } from '@/shared/api';
 import { Button } from '@/shared/ui/Button';
@@ -50,7 +50,7 @@ export function TeacherCreateForm({
       <div className="grid-cols-6 gap-y-5 gap-x-10 grid border-b border-zinc-200 dark:border-zinc-700 p-8">
         <div className="col-span-2">
           <Field label="Имя">
-            <Input
+            <TextField
               {...register('first_name', { required: true })}
               type="text"
               isValid={
@@ -64,7 +64,7 @@ export function TeacherCreateForm({
         </div>
         <div className="col-span-2">
           <Field label="Фамилия">
-            <Input
+            <TextField
               {...register('last_name', { required: true })}
               type="text"
               isValid={
@@ -78,7 +78,7 @@ export function TeacherCreateForm({
         </div>
         <div className="col-span-2">
           <Field label="Отчество">
-            <Input
+            <TextField
               {...register('patronymic', { required: true })}
               type="text"
               isValid={

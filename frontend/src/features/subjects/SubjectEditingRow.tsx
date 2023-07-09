@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import useSWR from 'swr';
-import { Input } from '@/shared/ui/Input';
+import { TextField } from '@/shared/ui/Input';
 import { Table } from '@/shared/ui/Table';
 import { fetcher, partiallyUpdateEntity, Subject } from '@/shared/api';
 
@@ -33,7 +33,7 @@ export function SubjectEditingRow({
     <Table.Row>
       <Table.DataCell />
       <Table.DataCell>
-        <Input ref={nameRef} defaultValue={subject.name} />
+        <TextField ref={nameRef} defaultValue={subject.name} />
       </Table.DataCell>
       <Table.DataCell>
         <Table.ButtonUpdate onSave={onSave} />

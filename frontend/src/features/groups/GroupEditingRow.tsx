@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import useSWR from 'swr';
 import { fetcher, Group, partiallyUpdateEntity } from '@/shared/api';
-import { Input } from '@/shared/ui/Input';
+import { TextField } from '@/shared/ui/Input';
 import { Table } from '@/shared/ui/Table';
 
 export type GroupEditingRowProps = {
@@ -35,14 +35,14 @@ export default function GroupEditingRow({
     <Table.Row>
       <Table.DataCell />
       <Table.DataCell>
-        <Input
+        <TextField
           pattern="[А-ЯA-Z]+к?-[1-4]\d{2,}"
           ref={groupNameRef}
           defaultValue={group.name}
         />
       </Table.DataCell>
       <Table.DataCell>
-        <Input
+        <TextField
           pattern="[1-9]+"
           ref={mainBlockRef}
           defaultValue={group.main_block}

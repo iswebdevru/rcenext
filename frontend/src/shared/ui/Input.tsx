@@ -1,32 +1,52 @@
 import { classNameWithDefaults, clsx } from '@/shared/lib/ui';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ComponentPropsWithRef, PropsWithChildren, forwardRef } from 'react';
+import {
+  ComponentPropsWithRef,
+  PropsWithChildren,
+  forwardRef,
+  useId,
+} from 'react';
 
-export const Input = forwardRef<
-  HTMLInputElement,
-  ComponentPropsWithRef<'input'> & {
-    isValid?: boolean | null;
+export type TextFieldProps = ComponentPropsWithRef<'input'> & {
+  isValid?: boolean | null;
+  label?: string;
+};
+
+export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
+  function TextField(props, ref) {
+    const inputId = useId();
+
+    return (
+      <div>
+        {props.label ? (
+          <label
+            className="block leading-8 mb-1 text-sm text-slate-600 font-semibold dark:text-zinc-200"
+            htmlFor={inputId}
+          >
+            {props.label}
+          </label>
+        ) : null}
+        <input
+          {...props}
+          id={inputId}
+          ref={ref}
+          className={classNameWithDefaults(
+            clsx({
+              'transition-[outline,border] leading-6 text-black min-w-0 dark:text-zinc-200 bg-white outline outline-blue-200 outline-0 rounded-md text-sm border px-3 py-1 w-full placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-4 focus:border-blue-500 dark:bg-zinc-800 dark:focus:border-blue-700 dark:outline-blue-700':
+                true,
+              'border-zinc-200 dark:border-zinc-700':
+                props.isValid === null || props.isValid === undefined,
+              'border-green-600 dark:border-green-600': props.isValid === true,
+              'border-red-500 dark:border-red-500': props.isValid === false,
+            }),
+            props.className
+          )}
+        />
+      </div>
+    );
   }
->(function Input({ className, isValid, ...props }, ref) {
-  return (
-    <input
-      ref={ref}
-      className={classNameWithDefaults(
-        clsx({
-          'transition-[outline,border] text-black min-w-0 dark:text-zinc-200 bg-white outline outline-blue-200 outline-0 rounded-md text-sm border px-3 py-1 w-full placeholder:text-zinc-300 dark:placeholder:text-zinc-600 focus:outline-4 focus:border-blue-500 dark:bg-zinc-800 dark:focus:border-blue-700 dark:outline-blue-700':
-            true,
-          'border-zinc-200 dark:border-zinc-700':
-            isValid === null || isValid === undefined,
-          'border-green-600 dark:border-green-600': isValid === true,
-          'border-red-500 dark:border-red-500': isValid === false,
-        }),
-        className
-      )}
-      {...props}
-    />
-  );
-});
+);
 
 export const InputSearch = forwardRef<
   HTMLInputElement,

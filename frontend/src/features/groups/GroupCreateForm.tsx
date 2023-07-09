@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { API_GROUPS, createEntity } from '@/shared/api';
 import { Button } from '@/shared/ui/Button';
-import { Field, Input } from '@/shared/ui/Input';
+import { Field, TextField } from '@/shared/ui/Input';
 
 export type GroupCreateForm = {
   refresh: () => Promise<unknown>;
@@ -34,7 +34,7 @@ export function GroupCreateForm({ refresh, onClose }: GroupCreateForm) {
       <div className="grid grid-cols-6 p-6 border-b border-zinc-200 dark:border-zinc-700">
         <div className="col-span-2">
           <Field label="Группа">
-            <Input
+            <TextField
               {...register('group', {
                 required: true,
                 pattern: /[А-ЯA-Z]+к?-[1-4]\d{2,}/,
@@ -44,7 +44,7 @@ export function GroupCreateForm({ refresh, onClose }: GroupCreateForm) {
         </div>
         <div className="col-span-2 col-start-4">
           <Field label="Корпус">
-            <Input
+            <TextField
               {...register('main_block', { required: true, pattern: /\d+/ })}
             />
           </Field>
