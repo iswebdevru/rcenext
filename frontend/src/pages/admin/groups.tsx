@@ -8,20 +8,13 @@ import GroupEditingRow from '@/features/groups/GroupEditingRow';
 import { API_GROUPS, deleteEntities, Group } from '@/shared/api';
 import { Title } from '@/shared/ui/Typography';
 import { Button } from '@/shared/ui/Button';
-import {
-  Modal,
-  Overlay,
-  useModalTransition,
-  useOverlayTransition,
-} from '@/shared/ui/Modal';
-import { Portal } from '@/shared/ui/Portal';
+import { Reveal } from '@/shared/ui/Reveal';
 
 export default function Groups() {
   const [searchFilter, setSearchFilter] = useState('');
   const searchFilterDebounce = useDebounce(searchFilter);
 
-  const [{ status: overlayStatus }, toggleOverlay] = useOverlayTransition();
-  const [{ status: modalStatus }, toggleModal] = useModalTransition();
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
   const { data, lastElementRef, mutate } = usePaginatedFetch<Group>(
     `${API_GROUPS}?search=${searchFilterDebounce}`
@@ -33,8 +26,7 @@ export default function Groups() {
   };
 
   const closeModal = () => {
-    toggleOverlay(false);
-    toggleModal(false);
+    setIsFormVisible(false);
   };
 
   return (
@@ -50,20 +42,17 @@ export default function Groups() {
               type="button"
               variant="primary"
               onClick={() => {
-                toggleOverlay(true);
-                toggleModal(true);
+                setIsFormVisible(true);
               }}
             >
               Добавить
             </Button>
-            <Portal>
-              <Overlay status={overlayStatus} onClose={closeModal}>
-                <Modal status={modalStatus}>
-                  <GroupCreateForm refresh={mutate} onClose={closeModal} />
-                </Modal>
-              </Overlay>
-            </Portal>
           </div>
+          <Reveal isVisible={isFormVisible}>
+            <div className="mb-6">
+              <GroupCreateForm refresh={mutate} onClose={closeModal} />
+            </div>
+          </Reveal>
           <Table<string>>
             <Table.Controls
               onDelete={deleteGroups}

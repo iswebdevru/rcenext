@@ -60,7 +60,7 @@ export function Table<T extends Id>({ children }: PropsWithChildren) {
         setEditingItems,
       }}
     >
-      <div className="rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+      <div className="rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800/40">
         {children}
       </div>
     </TableContext.Provider>
@@ -100,6 +100,10 @@ Table.Controls = function TableControls<T extends Id>({
       <InputSearch
         onChange={e => onSearchChange(e.currentTarget.value)}
         value={search}
+        placeholder="Поиск"
+        name="search"
+        autoComplete="off"
+        className="max-w-lg"
       />
       <Button
         type="button"
@@ -115,7 +119,11 @@ Table.Controls = function TableControls<T extends Id>({
 };
 
 Table.Main = function TableMain({ children }: PropsWithChildren) {
-  return <table className="w-full table-fixed">{children}</table>;
+  return (
+    <table className="w-full table-fixed border-separate border-spacing-0">
+      {children}
+    </table>
+  );
 };
 
 Table.Head = function TableHead({ children }: PropsWithChildren) {
@@ -300,8 +308,7 @@ Table.Row = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
       ref={ref}
       className={classNameWithDefaults(
         clsx({
-          'group/row rounded-md border-b border-zinc-200 transition-[background] last:border-0 group-[]/thead:border-b dark:border-zinc-700':
-            true,
+          'group/row rounded-md transition-[background]': true,
         }),
         className
       )}
@@ -325,9 +332,9 @@ Table.DataCell = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
       <td
         className={classNameWithDefaults(
           clsx({
-            'p-0 text-sm text-black group-last/row:first:rounded-bl-md group-last:last:rounded-br-md dark:text-zinc-200':
+            'p-0 border-b border-zinc-200 group-last/row:border-0 dark:border-zinc-700 text-sm text-black group-last/row:first:rounded-bl-md group-last:last:rounded-br-md dark:text-zinc-200':
               true,
-            'bg-zinc-50 dark:bg-zinc-700': !!ctx?.isSelected,
+            'bg-zinc-50 dark:bg-zinc-800': !!ctx?.isSelected,
           }),
           className
         )}
@@ -347,7 +354,7 @@ Table.DataCell = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
 
 Table.HeadCell = function TableHeadCell({ children }: PropsWithChildren) {
   return (
-    <th className="text-left text-sm font-semibold text-slate-900 first:w-[61px] last:w-[114px] dark:text-slate-100">
+    <th className="sticky top-14 text-left text-sm font-semibold text-slate-900 first:w-[61px] last:w-[114px] dark:text-slate-100 bg-white/20 backdrop-blur-sm dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700 p-0">
       <div className="flex h-12 items-center px-6 py-3">{children}</div>
     </th>
   );

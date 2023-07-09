@@ -5,21 +5,14 @@ import { AdminLayout } from '@/layouts';
 import { API_SUBJECTS, deleteEntities, Subject } from '@/shared/api';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { Button } from '@/shared/ui/Button';
-import {
-  Modal,
-  Overlay,
-  useModalTransition,
-  useOverlayTransition,
-} from '@/shared/ui/Modal';
-import { Portal } from '@/shared/ui/Portal';
 import { Table } from '@/shared/ui/Table';
 import { Title } from '@/shared/ui/Typography';
+import { Reveal } from '@/shared/ui/Reveal';
 
 export default function Subjects() {
   const [searchFilter, setSearchFilter] = useState('');
-  const [{ status: overlayStatus }, toggleOverlay] = useOverlayTransition();
-  const [{ status: modalStatus }, toggleModal] = useModalTransition();
   const searchFilterDebounced = useDebounce(searchFilter);
+  const [isFormVisible, setIsFormVisible] = useState(false);
 
   const { data, lastElementRef, mutate } = usePaginatedFetch<Subject>(
     `${API_SUBJECTS}?search=${searchFilterDebounced}`
@@ -28,11 +21,6 @@ export default function Subjects() {
   const deleteSubjects = async (urls: string[]) => {
     await deleteEntities(urls);
     return mutate();
-  };
-
-  const closeModal = () => {
-    toggleOverlay(false);
-    toggleModal(false);
   };
 
   return (
@@ -48,20 +36,20 @@ export default function Subjects() {
               type="button"
               variant="primary"
               onClick={() => {
-                toggleOverlay(true);
-                toggleModal(true);
+                setIsFormVisible(true);
               }}
             >
               Добавить
             </Button>
-            <Portal>
-              <Overlay status={overlayStatus} onClose={closeModal}>
-                <Modal status={modalStatus}>
-                  <SubjectCreateForm refresh={mutate} onClose={closeModal} />
-                </Modal>
-              </Overlay>
-            </Portal>
           </div>
+          <Reveal isVisible={isFormVisible}>
+            <div className="mb-6">
+              <SubjectCreateForm
+                refresh={mutate}
+                onClose={() => setIsFormVisible(false)}
+              />
+            </div>
+          </Reveal>
           <Table>
             <Table.Controls
               onDelete={deleteSubjects}

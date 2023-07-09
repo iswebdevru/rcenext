@@ -2,26 +2,19 @@ import { useState } from 'react';
 import Head from 'next/head';
 import { Table } from '@/shared/ui/Table';
 import { Button } from '@/shared/ui/Button';
-import {
-  Modal,
-  Overlay,
-  useModalTransition,
-  useOverlayTransition,
-} from '@/shared/ui/Modal';
 import { Title } from '@/shared/ui/Typography';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { API_TEACHERS, deleteEntities, Teacher } from '@/shared/api';
-import { Portal } from '@/shared/ui/Portal';
 import { ListInLine } from '@/shared/ui/ListInLine';
 import { SubjectTextView } from '@/entities/subjects';
 import { TeacherEditingRow, TeacherCreateForm } from '@/features/teachers';
 import { AdminLayout } from '@/layouts';
+import { Reveal } from '@/shared/ui/Reveal';
 
 export default function Teachers() {
   const [searchFilter, setSearchFilter] = useState('');
   const searchFilterDebounced = useDebounce(searchFilter);
-  const [{ status: overlayStatus }, toggleOverlay] = useOverlayTransition();
-  const [{ status: modalStatus }, toggleModal] = useModalTransition();
+  const [isFormVisible, setIsFormVisible] = useState(false);
   const { data, lastElementRef, mutate } = usePaginatedFetch<Teacher>(
     `${API_TEACHERS}?search=${searchFilterDebounced}`
   );
@@ -29,11 +22,6 @@ export default function Teachers() {
   const deleteTeachers = async (urls: string[]) => {
     await deleteEntities(urls);
     return mutate();
-  };
-
-  const closeModal = () => {
-    toggleOverlay(false);
-    toggleModal(false);
   };
 
   return (
@@ -49,20 +37,20 @@ export default function Teachers() {
               type="button"
               variant="primary"
               onClick={() => {
-                toggleOverlay(true);
-                toggleModal(true);
+                setIsFormVisible(true);
               }}
             >
               Добавить
             </Button>
-            <Portal>
-              <Overlay status={overlayStatus} onClose={closeModal}>
-                <Modal status={modalStatus}>
-                  <TeacherCreateForm refresh={mutate} onClose={closeModal} />
-                </Modal>
-              </Overlay>
-            </Portal>
           </div>
+          <Reveal isVisible={isFormVisible}>
+            <div className="mb-6">
+              <TeacherCreateForm
+                refresh={mutate}
+                onClose={() => setIsFormVisible(false)}
+              />
+            </div>
+          </Reveal>
           <Table>
             <Table.Controls
               onDelete={deleteTeachers}
