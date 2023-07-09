@@ -40,7 +40,7 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
     <header>
       <div
         className={clsx({
-          'z-10 border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800':
+          'z-10 border-b border-zinc-100 bg-white dark:border-zinc-700 dark:bg-zinc-800':
             true,
           '': true,
           relative: !fixed,

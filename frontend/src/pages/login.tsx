@@ -1,4 +1,3 @@
-import { BaseLayout } from '@/layouts';
 import { Button } from '@/shared/ui/Button';
 import { TextField } from '@/shared/ui/Input';
 import { GetServerSideProps } from 'next';
@@ -73,7 +72,6 @@ export default function Login() {
             на главную
           </Link>
         </div>
-
         {router.query.error === 'CredentialsSignin' ? (
           <div className="mt-6 text-xs text-center text-red-500 sm:text-sm md:mt-8">
             Неверное имя пользователя или пароль
