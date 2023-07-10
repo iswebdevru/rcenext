@@ -59,7 +59,7 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
 
     return (
       <div
-        className="flex flex-col bg-white border rounded-md border-zinc-200 dark:bg-zinc-800/40 dark:border-zinc-700"
+        className="flex flex-col rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800/40"
         ref={ref}
       >
         <div className="flex items-center justify-between px-2 py-1">
@@ -67,7 +67,7 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
             {group.name}
           </div>
           {isChanged ? (
-            <div className="ml-auto mr-4 text-xs bg-blue-100 text-blue-500 dark:bg-zinc-700 dark:text-zinc-200 rounded-md px-1.5 py-0.5">
+            <div className="ml-auto mr-4 rounded-md bg-blue-100 px-1.5 py-0.5 text-xs text-blue-500 dark:bg-zinc-700 dark:text-zinc-200">
               Изменено
             </div>
           ) : null}
@@ -79,7 +79,7 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
               }
             />
           ) : (
-            <div className="overflow-hidden rounded-lg w-7 h-7">
+            <div className="h-7 w-7 overflow-hidden rounded-lg">
               <LoaderRect />
             </div>
           )}
@@ -121,9 +121,9 @@ function Settings({ view, onViewChange }: SettingsProps) {
     <div className="relative" ref={settingsRef}>
       <button
         className={clsx({
-          'flex items-center justify-center w-8 h-8 rounded-full hover:text-zinc-900 hover:bg-zinc-100 transition-colors duration-100 dark:hover:bg-zinc-700 dark:hover:text-zinc-50':
+          'flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-100 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-700 dark:hover:text-zinc-50':
             true,
-          'text-zinc-900 bg-zinc-100 dark:bg-zinc-700 dark:text-zinc-50':
+          'bg-zinc-100 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-50':
             isSettingsOpened,
           'text-zinc-500': !isSettingsOpened,
         })}
@@ -138,16 +138,16 @@ function Settings({ view, onViewChange }: SettingsProps) {
       </button>
       <div
         className={clsx({
-          'absolute flex flex-col overflow-hidden bg-white border border-zinc-200 rounded-md right-0 top-full mt-2 shadow-sm transition-[opacity,transform] dark:bg-zinc-800 dark:border-zinc-700':
+          'absolute right-0 top-full mt-2 flex flex-col overflow-hidden rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] dark:border-zinc-700 dark:bg-zinc-800':
             true,
-          'z-10 opacity-1 scale-100 translate-y-0': isSettingsOpened,
-          'invisible pointer-events-none opacity-0 scale-75 -translate-y-12':
+          'opacity-1 z-10 translate-y-0 scale-100': isSettingsOpened,
+          'pointer-events-none invisible -translate-y-12 scale-75 opacity-0':
             !isSettingsOpened,
         })}
       >
         <div className="flex">
           <ModeButton
-            className="flex-grow h-10"
+            className="h-10 flex-grow"
             isActive={view === 'table'}
             onClick={() => {
               onViewChange('table');
@@ -157,7 +157,7 @@ function Settings({ view, onViewChange }: SettingsProps) {
             <FontAwesomeIcon icon={faTable} fixedWidth />
           </ModeButton>
           <ModeButton
-            className="flex-grow h-10"
+            className="h-10 flex-grow"
             isActive={view === 'message'}
             onClick={() => {
               onViewChange('message');
@@ -194,7 +194,7 @@ const ModeButton = forwardRef<HTMLButtonElement, ModeButtonProps>(
             'flex items-center justify-center transition duration-100': true,
             'bg-blue-50 text-blue-500 dark:bg-zinc-700 dark:text-zinc-50':
               !!isActive,
-            'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 dark:hover:bg-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-50':
+            'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900  dark:text-zinc-400 dark:hover:bg-zinc-600 dark:hover:text-zinc-50':
               !isActive,
           }),
           className
@@ -214,17 +214,17 @@ type ClassesTableViewProps = {
 
 function ClassesTableView({ periods, dispatch }: ClassesTableViewProps) {
   return (
-    <div className="border-t shrink-0 border-zinc-200 dark:border-zinc-700">
+    <div className="shrink-0 border-t border-zinc-200 dark:border-zinc-700">
       <table className="w-full">
         <tbody>
-          <tr className="border-b text-zinc-900 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700">
-            <th className="font-semibold border-r border-zinc-200 px-1 py-0.5 text-sm w-7 dark:border-zinc-700">
+          <tr className="border-b border-zinc-200 text-zinc-900 dark:border-zinc-700 dark:text-zinc-200">
+            <th className="w-7 border-r border-zinc-200 px-1 py-0.5 text-sm font-semibold dark:border-zinc-700">
               №
             </th>
-            <th className="font-semibold text-left border-r border-zinc-200 px-1 text-sm py-0.5 dark:border-zinc-700">
+            <th className="border-r border-zinc-200 px-1 py-0.5 text-left text-sm font-semibold dark:border-zinc-700">
               Предмет
             </th>
-            <th className="font-semibold text-left px-1 text-sm py-0.5 w-1/6">
+            <th className="w-1/6 px-1 py-0.5 text-left text-sm font-semibold">
               Каб.
             </th>
           </tr>
@@ -233,10 +233,10 @@ function ClassesTableView({ periods, dispatch }: ClassesTableViewProps) {
               key={period.index}
               className="border-b border-zinc-200 last:border-b-0 dark:border-zinc-700"
             >
-              <td className="text-zinc-500 border-r border-zinc-200 text-center text-sm px-1 py-0.5 dark:border-zinc-700">
+              <td className="border-r border-zinc-200 px-1 py-0.5 text-center text-sm text-zinc-500 dark:border-zinc-700">
                 {period.index}
               </td>
-              <td className="border-r text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700">
+              <td className="border-r border-zinc-200 text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
                 <SubjectSelect
                   selectedSubjectURL={period.subject}
                   onSelect={subject =>
@@ -251,7 +251,7 @@ function ClassesTableView({ periods, dispatch }: ClassesTableViewProps) {
                 <input
                   type="text"
                   name="cabinet"
-                  className="w-full px-1 py-0.5 text-sm text-zinc-700 dark:text-zinc-300 bg-transparent"
+                  className="w-full bg-transparent px-1 py-0.5 text-sm text-zinc-700 dark:text-zinc-300"
                   value={period.cabinet}
                   onChange={e => {
                     dispatch({
@@ -279,9 +279,9 @@ type ClassesMessageViewProps = {
 
 function ClassesMessageView({ message, dispatch }: ClassesMessageViewProps) {
   return (
-    <div className="flex-grow p-2 border-t shrink-0 border-zinc-200 dark:border-zinc-700">
+    <div className="shrink-0 flex-grow border-t border-zinc-200 p-2 dark:border-zinc-700">
       <textarea
-        className="w-full h-full resize-none"
+        className="h-full w-full resize-none"
         value={message}
         onChange={e => {
           dispatch({ type: 'change-message', payload: e.currentTarget.value });
@@ -294,21 +294,21 @@ function ClassesMessageView({ message, dispatch }: ClassesMessageViewProps) {
 
 function TableLoader() {
   return (
-    <div className="border-t shrink-0 border-zinc-200 dark:border-zinc-700">
+    <div className="shrink-0 border-t border-zinc-200 dark:border-zinc-700">
       <table className="w-full">
         <tbody>
           <tr className="border-b border-zinc-200 dark:border-zinc-700">
-            <th className="px-1.5 py-1 text-sm font-semibold border-r text-zinc-900 border-zinc-200 w-7 dark:border-zinc-700">
+            <th className="w-7 border-r border-zinc-200 px-1.5 py-1 text-sm font-semibold text-zinc-900 dark:border-zinc-700">
               <div className="h-4 overflow-hidden rounded-md">
                 <LoaderRect />
               </div>
             </th>
-            <th className="px-1.5 py-1 text-sm font-semibold text-left border-r text-zinc-900 border-zinc-200 dark:border-zinc-700">
+            <th className="border-r border-zinc-200 px-1.5 py-1 text-left text-sm font-semibold text-zinc-900 dark:border-zinc-700">
               <div className="h-4 overflow-hidden rounded-md">
                 <LoaderRect />
               </div>
             </th>
-            <th className="w-1/6 px-1.5 py-1 text-sm font-semibold text-left text-zinc-900">
+            <th className="w-1/6 px-1.5 py-1 text-left text-sm font-semibold text-zinc-900">
               <div className="h-4 overflow-hidden rounded-md">
                 <LoaderRect />
               </div>
@@ -319,12 +319,12 @@ function TableLoader() {
               key={period}
               className="border-b border-zinc-200 last:border-b-0 dark:border-zinc-700"
             >
-              <td className="px-1.5 py-1 border-r border-zinc-200 dark:border-zinc-700">
+              <td className="border-r border-zinc-200 px-1.5 py-1 dark:border-zinc-700">
                 <div className="h-4 overflow-hidden rounded-md">
                   <LoaderRect />
                 </div>
               </td>
-              <td className="px-1.5 py-1 border-r border-zinc-200 dark:border-zinc-700">
+              <td className="border-r border-zinc-200 px-1.5 py-1 dark:border-zinc-700">
                 <div className="h-4 overflow-hidden rounded-md">
                   <LoaderRect />
                 </div>

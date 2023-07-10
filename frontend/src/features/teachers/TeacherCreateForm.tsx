@@ -45,7 +45,7 @@ export function TeacherCreateForm({
       onSubmit={handleSubmit(onValid, onInvalid)}
       className="max-w-4xl rounded-md border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-800/40"
     >
-      <div className="grid-cols-6 gap-y-5 gap-x-10 grid border-b border-zinc-200 dark:border-zinc-700 p-8">
+      <div className="grid grid-cols-6 gap-x-10 gap-y-5 border-b border-zinc-200 p-8 dark:border-zinc-700">
         <div className="col-span-2">
           <TextField
             label="Имя"
@@ -92,13 +92,13 @@ export function TeacherCreateForm({
           />
         </div>
         <div className="col-span-3">
-          <label className="text-sm text-zinc-700 block mb-1" htmlFor="">
+          <label className="mb-1 block text-sm text-zinc-700" htmlFor="">
             Предметы
           </label>
           <SelectSubjects value={subjects} onChange={setSubjects} />
         </div>
       </div>
-      <div className="p-4 flex justify-end gap-5">
+      <div className="flex justify-end gap-5 p-4">
         <Button type="button" onClick={onClose}>
           Отменить
         </Button>

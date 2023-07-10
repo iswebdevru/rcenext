@@ -28,7 +28,7 @@ export function ClassesFilters(props: ClassesFiltersProps) {
     <>
       <div
         className={clsx({
-          'fixed top-0 left-0 z-20 h-full w-full bg-black transition-colors duration-300 lg:visible lg:static lg:bg-transparent lg:opacity-100 lg:transition-none':
+          'fixed left-0 top-0 z-20 h-full w-full bg-black transition-colors duration-300 lg:visible lg:static lg:bg-transparent lg:opacity-100 lg:transition-none':
             true,
           'bg-opacity-50': isMobileFiltersOpened,
           'invisible bg-opacity-0': !isMobileFiltersOpened,

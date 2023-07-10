@@ -33,7 +33,7 @@ export function SubjectCreateForm({
       onSubmit={handleSubmit(onSave)}
       className="max-w-lg rounded-md border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-800/40"
     >
-      <div className="p-6 border-b border-zinc-200 dark:border-zinc-700">
+      <div className="border-b border-zinc-200 p-6 dark:border-zinc-700">
         <TextField
           label="Предмет"
           placeholder="Название"
@@ -42,7 +42,7 @@ export function SubjectCreateForm({
           {...register('subject', { required: true })}
         />
       </div>
-      <div className="p-4 flex gap-4 justify-end">
+      <div className="flex justify-end gap-4 p-4">
         <Button type="button" onClick={onClose}>
           Отменить
         </Button>

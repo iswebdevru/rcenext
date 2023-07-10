@@ -32,9 +32,9 @@ export function GroupCreateForm({ refresh, onClose }: GroupCreateForm) {
   return (
     <form
       onSubmit={handleSubmit(onSave)}
-      className="max-w-2xl border dark:bg-zinc-800/40 border-zinc-200 dark:border-zinc-700 rounded-md"
+      className="max-w-2xl rounded-md border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-800/40"
     >
-      <div className="grid grid-cols-4 gap-8 p-6 border-b border-zinc-200 dark:border-zinc-700">
+      <div className="grid grid-cols-4 gap-8 border-b border-zinc-200 p-6 dark:border-zinc-700">
         <div className="col-span-2">
           <TextField
             label="Группа"
@@ -53,7 +53,7 @@ export function GroupCreateForm({ refresh, onClose }: GroupCreateForm) {
           />
         </div>
       </div>
-      <div className="py-4 px-6 flex justify-end gap-4">
+      <div className="flex justify-end gap-4 px-6 py-4">
         <Button onClick={onClose}>Отменить</Button>
         <Button variant="primary">Сохранить</Button>
       </div>

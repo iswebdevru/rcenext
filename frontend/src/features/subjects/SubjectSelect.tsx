@@ -35,7 +35,7 @@ export function SubjectSelect({ selectedSubjectURL, onSelect }: SubjectSelect) {
             name="subject"
             value={searchStr}
             onChange={e => setSearchStr(e.target.value)}
-            className="w-full px-1 py-0.5 text-sm bg-transparent"
+            className="w-full bg-transparent px-1 py-0.5 text-sm"
             hidden={!isRevealed}
             ref={inputRef}
           />
@@ -45,7 +45,7 @@ export function SubjectSelect({ selectedSubjectURL, onSelect }: SubjectSelect) {
               setTimeout(() => inputRef.current?.focus());
             }}
             hidden={isRevealed}
-            className="w-full text-left text-sm px-1 py-0.5"
+            className="w-full px-1 py-0.5 text-left text-sm"
           >
             {selectedSubject ? selectedSubject.name : '-------------'}
           </button>

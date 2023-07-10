@@ -43,9 +43,10 @@ export function SelectBeta({
       return;
     }
     const componentRect = componentRef.current.getBoundingClientRect();
+
     setWidth(componentRect.width);
-    setLeft(componentRect.x);
-    setTop(componentRect.bottom);
+    setLeft(componentRect.x + window.scrollX);
+    setTop(componentRect.bottom + window.scrollY);
   };
 
   useClickOutside(componentRef, onClose);
@@ -75,7 +76,7 @@ export function SelectBeta({
             className={clsx({
               'absolute z-10 border mt-2 rounded-md bg-white shadow-sm border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-600 transition-[opacity,transform] duration-300':
                 true,
-              'opacity-0 -translate-y-8 scale-75':
+              '-translate-y-8 scale-75 opacity-0':
                 transitionState.status === 'preEnter' ||
                 transitionState.status === 'exiting',
             })}
