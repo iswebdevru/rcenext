@@ -36,7 +36,7 @@ export default function Groups() {
       </Head>
       <AdminLayout>
         <div className="h-full p-6">
-          <div className="flex justify-between items-center px-6 pb-6">
+          <div className="flex items-center justify-between px-6 pb-6">
             <Title>Группы</Title>
             <Button
               type="button"

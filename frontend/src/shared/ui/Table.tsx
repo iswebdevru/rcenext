@@ -42,7 +42,7 @@ type TableContext<T extends Id> = {
   setEditingItems: Dispatch<SetStateAction<Set<Id>>>;
 };
 
-const TableContext = createContext<TableContext<any>>(undefined as any);
+const TableContext = createContext<TableContext<any>>({} as any);
 
 export function Table<T extends Id>({ children }: PropsWithChildren) {
   const [visibleItems, setVisibleItems] = useState<T[]>([]);
@@ -60,9 +60,7 @@ export function Table<T extends Id>({ children }: PropsWithChildren) {
         setEditingItems,
       }}
     >
-      <div className="rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800/40">
-        {children}
-      </div>
+      {children}
     </TableContext.Provider>
   );
 }
@@ -96,7 +94,7 @@ Table.Controls = function TableControls<T extends Id>({
   };
 
   return (
-    <div className="flex gap-4 border-b border-zinc-200 p-4 dark:border-zinc-700">
+    <div className="mb-3 flex items-center gap-4 rounded-md rounded-tr-md border border-zinc-200 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
       <InputSearch
         onChange={e => onSearchChange(e.currentTarget.value)}
         value={search}
@@ -120,7 +118,7 @@ Table.Controls = function TableControls<T extends Id>({
 
 Table.Main = function TableMain({ children }: PropsWithChildren) {
   return (
-    <table className="w-full table-fixed border-separate border-spacing-0">
+    <table className="w-full table-fixed border-separate border-spacing-0 rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
       {children}
     </table>
   );
@@ -332,7 +330,7 @@ Table.DataCell = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
       <td
         className={classNameWithDefaults(
           clsx({
-            'p-0 border-b border-zinc-200 group-last/row:border-0 dark:border-zinc-700 text-sm text-black group-last/row:first:rounded-bl-md group-last:last:rounded-br-md dark:text-zinc-200':
+            'border-b border-zinc-200 p-0 text-sm text-black group-last/row:border-0 group-last/row:first:rounded-bl-md group-last:last:rounded-br-md dark:border-zinc-700 dark:text-zinc-200':
               true,
             'bg-zinc-50 dark:bg-zinc-800': !!ctx?.isSelected,
           }),
@@ -354,7 +352,7 @@ Table.DataCell = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
 
 Table.HeadCell = function TableHeadCell({ children }: PropsWithChildren) {
   return (
-    <th className="sticky top-14 text-left text-sm font-semibold text-slate-900 first:w-[61px] last:w-[114px] dark:text-slate-100 bg-white/20 backdrop-blur-sm dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700 p-0">
+    <th className="sticky top-14 border-b border-zinc-200 bg-white/50 p-0 text-left text-sm font-semibold text-slate-900 backdrop-blur-md first:w-[61px] last:w-[114px] dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-slate-100">
       <div className="flex h-12 items-center px-6 py-3">{children}</div>
     </th>
   );

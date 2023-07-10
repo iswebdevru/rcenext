@@ -32,7 +32,7 @@ export function GroupCreateForm({ refresh, onClose }: GroupCreateForm) {
   return (
     <form
       onSubmit={handleSubmit(onSave)}
-      className="max-w-2xl rounded-md border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-800/40"
+      className="max-w-2xl rounded-md border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-800"
     >
       <div className="grid grid-cols-4 gap-8 border-b border-zinc-200 p-6 dark:border-zinc-700">
         <div className="col-span-2">

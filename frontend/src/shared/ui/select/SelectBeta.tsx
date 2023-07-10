@@ -51,6 +51,12 @@ export function SelectBeta({
 
   useClickOutside(componentRef, onClose);
 
+  // Scroll event
+  useEffect(() => {
+    window.addEventListener('scroll', recalculatePosition);
+    return () => window.removeEventListener('resize', recalculatePosition);
+  }, []);
+
   // Resize event
   useEffect(() => {
     window.addEventListener('resize', recalculatePosition);
@@ -74,7 +80,7 @@ export function SelectBeta({
           <div
             style={{ left, top, width }}
             className={clsx({
-              'absolute z-10 border mt-2 rounded-md bg-white shadow-sm border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-600 transition-[opacity,transform] duration-300':
+              'absolute z-10 mt-2 max-h-60 overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-300 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600':
                 true,
               '-translate-y-8 scale-75 opacity-0':
                 transitionState.status === 'preEnter' ||
@@ -101,14 +107,14 @@ export const SelectBetaOption = forwardRef<
   return (
     <li
       className={clsx({
-        'border-b border-b-zinc-200 dark:border-b-zinc-700 last:border-b-0':
+        'border-b border-b-zinc-200 last:border-b-0 dark:border-b-zinc-700':
           true,
         'bg-zinc-100 dark:bg-zinc-700': selected,
       })}
       ref={ref}
     >
       <button
-        className="w-full px-3 py-2 overflow-hidden text-sm text-left select-none overflow-ellipsis whitespace-nowrap text-zinc-700 dark:text-zinc-200"
+        className="w-full select-none overflow-hidden overflow-ellipsis whitespace-nowrap px-3 py-2 text-left text-sm text-zinc-700 dark:text-zinc-200"
         onClick={onSelect}
       >
         {children}

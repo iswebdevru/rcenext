@@ -31,7 +31,7 @@ export function SubjectCreateForm({
   return (
     <form
       onSubmit={handleSubmit(onSave)}
-      className="max-w-lg rounded-md border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-800/40"
+      className="max-w-lg rounded-md border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-800"
     >
       <div className="border-b border-zinc-200 p-6 dark:border-zinc-700">
         <TextField

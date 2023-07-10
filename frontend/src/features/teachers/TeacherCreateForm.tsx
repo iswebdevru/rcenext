@@ -43,7 +43,7 @@ export function TeacherCreateForm({
   return (
     <form
       onSubmit={handleSubmit(onValid, onInvalid)}
-      className="max-w-4xl rounded-md border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-800/40"
+      className="max-w-4xl rounded-md border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-800"
     >
       <div className="grid grid-cols-6 gap-x-10 gap-y-5 border-b border-zinc-200 p-8 dark:border-zinc-700">
         <div className="col-span-2">
@@ -52,11 +52,7 @@ export function TeacherCreateForm({
             placeholder="Иван"
             autoComplete="given-name"
             type="text"
-            isValid={
-              formState.touchedFields.first_name
-                ? !formState.errors.first_name
-                : null
-            }
+            error={formState.errors.first_name?.message}
             disabled={formState.isSubmitting}
             {...register('first_name', { required: true })}
           />
@@ -67,11 +63,7 @@ export function TeacherCreateForm({
             placeholder="Иванов"
             autoComplete="family-name"
             type="text"
-            isValid={
-              formState.touchedFields.last_name
-                ? !formState.errors.last_name
-                : null
-            }
+            error={formState.errors.last_name?.message}
             disabled={formState.isSubmitting}
             {...register('last_name', { required: true })}
           />
@@ -82,11 +74,7 @@ export function TeacherCreateForm({
             placeholder="Иванович"
             autoComplete="additional-name"
             type="text"
-            isValid={
-              formState.touchedFields.patronymic
-                ? !formState.errors.patronymic
-                : null
-            }
+            error={formState.errors.patronymic?.message}
             disabled={formState.isSubmitting}
             {...register('patronymic', { required: true })}
           />
