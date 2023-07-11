@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
  * @param value value to track changes from
  * @param ms time to ignore value
  */
-export function useDebounce<T>(value: T, ms: number = 250): T {
+export function useDebounce<T>(value: T, ms = 250): T {
   const [derivedState, setDerivedState] = useState(value);
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
 

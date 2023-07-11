@@ -24,24 +24,21 @@ export default function Classes() {
   const [collegeBlock, setCollegeBlock] = useState<number>(-1);
   const [classesType, setClassesType] = useState<ClassesType>('mixed');
   const [groupSearch, setGroupSearch] = useState('');
-  const weekType = date ? getWeekType(date) : null;
-  const weekDay = date ? WEEKDAYS_MAP[date.getDay()] : null;
-  const dateStr = date ? formatDate(date) : '';
+  const weekType = getWeekType(date);
+  const weekDay = WEEKDAYS_MAP[date.getDay()];
+  const dateStr = formatDate(date);
 
   // Debounced
   const groupSearchDebounced = useDebounce(groupSearch);
 
-  const queryParams =
-    weekDay && weekType
-      ? getClassesQueryParams({
+  const queryParams = getClassesQueryParams({
           classesType,
           weekDay,
           weekType,
           date: dateStr,
           groupSearch: groupSearchDebounced,
           collegeBlock,
-        })
-      : '';
+        });
 
   const {
     data: classesSchedule,
