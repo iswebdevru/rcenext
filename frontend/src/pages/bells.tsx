@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { BaseLayout } from '@/layouts';
 import { getAppDate } from '@/shared/lib/date';
 import { Table } from '@/shared/ui/Table';
 import { Calendar } from '@/shared/ui/calendar';
 import Head from 'next/head';
-import { useState } from 'react';
+import { SelectBeta, SelectBetaOption } from '@/shared/ui/select';
+import { Button } from '@/shared/ui/controls';
 
 export default function Bells() {
   const [date, setDate] = useState(getAppDate);
+  const [bellsType, setBellsType] = useState<BellsType>('normal');
 
   return (
     <>
@@ -49,9 +52,9 @@ export default function Bells() {
               </Table.Main>
             </Table>
           </div>
-          <div className="flex-none">
+          <div className="flex-none space-y-4">
             <Calendar onDateChange={setDate} date={date} />
-            <SelectBellsType />
+            <SelectBellsType type={bellsType} onChange={setBellsType} />
           </div>
         </div>
       </BaseLayout>
@@ -59,6 +62,38 @@ export default function Bells() {
   );
 }
 
-function SelectBellsType() {
-  return null;
+const BELLS_TYPES = {
+  normal: 'Основной',
+  reduced: 'Сокращенный',
+} as const;
+
+type BellsType = keyof typeof BELLS_TYPES;
+
+type SelectBellsTypeProps = {
+  type: BellsType;
+  onChange: (type: BellsType) => void;
+};
+
+function SelectBellsType({ type, onChange }: SelectBellsTypeProps) {
+  const [isRevealed, setIsRevealed] = useState(false);
+
+  return (
+    <SelectBeta
+      isRevealed={isRevealed}
+      onClose={() => setIsRevealed(false)}
+      inputElement={
+        <Button onClick={() => setIsRevealed(true)}>{BELLS_TYPES[type]}</Button>
+      }
+    >
+      {Object.entries(BELLS_TYPES).map(([key, value]) => (
+        <SelectBetaOption
+          key={key}
+          onSelect={() => onChange(key as BellsType)}
+          selected={type === key}
+        >
+          {value}
+        </SelectBetaOption>
+      ))}
+    </SelectBeta>
+  );
 }

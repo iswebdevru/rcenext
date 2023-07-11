@@ -1,19 +1,22 @@
-import { ClassesScheduleMixed, WeekDay, WeekType } from '@/shared/api';
+import {
+  ClassesScheduleMixed,
+  Hyperlink,
+  WeekDay,
+  WeekType,
+} from '@/shared/api';
 import { Reducer, useReducer } from 'react';
 import { withBlankPeriods } from './lib';
 import {
   ClassesData,
-  ClassesDataWithHistory,
+  ClassesDataWithDraft,
   ClassesStore,
   ClassesStoreAction,
 } from './types';
 import { defaultClassesDataWithHistory, defaultPeriods } from './constants';
 
-export function getMainStoreKey(weekType: WeekType, weekDay: WeekDay) {
-  return `${weekType}${weekDay}`;
-}
-
-export type GetStoreKeyOptions =
+export type GetStoreKeyOptions = {
+  group: Hyperlink;
+} & (
   | {
       classesType: 'main';
       weekType: WeekType;
@@ -22,12 +25,14 @@ export type GetStoreKeyOptions =
   | {
       classesType: 'changes';
       date: string;
-    };
+    }
+);
 
-export function getStoreKey(options: GetStoreKeyOptions) {
-  return options.classesType === 'main'
-    ? getMainStoreKey(options.weekType, options.weekDay)
-    : options.date;
+export function getClassesDataKey(options: GetStoreKeyOptions) {
+  if (options.classesType === 'main') {
+    return `main/${options.weekType}${options.weekDay}/${options.group}`;
+  }
+  return `changes/${options.date}/${options.group}`;
 }
 
 export function validateClassesDataDraft(data: ClassesData) {
@@ -37,7 +42,7 @@ export function validateClassesDataDraft(data: ClassesData) {
   return data.periods.some(period => period.subject !== null);
 }
 
-export function hasInitAndDraftDiff(data: ClassesDataWithHistory) {
+export function hasInitAndDraftDiff(data: ClassesDataWithDraft) {
   if (data.init.view !== data.draft.view) {
     return true;
   }
@@ -65,7 +70,7 @@ export function hasInitAndDraftDiff(data: ClassesDataWithHistory) {
 
 function createClassesDataWithHistoryFromPayload(
   payload: ClassesScheduleMixed
-): ClassesDataWithHistory {
+): ClassesDataWithDraft {
   return {
     init: {
       view: payload.view,
@@ -93,30 +98,23 @@ const classesStoreReducer: Reducer<ClassesStore, ClassesStoreAction> = (
   switch (action.type) {
     case 'init-empty': {
       const clone = structuredClone(state);
-      const key = getStoreKey(action);
-      const data = structuredClone(defaultClassesDataWithHistory);
-      if (clone[action.classesType].has(key)) {
-        clone[action.classesType].get(key)!.set(action.group, data);
-      } else {
-        clone[action.classesType].set(key, new Map([[action.group, data]]));
-      }
+      const key = getClassesDataKey(action);
+      clone.set(key, structuredClone(defaultClassesDataWithHistory));
       return clone;
     }
     case 'init-defined': {
       const clone = structuredClone(state);
-      const key = getStoreKey(action);
-      const data = createClassesDataWithHistoryFromPayload(action.payload);
-      if (clone[action.classesType].has(key)) {
-        clone[action.classesType].get(key)!.set(action.group, data);
-      } else {
-        clone[action.classesType].set(key, new Map([[action.group, data]]));
-      }
+      const key = getClassesDataKey(action);
+      clone.set(
+        key,
+        structuredClone(createClassesDataWithHistoryFromPayload(action.payload))
+      );
       return clone;
     }
     case 'change-view': {
       const clone = structuredClone(state);
-      const key = getStoreKey(action);
-      const data = clone[action.classesType].get(key)?.get(action.group);
+      const key = getClassesDataKey(action);
+      const data = clone.get(key);
       if (!data) {
         return state;
       }
@@ -125,8 +123,8 @@ const classesStoreReducer: Reducer<ClassesStore, ClassesStoreAction> = (
     }
     case 'change-period': {
       const clone = structuredClone(state);
-      const key = getStoreKey(action);
-      const data = clone[action.classesType].get(key)?.get(action.group);
+      const key = getClassesDataKey(action);
+      const data = clone.get(key);
       if (!data) {
         return state;
       }
@@ -143,8 +141,8 @@ const classesStoreReducer: Reducer<ClassesStore, ClassesStoreAction> = (
     }
     case 'change-message': {
       const clone = structuredClone(state);
-      const key = getStoreKey(action);
-      const data = clone[action.classesType].get(key)?.get(action.group);
+      const key = getClassesDataKey(action);
+      const data = clone.get(key);
       if (!data) {
         return state;
       }
@@ -153,12 +151,10 @@ const classesStoreReducer: Reducer<ClassesStore, ClassesStoreAction> = (
     }
     case 'remove': {
       const clone = structuredClone(state);
-      const key = getStoreKey(action);
-      const dayStore = clone[action.classesType].get(key);
-      if (!dayStore) {
-        return state;
-      }
-      action.payload.forEach(group => dayStore.delete(group));
+      action.payload.forEach(group => {
+        const key = getClassesDataKey({ ...action, group });
+        clone.delete(key);
+      });
       return clone;
     }
     default:
@@ -167,8 +163,5 @@ const classesStoreReducer: Reducer<ClassesStore, ClassesStoreAction> = (
 };
 
 export function useClassesStore() {
-  return useReducer(classesStoreReducer, {
-    main: new Map(),
-    changes: new Map(),
-  });
+  return useReducer(classesStoreReducer, new Map());
 }

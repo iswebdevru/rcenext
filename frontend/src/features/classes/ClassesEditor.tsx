@@ -1,5 +1,5 @@
 import { ComponentProps, Dispatch, forwardRef, useRef, useState } from 'react';
-import useSWRImmutable from 'swr/immutable';
+import useSWR from 'swr';
 import { ClassesScheduleChanges, Group, fetcher } from '@/shared/api';
 import {
   faComment,
@@ -12,7 +12,7 @@ import { classNameWithDefaults, clsx } from '@/shared/lib/ui';
 import { useClickOutside } from '@/shared/hooks';
 import { Button } from '@/shared/ui/controls';
 import {
-  ClassesDataWithHistory,
+  ClassesDataWithDraft,
   ClassesPartialPeriod,
   ClassesStoreGroupAction,
   ClassesType,
@@ -26,7 +26,7 @@ export type ClassesEditorProps = {
   type: ClassesType;
   group: Group;
   searchParams: string;
-  classes?: ClassesDataWithHistory;
+  classes?: ClassesDataWithDraft;
   dispatch: Dispatch<ClassesStoreGroupAction>;
 };
 
@@ -35,7 +35,7 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
     { type, group, searchParams, classes, dispatch },
     ref
   ) {
-    useSWRImmutable<ClassesScheduleChanges>(
+    useSWR<ClassesScheduleChanges>(
       classes ? null : `${group.classes}${searchParams}`,
       fetcher,
       {

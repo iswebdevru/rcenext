@@ -1,4 +1,4 @@
-import { ClassesDataWithHistory, ClassesPartialPeriod } from './types';
+import { ClassesDataWithDraft, ClassesPartialPeriod } from './types';
 
 export type ClassesType = 'main' | 'changes' | 'mixed';
 
@@ -13,7 +13,7 @@ export const defaultPeriods: ClassesPartialPeriod[] = [
   { index: 7, subject: null, cabinet: '', teachers: [] },
 ];
 
-export const defaultClassesDataWithHistory: ClassesDataWithHistory = {
+export const defaultClassesDataWithHistory: ClassesDataWithDraft = {
   init: {
     view: 'table',
     message: '',

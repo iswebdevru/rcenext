@@ -23,18 +23,24 @@ export type ClassesData = {
   message: string;
   periods: ClassesPartialPeriod[];
 };
-export type ClassesDataWithHistory = {
+export type ClassesDataWithDraft = {
   init: ClassesData;
   draft: ClassesData;
 };
-export type ClassesMainDayStore = Map<Hyperlink, ClassesDataWithHistory>;
-export type ClassesChangesDayStore = Map<Hyperlink, ClassesDataWithHistory>;
-export type ClassesMainStore = Map<string, ClassesMainDayStore>;
-export type ClassesChangesStore = Map<string, ClassesChangesDayStore>;
-export type ClassesStore = {
-  main: ClassesMainStore;
-  changes: ClassesChangesStore;
-};
+export type ClassesStore = Map<string, ClassesDataWithDraft>;
+
+/**
+ *
+ * Map
+ * key => value
+ *
+ * main:
+ * key: main/date/group/init
+ * key: main/date/group/draft
+ *
+ * changes:
+ * key: changes/date/
+ */
 
 // Actions
 export type ClassesChangesStoreAction = {
@@ -77,10 +83,10 @@ export type ClassesStoreGroupAction =
   | ClassesStoreChangeViewAction
   | ClassesStoreChangePeriodAction
   | ClassesStoreChangeMessageAction;
-export type ClassesStoreGeneralAction = ClassesStoreRemoveAction;
 
-export type ClassesStoreAction = (
-  | (ClassesStoreGroupAction & ClassesStoreGroupActionBase)
-  | ClassesStoreGeneralAction
-) &
-  (ClassesMainStoreAction | ClassesChangesStoreAction);
+export type ClassesStoreAction =
+  | (
+      | (ClassesStoreGroupAction & ClassesStoreGroupActionBase)
+      | ClassesStoreRemoveAction
+    ) &
+      (ClassesMainStoreAction | ClassesChangesStoreAction);

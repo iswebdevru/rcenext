@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/controls';
 import { InputDate } from '@/shared/ui/calendar';
 import { SelectWeekType, SelectWeekDay } from '@/shared/ui/select';
 import { Toggles } from '@/shared/ui/controls';
 import { AdminLayout } from '@/layouts';
-import { usePaginatedFetch } from '@/shared/hooks';
+import { useDebounce, usePaginatedFetch, usePrevious } from '@/shared/hooks';
 import {
   API_CLASSES,
   API_GROUPS,
@@ -16,7 +16,7 @@ import {
 } from '@/shared/api';
 import {
   ClassesType,
-  getStoreKey,
+  getClassesDataKey,
   hasInitAndDraftDiff,
   useClassesStore,
   validateClassesDataDraft,
@@ -32,31 +32,44 @@ export default function Classes() {
   const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
   const [date, setDate] = useState(getAppDate);
+
+  const debouncedDate = useDebounce(date, 500);
+  const prevDebouncedDate = usePrevious(debouncedDate);
+
   const [classesStore, dispatch] = useClassesStore();
   const [isSaving, setIsSaving] = useState(false);
-  const strDate = date ? formatDate(date) : '';
-  const storeKey = date
-    ? getStoreKey({
-        classesType,
-        weekDay,
-        weekType,
-        date: strDate,
-      })
-    : null;
-  const classesDayStore = storeKey
-    ? classesStore[classesType].get(storeKey)
-    : null;
+
+  const strDate = formatDate(debouncedDate);
+
   const { data: groups, lastElementRef } = usePaginatedFetch<Group>(API_GROUPS);
 
-  const validatedClassesDataList = classesDayStore
-    ? [...classesDayStore.entries()]
-        .filter(
-          ([_, classesData]) =>
-            hasInitAndDraftDiff(classesData) &&
-            validateClassesDataDraft(classesData.draft)
-        )
-        .map(([group, data]) => ({ group, draft: data.draft }))
-    : [];
+  const validatedClassesDataList =
+    groups
+      ?.flatMap(data => data.results)
+      .map(group => group.url)
+      .map(
+        group =>
+          [
+            group,
+            classesStore.get(
+              getClassesDataKey({
+                group,
+                classesType,
+                date: strDate,
+                weekDay,
+                weekType,
+              })
+            ),
+          ] as const
+      )
+      .filter(
+        ([group, classesData]) =>
+          classesData &&
+          hasInitAndDraftDiff(classesData) &&
+          validateClassesDataDraft(classesData.draft)
+      )
+      .map(([group, data]) => ({ group, draft: data!.draft })) ?? [];
+
   const canSave = validatedClassesDataList.length > 0;
 
   async function handleSave() {
@@ -107,6 +120,20 @@ export default function Classes() {
     });
     setIsSaving(false);
   }
+
+  useEffect(() => {
+    if (groups && prevDebouncedDate) {
+      dispatch({
+        type: 'remove',
+        payload: groups.flatMap(data => data.results).map(group => group.url),
+        classesType,
+        date: formatDate(prevDebouncedDate),
+        weekDay,
+        weekType,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedDate]);
 
   return (
     <>
@@ -175,7 +202,14 @@ export default function Classes() {
                       });
                     }}
                     group={group}
-                    classes={classesDayStore?.get(group.url)}
+                    classes={classesStore.get(
+                      getClassesDataKey({
+                        classesType: 'main',
+                        group: group.url,
+                        weekType,
+                        weekDay,
+                      })
+                    )}
                     searchParams={`?type=${classesType}&week_day=${weekDay}&week_type=${weekType}`}
                     ref={a.length - 1 === i ? lastElementRef : null}
                   />
@@ -192,7 +226,13 @@ export default function Classes() {
                       });
                     }}
                     group={group}
-                    classes={classesDayStore?.get(group.url)}
+                    classes={classesStore.get(
+                      getClassesDataKey({
+                        classesType: 'changes',
+                        group: group.url,
+                        date: strDate,
+                      })
+                    )}
                     searchParams={`?date=${strDate}`}
                     ref={a.length - 1 === i ? lastElementRef : null}
                   />
