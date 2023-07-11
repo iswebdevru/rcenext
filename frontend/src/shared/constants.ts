@@ -38,3 +38,5 @@ export const WEEK_DAYS = new Map<WeekDay, string>([
   ['ПТ', 'Пятница'],
   ['СБ', 'Суббота'],
 ]);
+
+export const APP_TIMEZONE = 'Europe/Moscow';

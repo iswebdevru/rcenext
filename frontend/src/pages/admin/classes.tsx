@@ -4,7 +4,7 @@ import { InputDate } from '@/shared/ui/calendar';
 import { SelectWeekType, SelectWeekDay } from '@/shared/ui/select';
 import { Toggles } from '@/shared/ui/controls';
 import { AdminLayout } from '@/layouts';
-import { useDate, usePaginatedFetch } from '@/shared/hooks';
+import { usePaginatedFetch } from '@/shared/hooks';
 import {
   API_CLASSES,
   API_GROUPS,
@@ -22,7 +22,7 @@ import {
   validateClassesDataDraft,
 } from '@/entities/classes';
 import { ClassesEditor } from '@/features/classes';
-import { formatDate } from '@/shared/lib/date';
+import { formatDate, getAppDate } from '@/shared/lib/date';
 import Head from 'next/head';
 
 export default function Classes() {
@@ -31,7 +31,7 @@ export default function Classes() {
     useState<Exclude<ClassesType, 'mixed'>>('changes');
   const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
-  const [date, setDate] = useDate();
+  const [date, setDate] = useState(getAppDate);
   const [classesStore, dispatch] = useClassesStore();
   const [isSaving, setIsSaving] = useState(false);
   const strDate = date ? formatDate(date) : '';

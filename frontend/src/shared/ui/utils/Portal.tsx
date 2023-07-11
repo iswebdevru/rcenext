@@ -10,12 +10,11 @@ export function Portal({ children }: PropsWithChildren) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const root = document.getElementById('__next')!;
     containerRef.current = document.createElement('div');
     containerRef.current.classList.add(openSans.variable, 'font-sans');
-    root.append(containerRef.current);
+    document.body.append(containerRef.current);
     return () => {
-      root.removeChild(containerRef.current!);
+      document.body.removeChild(containerRef.current!);
     };
   }, []);
 

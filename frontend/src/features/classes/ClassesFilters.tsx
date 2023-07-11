@@ -8,7 +8,7 @@ import { ClassesType } from '@/entities/classes';
 import { GroupSelect } from '../groups';
 
 export type ClassesFiltersProps = {
-  date: Date | null;
+  date: Date;
   onDateChange: (date: Date) => void;
   collegeBlock: number;
   onCollegeBlockChange: (collegeBlock: number) => void;

@@ -1,4 +1,5 @@
 import { WeekDay, WeekType } from '../api';
+import { APP_TIMEZONE } from '../constants';
 
 const baseTimestamp = new Date(2000, 0, 3);
 const DAY = 86400000;
@@ -22,3 +23,11 @@ export const WEEKDAYS_MAP: WeekDay[] = [
   'ПТ',
   'СБ',
 ];
+
+export function getAppDate() {
+  return new Date(
+    new Date().toLocaleDateString(undefined, {
+      timeZone: APP_TIMEZONE,
+    })
+  );
+}

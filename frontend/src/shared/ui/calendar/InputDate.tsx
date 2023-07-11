@@ -19,7 +19,7 @@ export function InputDate({
   return (
     <div className="relative" ref={componentRef}>
       <Button onClick={() => setIsRevealed(true)} disabled={disabled}>
-        {date?.toLocaleDateString()}
+        {date.toLocaleDateString('en')}
       </Button>
       <div
         className={clsx({
