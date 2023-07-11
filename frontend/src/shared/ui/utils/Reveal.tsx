@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { clsx } from '../lib/ui';
+import { clsx } from '../../lib/ui';
 
 export type RevealProps = {
   isVisible: boolean;
@@ -11,8 +11,8 @@ export function Reveal({ isVisible, children }: RevealProps) {
       className={clsx({
         'grid origin-top-left transition-[grid-template-rows,transform] duration-500':
           true,
-        'grid-rows-[1fr] scale-100': isVisible,
-        'grid-rows-[0fr] scale-0': !isVisible,
+        'scale-100 grid-rows-[1fr]': isVisible,
+        'scale-0 grid-rows-[0fr]': !isVisible,
       })}
     >
       <div className="overflow-hidden">{children}</div>

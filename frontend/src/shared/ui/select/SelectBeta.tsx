@@ -10,7 +10,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Portal } from '../Portal';
+import { Portal } from '../utils';
 import useTransition from 'react-transition-state';
 
 export type SelectBetaProps = {

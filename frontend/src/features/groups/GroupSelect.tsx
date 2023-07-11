@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
-import { InputSearch } from '@/shared/ui/Input';
+import { SearchField } from '@/shared/ui/controls';
 import { SelectBeta, SelectBetaOption } from '@/shared/ui/select';
 import { API_GROUPS, Group } from '@/shared/api';
 
@@ -30,7 +30,7 @@ export function GroupSelect({
       isRevealed={isRevealed}
       onClose={closeWindow}
       inputElement={
-        <InputSearch
+        <SearchField
           placeholder="Группа"
           onFocus={() => setIsRevealed(true)}
           value={groupSearch}

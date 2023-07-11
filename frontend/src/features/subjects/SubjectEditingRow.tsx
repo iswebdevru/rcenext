@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import useSWR from 'swr';
-import { TextField } from '@/shared/ui/Input';
+import { TextField } from '@/shared/ui/controls';
 import { Table } from '@/shared/ui/Table';
 import { fetcher, partiallyUpdateEntity, Subject } from '@/shared/api';
 

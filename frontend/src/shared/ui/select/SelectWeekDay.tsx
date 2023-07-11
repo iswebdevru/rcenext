@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { SelectBeta, SelectBetaOption } from './SelectBeta';
-import { Button } from '../Button';
+import { Button } from '../controls';
 import { WEEK_DAYS } from '@/shared/constants';
 import { WeekDay } from '@/shared/api';
 

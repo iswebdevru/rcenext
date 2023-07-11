@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { TextField } from '@/shared/ui/Input';
+import { TextField } from '@/shared/ui/controls';
 import { Table } from '@/shared/ui/Table';
-import { SelectSubjects } from '../subjects/SelectSubjects'; // TODO: fix one-level cross import
 import { fetcher, partiallyUpdateEntity, Teacher } from '@/shared/api';
+import { SelectSubjects } from '../subjects/SelectSubjects'; // TODO: fix one-level cross import
 
 export type TeacherEditingRowProps = {
   id: string;

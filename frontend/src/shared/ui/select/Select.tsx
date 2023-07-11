@@ -11,7 +11,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { TextField } from '../Input';
+import { TextField } from '../controls';
 
 type Id = string | number;
 
@@ -109,7 +109,7 @@ export function Select<T extends Id>({
 
   return (
     <div
-      className="relative z-10 flex items-center w-full h-8"
+      className="relative z-10 flex h-8 w-full items-center"
       ref={componentRef}
       onFocus={() => {
         setIsOpened(true);
@@ -125,7 +125,7 @@ export function Select<T extends Id>({
         type="button"
         onMouseDown={() => setIsOpened(p => !p)}
         className={clsx({
-          'w-full transition-[border,outline] outline-blue-200 h-full border rounded-md px-3 text-left text-sm outline outline-0':
+          'h-full w-full rounded-md border px-3 text-left text-sm outline outline-0 outline-blue-200 transition-[border,outline]':
             true,
           'border-blue-500 outline-4': isOpened,
           'border-neutral-200': !isOpened,
@@ -137,7 +137,7 @@ export function Select<T extends Id>({
         {Array.isArray(displayValue) ? (
           <div className="flex flex-wrap gap-2">
             {displayValue.map((displayV, i) => (
-              <span key={i} className="block px-1 rounded-md bg-neutral-200">
+              <span key={i} className="block rounded-md bg-neutral-200 px-1">
                 {displayV}
               </span>
             ))}
@@ -151,13 +151,13 @@ export function Select<T extends Id>({
           height: isOpened ? dropDownRef.current?.offsetHeight : 0,
         }}
         className={clsx({
-          'absolute bg-white -left-1 top-[130%] z-10 -right-1 rounded-sm overflow-hidden transition-[height]':
+          'absolute -left-1 -right-1 top-[130%] z-10 overflow-hidden rounded-sm bg-white transition-[height]':
             true,
         })}
       >
         <div ref={dropDownRef} className="border">
           {searchString && onSearchStringChange ? (
-            <div className="px-4 py-3 border-b">
+            <div className="border-b px-4 py-3">
               <TextField />
             </div>
           ) : null}
@@ -183,7 +183,7 @@ Select.Option = forwardRef<HTMLLIElement, OptionProps>(function Option(
       <button
         type="button"
         className={clsx({
-          'px-3 py-2 border-b group-last:border-b-0 w-full text-left': true,
+          'w-full border-b px-3 py-2 text-left group-last:border-b-0': true,
           'bg-blue-50': isSelected,
         })}
         onClick={triggerSelect}

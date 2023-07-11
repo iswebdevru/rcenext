@@ -1,9 +1,8 @@
-import { Button } from '@/shared/ui/Button';
-import { TextField } from '@/shared/ui/Input';
 import { GetServerSideProps } from 'next';
 import { getServerSession } from 'next-auth';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { TextField, Button } from '@/shared/ui/controls';
 import { FormEventHandler, useId, useState } from 'react';
 import { authOptions } from './api/auth/[...nextauth]';
 import Link from 'next/link';
@@ -25,12 +24,12 @@ export default function Login() {
   };
 
   return (
-    <div className="grid place-items-center h-full p-4">
-      <div className="max-w-sm w-full">
-        <h1 className="text-slate-800 dark:text-zinc-50 mb-10 text-xl font-bold text-center md:text-2xl">
+    <div className="grid h-full place-items-center p-4">
+      <div className="w-full max-w-sm">
+        <h1 className="mb-10 text-center text-xl font-bold text-slate-800 dark:text-zinc-50 md:text-2xl">
           Вход в аккаунт
         </h1>
-        <form className="space-y-6 mb-10" onSubmit={handleSubmit}>
+        <form className="mb-10 space-y-6" onSubmit={handleSubmit}>
           <TextField
             type="text"
             id={loginLabelId}
@@ -56,24 +55,24 @@ export default function Login() {
           />
           <Button
             type="submit"
-            className="w-full h-8"
+            className="h-8 w-full"
             variant="primary"
             disabled={!username || !password}
           >
             Войти
           </Button>
         </form>
-        <div className="text-sm text-center">
+        <div className="text-center text-sm">
           <span className="text-slate-700 dark:text-zinc-400">Вернуться </span>
           <Link
-            className="text-primary-400 font-semibold hover:text-primary-500 transition-colors"
+            className="font-semibold text-primary-400 transition-colors hover:text-primary-500"
             href="/"
           >
             на главную
           </Link>
         </div>
         {router.query.error === 'CredentialsSignin' ? (
-          <div className="mt-6 text-xs text-center text-red-500 sm:text-sm md:mt-8">
+          <div className="mt-6 text-center text-xs text-red-500 sm:text-sm md:mt-8">
             Неверное имя пользователя или пароль
           </div>
         ) : null}

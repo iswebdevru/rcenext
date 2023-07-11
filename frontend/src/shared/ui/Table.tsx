@@ -18,8 +18,7 @@ import {
   useState,
 } from 'react';
 import { classNameWithDefaults, clsx } from '../lib/ui';
-import { Button } from './Button';
-import { InputSearch } from './Input';
+import { Button, SearchField } from './controls';
 
 export type Id = string | number;
 
@@ -95,7 +94,7 @@ Table.Controls = function TableControls<T extends Id>({
 
   return (
     <div className="mb-3 flex items-center gap-4 rounded-md rounded-tr-md border border-zinc-200 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
-      <InputSearch
+      <SearchField
         onChange={e => onSearchChange(e.currentTarget.value)}
         value={search}
         placeholder="Поиск"

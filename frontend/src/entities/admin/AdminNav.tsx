@@ -1,5 +1,5 @@
 import { clsx } from '@/shared/lib/ui';
-import { HamburgerButton } from '@/shared/ui/Button';
+import { HamburgerButton } from '@/shared/ui/controls/Button';
 import {
   IconDefinition,
   faBell,
@@ -34,7 +34,7 @@ export function AdminNav() {
 
   return (
     <>
-      <div className="fixed w-64 left-0 top-12 hidden h-full bg-white py-10 px-6 dark:bg-zinc-900 lg:block">
+      <div className="fixed left-0 top-12 hidden h-full w-64 bg-white px-6 py-10 dark:bg-zinc-900 lg:block">
         <nav>
           <ul className="space-y-3">
             {links.map(link => (
@@ -54,7 +54,7 @@ export function AdminNav() {
       </div>
       <div
         className={clsx({
-          'fixed top-0 left-0 z-10 block h-full w-full bg-black transition-colors lg:hidden':
+          'fixed left-0 top-0 z-10 block h-full w-full bg-black transition-colors lg:hidden':
             true,
           'bg-opacity-50': isMobileViewOpened,
           'invisible bg-opacity-0': !isMobileViewOpened,
@@ -103,15 +103,15 @@ function AdminNavLink({ href, isActive, text, icon }: AdminNavLinkProps) {
     <Link
       href={href}
       className={clsx({
-        'block font-semibold transition-color p-2 hover:text-blue-500 dark:hover:text-zinc-50':
+        'transition-color block p-2 font-semibold hover:text-blue-500 dark:hover:text-zinc-50':
           true,
-        'text-blue-500 dark:text-white bg-slate-100 dark:bg-zinc-800 rounded-md':
+        'rounded-md bg-slate-100 text-blue-500 dark:bg-zinc-800 dark:text-white':
           isActive,
         'text-slate-800 dark:text-zinc-400': !isActive,
       })}
     >
       <div className="flex items-center gap-4">
-        <div className="grid items-place-center">
+        <div className="items-place-center grid">
           <FontAwesomeIcon icon={icon} fixedWidth className="text-lg" />
         </div>
         <span className="text-sm">{text}</span>

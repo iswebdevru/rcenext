@@ -1,8 +1,8 @@
-import { WEEK_TYPES } from '@/shared/constants';
-import { SelectBeta, SelectBetaOption } from './SelectBeta';
-import { Button } from '../Button';
 import { useState } from 'react';
+import { WEEK_TYPES } from '@/shared/constants';
 import { WeekType } from '@/shared/api';
+import { SelectBeta, SelectBetaOption } from './SelectBeta';
+import { Button } from '../controls';
 
 export type SelectWeekTypeProps<T extends WeekType> = {
   weekTypeId: T;

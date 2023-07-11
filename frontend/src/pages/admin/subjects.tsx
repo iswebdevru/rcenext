@@ -4,10 +4,10 @@ import { SubjectCreateForm, SubjectEditingRow } from '@/features/subjects';
 import { AdminLayout } from '@/layouts';
 import { API_SUBJECTS, deleteEntities, Subject } from '@/shared/api';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
-import { Button } from '@/shared/ui/Button';
+import { Button } from '@/shared/ui/controls/Button';
 import { Table } from '@/shared/ui/Table';
 import { Title } from '@/shared/ui/Typography';
-import { Reveal } from '@/shared/ui/Reveal';
+import { Reveal } from '@/shared/ui/utils/Reveal';
 
 export default function Subjects() {
   const [searchFilter, setSearchFilter] = useState('');
@@ -30,7 +30,7 @@ export default function Subjects() {
       </Head>
       <AdminLayout>
         <div className="h-full p-6">
-          <div className="flex justify-between items-center px-6 pb-6">
+          <div className="flex items-center justify-between px-6 pb-6">
             <Title>Предметы</Title>
             <Button
               type="button"

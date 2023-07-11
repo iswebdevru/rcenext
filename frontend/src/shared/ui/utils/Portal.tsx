@@ -1,6 +1,6 @@
 import { PropsWithChildren, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { openSans } from './fonts';
+import { openSans } from '../fonts';
 
 /**
  * Render children outside of application root.

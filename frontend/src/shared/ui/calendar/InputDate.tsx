@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Button } from '../Button';
+import { Button } from '../controls/Button';
 import { Calendar, CalendarProps } from './Calendar';
 import { clsx } from '@/shared/lib/ui';
 import { useClickOutside } from '@/shared/hooks';

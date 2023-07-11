@@ -1,6 +1,5 @@
 import { API_SUBJECTS, createEntity } from '@/shared/api';
-import { Button } from '@/shared/ui/Button';
-import { TextField } from '@/shared/ui/Input';
+import { TextField, Button } from '@/shared/ui/controls';
 import { useForm } from 'react-hook-form';
 
 export type SubjectCreateFormProps = {

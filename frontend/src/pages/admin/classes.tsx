@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Button } from '@/shared/ui/Button';
+import { Button } from '@/shared/ui/controls';
 import { InputDate } from '@/shared/ui/calendar';
 import { SelectWeekType, SelectWeekDay } from '@/shared/ui/select';
-import { Toggles } from '@/shared/ui/Toggles';
+import { Toggles } from '@/shared/ui/controls';
 import { AdminLayout } from '@/layouts';
 import { useDate, usePaginatedFetch } from '@/shared/hooks';
 import {

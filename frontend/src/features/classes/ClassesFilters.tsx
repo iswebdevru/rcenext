@@ -3,8 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { clsx } from '@/shared/lib/ui';
 import { Calendar } from '@/shared/ui/calendar';
-import { Button } from '@/shared/ui/Button';
-import { Toggles } from '@/shared/ui/Toggles';
+import { Toggles, Button } from '@/shared/ui/controls';
 import { ClassesType } from '@/entities/classes';
 import { GroupSelect } from '../groups';
 

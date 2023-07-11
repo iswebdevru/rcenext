@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SubjectSelect } from '../subjects';
 import { classNameWithDefaults, clsx } from '@/shared/lib/ui';
 import { useClickOutside } from '@/shared/hooks';
-import { Button } from '@/shared/ui/Button';
+import { Button } from '@/shared/ui/controls';
 import {
   ClassesDataWithHistory,
   ClassesPartialPeriod,

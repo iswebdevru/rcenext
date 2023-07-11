@@ -6,7 +6,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { clsx } from '@/shared/lib/ui';
-import { HamburgerButton } from '@/shared/ui/Button';
+import { HamburgerButton } from '@/shared/ui/controls/Button';
 import { GroupSearch } from '@/features/groups';
 
 const ThemeTogglerWithNoSSR = dynamic(
