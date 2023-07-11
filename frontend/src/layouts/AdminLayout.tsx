@@ -9,7 +9,7 @@ export function AdminLayout({ children }: PropsWithChildren) {
         <div className="flex-shrink-0">
           <AdminNav />
         </div>
-        <div className="lg:pl-64 grow pt-14">{children}</div>
+        <div className="grow pt-14 lg:pl-64">{children}</div>
       </div>
     </BaseLayout>
   );
