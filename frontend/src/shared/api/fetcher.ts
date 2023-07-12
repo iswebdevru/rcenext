@@ -10,7 +10,7 @@ export type FetcherRequestInit<B> = {
 export const fetcher = async <R>(
   input: RequestInfo | URL,
   init?: RequestInit,
-  extra?: FetcherExtraArgs
+  extra?: FetcherExtraArgs,
 ) => {
   return (await fetcher.any(input, init, extra)).json() as R;
 };
@@ -18,13 +18,13 @@ export const fetcher = async <R>(
 fetcher.delete = <B>(
   input: RequestInfo | URL,
   args?: FetcherRequestInit<B>,
-  extra?: FetcherExtraArgs
+  extra?: FetcherExtraArgs,
 ) => fetcher.any<B>(input, { method: 'DELETE', ...args }, extra);
 
 fetcher.post = <R, B>(
   input: RequestInfo | URL,
   init?: FetcherRequestInit<B>,
-  extra?: FetcherExtraArgs
+  extra?: FetcherExtraArgs,
 ) =>
   fetcher
     .any<B>(input, { method: 'POST', ...init }, extra)
@@ -33,7 +33,7 @@ fetcher.post = <R, B>(
 fetcher.patch = <R, B>(
   input: RequestInfo | URL,
   args?: FetcherRequestInit<B>,
-  extra?: FetcherExtraArgs
+  extra?: FetcherExtraArgs,
 ) =>
   fetcher
     .any<B>(input, { method: 'PATCH', ...args }, extra)
@@ -42,7 +42,7 @@ fetcher.patch = <R, B>(
 fetcher.put = <R, B>(
   input: RequestInfo | URL,
   args?: FetcherRequestInit<B>,
-  extra?: FetcherExtraArgs
+  extra?: FetcherExtraArgs,
 ) =>
   fetcher
     .any<B>(input, { method: 'PUT', ...args }, extra)
@@ -51,7 +51,7 @@ fetcher.put = <R, B>(
 fetcher.any = async <B>(
   input: RequestInfo | URL,
   init?: FetcherRequestInit<B>,
-  extra?: FetcherExtraArgs
+  extra?: FetcherExtraArgs,
 ) => {
   const headers: [string, string][] = [];
   let options: RequestInit = {};
@@ -81,7 +81,7 @@ fetcher.any = async <B>(
 
 function extendHeaders(
   headers?: HeadersInit,
-  headersToAdd?: [string, string][]
+  headersToAdd?: [string, string][],
 ): HeadersInit | undefined {
   if (!headers) {
     return headersToAdd;

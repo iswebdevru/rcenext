@@ -1,7 +1,7 @@
-import { RefCallback, useCallback, useRef } from 'react';
+import { MutableRefObject, RefCallback, useCallback, useRef } from 'react';
 
 export function usePagination<E extends Element = Element>(
-  toNextPage: () => void
+  toNextPage: MutableRefObject<() => void>,
 ) {
   const observer = useRef<IntersectionObserver | null>(null);
 
@@ -12,21 +12,22 @@ export function usePagination<E extends Element = Element>(
           (entries, observer) => {
             entries.forEach(entry => {
               if (entry.isIntersecting) {
-                toNextPage();
+                toNextPage.current();
                 observer.unobserve(entry.target);
               }
             });
           },
-          { threshold: 0.7 }
+          { threshold: 0.7 },
         );
       }
       if (!elem) {
-        // observer.current.disconnect();
+        observer.current.disconnect();
       } else {
         observer.current.observe(elem);
       }
     },
-    [toNextPage]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
 
   return lastElementRef;

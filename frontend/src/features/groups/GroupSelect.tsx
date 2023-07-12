@@ -12,32 +12,40 @@ export type GroupSelectProps = {
   onGroupSearchChange: (groupSearch: string) => void;
 };
 
-export function GroupSelect({
-  groupSearch,
-  groupSearchDebounced,
-  onGroupSearchChange,
-  onSelect,
-}: GroupSelectProps) {
+export function GroupSelect(props: GroupSelectProps) {
   const [isRevealed, setIsRevealed] = useState(false);
-  const { data, lastElementRef } = usePaginatedFetch<Group>(
-    isRevealed ? `${API_GROUPS}?search=${groupSearchDebounced}` : null
-  );
-
-  const closeWindow = () => setIsRevealed(false);
+  const hide = () => setIsRevealed(false);
 
   return (
     <SelectBeta
       isRevealed={isRevealed}
-      onClose={closeWindow}
+      onClose={hide}
       inputElement={
         <SearchField
           placeholder="Группа"
           onFocus={() => setIsRevealed(true)}
-          value={groupSearch}
-          onChange={e => onGroupSearchChange(e.currentTarget.value)}
+          value={props.groupSearch}
+          onChange={e => props.onGroupSearchChange(e.currentTarget.value)}
         />
       }
     >
+      {isRevealed ? <GroupSelectOptions {...props} hide={hide} /> : null}
+    </SelectBeta>
+  );
+}
+
+function GroupSelectOptions({
+  groupSearchDebounced,
+  groupSearch,
+  onSelect,
+  hide,
+}: GroupSelectProps & { hide: () => void }) {
+  const { data, lastElementRef } = usePaginatedFetch<Group>(
+    `${API_GROUPS}?search=${groupSearchDebounced}`,
+  );
+
+  return (
+    <>
       {data
         ?.flatMap(page => page.results)
         .map((group, i, arr) => (
@@ -47,13 +55,13 @@ export function GroupSelect({
             selected={group.name === groupSearch}
             onSelect={() => {
               onSelect(group);
-              closeWindow();
+              hide();
             }}
           >
             {group.name}
           </SelectBetaOption>
         ))}
-    </SelectBeta>
+    </>
   );
 }
 

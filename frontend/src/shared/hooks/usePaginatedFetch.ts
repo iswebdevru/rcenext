@@ -1,29 +1,26 @@
-import { useCallback } from 'react';
+import { useRef } from 'react';
 import useSWRInfinite from 'swr/infinite';
 import { fetcher, Paginated } from '../api';
 import { usePagination } from './usePagination';
 
-export function usePaginatedFetch<T>(key: string | null) {
-  const { setSize, ...swrData } = useSWRInfinite<Paginated<T>>(
+export function usePaginatedFetch<T>(key: string) {
+  const toNextFnRef = useRef(() => {});
+
+  const { setSize, data, ...swrData } = useSWRInfinite<Paginated<T>>(
     (pageIndex, prevPageData) => {
-      if (key === null) {
-        return null;
-      }
       if (pageIndex === 0) {
         return key;
       }
-      if (prevPageData?.next) {
-        return prevPageData.next;
-      }
-      return null;
+      return prevPageData?.next;
     },
     fetcher,
     {
+      persistSize: true,
       keepPreviousData: true,
-      persistSize: true, // FUCK YOU FUCKING FUCK
-    }
+    },
   );
-  const toNext = useCallback(() => setSize(p => p + 1), [setSize]);
-  const lastElementRef = usePagination(toNext);
-  return { ...swrData, setSize, lastElementRef };
+  toNextFnRef.current = () => setSize(p => p + 1);
+  const lastElementRef = usePagination(toNextFnRef);
+
+  return { ...swrData, data, lastElementRef };
 }
