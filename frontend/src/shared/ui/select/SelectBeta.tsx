@@ -63,7 +63,7 @@ export function SelectBeta({
               } as React.CSSProperties
             }
             className={clsx({
-              'fixed left-0 top-0 mt-2 max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600':
+              'fixed left-0 top-0 max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600':
                 true,
               'scale-90 opacity-0':
                 transitionState.status === 'preEnter' ||

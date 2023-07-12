@@ -15,7 +15,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
         className={classNameWithDefaults(
           clsx({
-            'select-none rounded-md border px-3 py-1 text-sm font-semibold transition-[background,color,border-color]':
+            'w-full select-none rounded-md border px-3 py-1 text-sm font-semibold transition-[background,color,border-color]':
               true,
             'border-transparent bg-blue-600 text-white enabled:hover:bg-blue-800 disabled:bg-blue-600/50 disabled:text-blue-50/75':
               variant === 'primary',

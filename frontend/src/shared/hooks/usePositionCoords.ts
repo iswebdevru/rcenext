@@ -1,6 +1,9 @@
 import { RefObject, useCallback, useState } from 'react';
 import { useEvent } from './useEvent';
 
+const MAX_HEIGHT = 240;
+const OFFSET = 8;
+
 export function usePositionCoords(ref: RefObject<HTMLElement>) {
   const [width, setWidth] = useState(0);
   const [left, setLeft] = useState(0);
@@ -13,7 +16,12 @@ export function usePositionCoords(ref: RefObject<HTMLElement>) {
     const componentRect = ref.current.getBoundingClientRect();
     setWidth(componentRect.width);
     setLeft(componentRect.x);
-    setTop(componentRect.bottom);
+    setTop(
+      document.body.clientHeight - componentRect.bottom <
+        MAX_HEIGHT + OFFSET * 2
+        ? componentRect.top - MAX_HEIGHT - OFFSET
+        : componentRect.bottom + OFFSET,
+    );
   }, [ref]);
 
   useEvent('scroll', recalculatePosition, undefined, true);

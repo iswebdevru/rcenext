@@ -32,13 +32,13 @@ export default function Classes() {
   const groupSearchDebounced = useDebounce(groupSearch);
 
   const queryParams = getClassesQueryParams({
-          classesType,
-          weekDay,
-          weekType,
-          date: dateStr,
-          groupSearch: groupSearchDebounced,
-          collegeBlock,
-        });
+    classesType,
+    weekDay,
+    weekType,
+    date: dateStr,
+    groupSearch: groupSearchDebounced,
+    collegeBlock,
+  });
 
   const {
     data: classesSchedule,
@@ -52,7 +52,7 @@ export default function Classes() {
         <title>Расписание занятий</title>
       </Head>
       <BaseLayout>
-        <div className="container flex gap-4 pt-6">
+        <div className="container gap-6 pt-6 lg:flex">
           <div className="grow">
             <h1 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-200">
               Расписание занятий на {date.getDate()}{' '}
