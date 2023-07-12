@@ -3,7 +3,7 @@ import useSWRInfinite from 'swr/infinite';
 import { fetcher, Paginated } from '../api';
 import { usePagination } from './usePagination';
 
-export function usePaginatedFetch<T>(key: string) {
+export function usePaginatedFetch<T>(key: string | null) {
   const toNextFnRef = useRef(() => {});
 
   const { setSize, data, ...swrData } = useSWRInfinite<Paginated<T>>(
