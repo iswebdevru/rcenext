@@ -1,5 +1,7 @@
 import { WeekDay, WeekType } from './api';
 
+export const isBrowser = typeof window !== 'undefined';
+
 export const WEEK_TYPES = new Map<WeekType, string>([
   ['ЧИСЛ', 'Числитель'],
   ['ЗНАМ', 'Знаменатель'],

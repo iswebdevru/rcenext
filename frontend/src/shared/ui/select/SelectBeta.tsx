@@ -1,11 +1,11 @@
-import { useClickOutside } from '@/shared/hooks';
+import { useClickOutside, useEvent } from '@/shared/hooks';
 import { clsx } from '@/shared/lib/ui';
 import {
   MouseEventHandler,
   PropsWithChildren,
   ReactNode,
   forwardRef,
-  useEffect,
+  useCallback,
   useLayoutEffect,
   useRef,
   useState,
@@ -38,30 +38,20 @@ export function SelectBeta({
   const [left, setLeft] = useState(0);
   const [top, setTop] = useState(0);
 
-  const recalculatePosition = () => {
+  const recalculatePosition = useCallback(() => {
     if (!componentRef.current) {
       return;
     }
     const componentRect = componentRef.current.getBoundingClientRect();
-
     setWidth(componentRect.width);
     setLeft(componentRect.x + window.scrollX);
     setTop(componentRect.bottom + window.scrollY);
-  };
+  }, []);
 
   useClickOutside(componentRef, onClose);
 
-  // Scroll event
-  useEffect(() => {
-    window.addEventListener('scroll', recalculatePosition);
-    return () => window.removeEventListener('resize', recalculatePosition);
-  }, []);
-
-  // Resize event
-  useEffect(() => {
-    window.addEventListener('resize', recalculatePosition);
-    return () => window.removeEventListener('resize', recalculatePosition);
-  }, []);
+  useEvent('scroll', recalculatePosition);
+  useEvent('resize', recalculatePosition);
 
   useLayoutEffect(() => {
     if (isRevealed) {
@@ -70,7 +60,7 @@ export function SelectBeta({
     } else {
       toggleTransition(false);
     }
-  }, [isRevealed]);
+  }, [isRevealed, recalculatePosition]);
 
   return (
     <div ref={componentRef}>
@@ -80,7 +70,7 @@ export function SelectBeta({
           <div
             style={{ left, top, width }}
             className={clsx({
-              'absolute z-10 mt-2 max-h-60 overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-300 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600':
+              'absolute z-20 mt-2 max-h-60 overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-300 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600':
                 true,
               '-translate-y-8 scale-75 opacity-0':
                 transitionState.status === 'preEnter' ||

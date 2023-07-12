@@ -11,7 +11,7 @@ import { GroupSearch } from '@/features/groups';
 
 const ThemeTogglerWithNoSSR = dynamic(
   () => import('./ThemeToggler').then(module => module.ThemeToggler),
-  { ssr: false }
+  { ssr: false },
 );
 
 export type HeaderProps = {
@@ -42,7 +42,6 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
         className={clsx({
           'z-20 border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800':
             true,
-          '': true,
           relative: !fixed,
           'fixed left-0 top-0 w-full': fixed,
         })}
