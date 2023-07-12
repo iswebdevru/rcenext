@@ -4,12 +4,12 @@ import { BaseLayout } from './BaseLayout';
 
 export function AdminLayout({ children }: PropsWithChildren) {
   return (
-    <BaseLayout wide fixed>
+    <BaseLayout wide>
       <div className="flex h-full">
-        <div className="flex-shrink-0">
+        <div className="flex-none">
           <AdminNav />
         </div>
-        <div className="grow pt-14 lg:pl-64">{children}</div>
+        <div className="flex-auto lg:pl-64">{children}</div>
       </div>
     </BaseLayout>
   );

@@ -6,7 +6,7 @@ export function useClickOutside(
   onClick: (e: MouseEvent) => void,
 ) {
   useEvent('click', e => {
-    if (!ref.current || !(e.target instanceof HTMLElement)) {
+    if (!ref.current || !(e.target instanceof Node)) {
       return;
     }
     if (!ref.current.contains(e.target)) {

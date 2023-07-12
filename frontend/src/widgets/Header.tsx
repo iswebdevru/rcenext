@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
@@ -6,8 +6,10 @@ import { signOut, useSession } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { clsx } from '@/shared/lib/ui';
-import { HamburgerButton } from '@/shared/ui/controls/Button';
+import { HamburgerButton } from '@/shared/ui/controls';
 import { GroupSearch } from '@/features/groups';
+import useTransition from 'react-transition-state';
+import { Portal, ZIndex, useZIndex } from '@/shared/ui/utils';
 
 const ThemeTogglerWithNoSSR = dynamic(
   () => import('./ThemeToggler').then(module => module.ThemeToggler),
@@ -16,7 +18,6 @@ const ThemeTogglerWithNoSSR = dynamic(
 
 export type HeaderProps = {
   wide?: boolean;
-  fixed?: boolean;
 };
 
 const baseLinks = [
@@ -26,29 +27,36 @@ const baseLinks = [
   { href: '/for-teachers', text: 'Преподавателям' },
 ] as const;
 
-export default function Header({ wide, fixed = false }: HeaderProps) {
-  const router = useRouter();
-  const [isMenuOpened, setIsMenuOpen] = useState(false);
-  const mobileMenuRef = useRef<HTMLDivElement>(null);
+export default function Header({ wide }: HeaderProps) {
+  const [isMenuOpened, setIsMenuOpened] = useState(false);
+
   const session = useSession();
 
   const links = session.data
     ? [...baseLinks, { href: '/admin', text: 'Админ' }]
     : baseLinks;
 
+  const openMenu = () => {
+    setIsMenuOpened(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpened(false);
+    document.body.style.overflow = '';
+  };
+
+  const zIndex = 20;
+
   return (
-    <header>
-      <div
-        className={clsx({
-          'z-20 border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800':
-            true,
-          relative: !fixed,
-          'fixed left-0 top-0 w-full': fixed,
-        })}
+    <ZIndex index={zIndex}>
+      <header
+        style={{ zIndex }}
+        className="fixed left-0 top-0 h-14 w-full border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800"
       >
         <div
           className={clsx({
-            'flex h-14 items-center': true,
+            'flex h-full items-center': true,
             container: !wide,
             'px-6': !!wide,
           })}
@@ -87,44 +95,100 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
           ) : null}
           <HamburgerButton
             className="ml-auto block w-9 sm:ml-6 xl:hidden"
-            onClick={() => setIsMenuOpen(p => !p)}
+            onClick={openMenu}
           />
+          <HeaderMobile isOpened={isMenuOpened} onClose={closeMenu} />
         </div>
-      </div>
-      {/* Mobile view */}
+      </header>
+    </ZIndex>
+  );
+}
+
+type HeaderMobileProps = {
+  isOpened: boolean;
+  onClose: () => void;
+};
+
+function HeaderMobile({ isOpened, onClose }: HeaderMobileProps) {
+  const componentRef = useRef<HTMLDivElement | null>(null);
+
+  const zIndex = useZIndex();
+
+  const [transitionState, toggleTransition] = useTransition({
+    timeout: 300,
+    preEnter: true,
+    unmountOnExit: true,
+    mountOnEnter: true,
+  });
+
+  const router = useRouter();
+  const session = useSession();
+
+  const links = session.data
+    ? [...baseLinks, { href: '/admin', text: 'Админ' }]
+    : baseLinks;
+
+  useLayoutEffect(() => {
+    if (isOpened) {
+      toggleTransition(true);
+    } else {
+      toggleTransition(false);
+    }
+  }, [isOpened]);
+
+  if (!transitionState.isMounted) {
+    return null;
+  }
+
+  return (
+    <Portal>
       <div
+        style={{ zIndex }}
         className={clsx({
-          'fixed left-0 top-0 z-10 block h-full w-full bg-black transition-colors duration-300 xl:hidden':
+          'fixed left-0 top-0 block h-full w-full bg-black transition-colors duration-300 xl:hidden':
             true,
-          'bg-opacity-50': isMenuOpened,
-          'invisible bg-opacity-0': !isMenuOpened,
+          'bg-opacity-0':
+            transitionState.status === 'preEnter' ||
+            transitionState.status === 'exiting',
+          'bg-opacity-40':
+            transitionState.status === 'entering' ||
+            transitionState.status === 'entered',
         })}
         onClick={e => {
           if (
-            !(e.target instanceof Node) ||
-            !mobileMenuRef.current?.contains(e.target)
+            e.target instanceof Node &&
+            !componentRef.current?.contains(e.target)
           ) {
-            setIsMenuOpen(false);
+            onClose();
           }
         }}
       >
         <div
           className={clsx({
-            'flex h-full max-w-[260px] flex-col gap-6 overflow-y-auto bg-white px-6 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-900 sm:max-w-xs':
+            'flex h-full flex-col overflow-y-auto bg-white px-8 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-900 sm:max-w-sm':
               true,
-            '-translate-x-full opacity-0': !isMenuOpened,
-            'translate-x-0 opacity-100': isMenuOpened,
+            '-translate-x-full opacity-0':
+              transitionState.status === 'preEnter' ||
+              transitionState.status === 'exiting',
+            'translate-x-0 opacity-100': transitionState.status === 'entering',
           })}
-          ref={mobileMenuRef}
+          ref={componentRef}
         >
-          <Link href="/" className="font-bold text-blue-400 dark:text-white">
-            Расписание РКЭ
-          </Link>
-          <div className="sm:hidden">
+          <div className="mb-10 flex items-center">
+            <Link href="/" className="font-bold text-blue-400 dark:text-white">
+              Расписание РКЭ
+            </Link>
+            <HamburgerButton
+              close
+              className="ml-auto w-9 sm:ml-6 sm:hidden"
+              onClick={onClose}
+            />
+          </div>
+          <div className="mb-6 max-w-xs sm:hidden">
             <GroupSearch />
           </div>
-          <nav>
-            <ul className="flex flex-col gap-3">
+          <nav className="mb-6 max-w-xs">
+            <ul className="space-y-3">
               {links.map(link => (
                 <li key={link.href}>
                   <Link
@@ -150,7 +214,7 @@ export default function Header({ wide, fixed = false }: HeaderProps) {
           </div>
         </div>
       </div>
-    </header>
+    </Portal>
   );
 }
 

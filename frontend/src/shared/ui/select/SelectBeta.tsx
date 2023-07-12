@@ -1,17 +1,15 @@
-import { useClickOutside, useEvent } from '@/shared/hooks';
+import { useClickOutside, usePositionCoords } from '@/shared/hooks';
 import { clsx } from '@/shared/lib/ui';
 import {
   MouseEventHandler,
   PropsWithChildren,
   ReactNode,
   forwardRef,
-  useCallback,
   useLayoutEffect,
   useRef,
-  useState,
 } from 'react';
-import { Portal } from '../utils';
 import useTransition from 'react-transition-state';
+import { Portal, useZIndex } from '../utils';
 
 export type SelectBetaProps = {
   onClose: () => void;
@@ -27,36 +25,24 @@ export function SelectBeta({
 }: SelectBetaProps) {
   const componentRef = useRef<HTMLDivElement>(null);
 
+  const zIndex = useZIndex();
+
   const [transitionState, toggleTransition] = useTransition({
-    timeout: 300,
+    timeout: 200,
     preEnter: true,
     mountOnEnter: true,
     unmountOnExit: true,
   });
 
-  const [width, setWidth] = useState(0);
-  const [left, setLeft] = useState(0);
-  const [top, setTop] = useState(0);
-
-  const recalculatePosition = useCallback(() => {
-    if (!componentRef.current) {
-      return;
-    }
-    const componentRect = componentRef.current.getBoundingClientRect();
-    setWidth(componentRect.width);
-    setLeft(componentRect.x + window.scrollX);
-    setTop(componentRect.bottom + window.scrollY);
-  }, []);
+  const { width, left, top, recalculatePosition } =
+    usePositionCoords(componentRef);
 
   useClickOutside(componentRef, onClose);
 
-  useEvent('scroll', recalculatePosition);
-  useEvent('resize', recalculatePosition);
-
   useLayoutEffect(() => {
     if (isRevealed) {
-      toggleTransition(true);
       recalculatePosition();
+      toggleTransition(true);
     } else {
       toggleTransition(false);
     }
@@ -65,22 +51,32 @@ export function SelectBeta({
   return (
     <div ref={componentRef}>
       {inputElement}
-      <Portal>
-        {transitionState.isMounted ? (
+      {transitionState.isMounted ? (
+        <Portal>
           <div
-            style={{ left, top, width }}
+            style={
+              {
+                '--tw-translate-x': `${left}px`,
+                '--tw-translate-y': `${top}px`,
+                width,
+                zIndex,
+              } as React.CSSProperties
+            }
             className={clsx({
-              'absolute z-20 mt-2 max-h-60 overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-300 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600':
+              'fixed left-0 top-0 mt-2 max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600':
                 true,
-              '-translate-y-8 scale-75 opacity-0':
+              'scale-90 opacity-0':
                 transitionState.status === 'preEnter' ||
+                transitionState.status === 'exiting',
+              'transition-[opacity,transform] duration-200':
+                transitionState.status === 'entering' ||
                 transitionState.status === 'exiting',
             })}
           >
             <ul>{children}</ul>
           </div>
-        ) : null}
-      </Portal>
+        </Portal>
+      ) : null}
     </div>
   );
 }

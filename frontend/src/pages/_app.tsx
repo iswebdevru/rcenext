@@ -2,10 +2,10 @@ import type { AppProps } from 'next/app';
 import { SessionProvider } from 'next-auth/react';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
-import '@/application/style.css';
-import { Notifications } from '@/shared/ui/Notification';
 import { clsx } from '@/shared/lib/ui';
 import { openSans } from '@/shared/ui/fonts';
+
+import '@/application/style.css';
 
 config.autoAddCss = false;
 
@@ -22,8 +22,8 @@ export default function App({
     >
       <SessionProvider session={session}>
         <Component {...pageProps} />
-        <Notifications />
       </SessionProvider>
+      <div id="__portal"></div>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { Calendar } from '@/shared/ui/calendar';
 import { Toggles, Button } from '@/shared/ui/controls';
 import { ClassesType } from '@/entities/classes';
 import { GroupSelect } from '../groups';
+import { ZIndex } from '@/shared/ui/utils';
 
 export type ClassesFiltersProps = {
   date: Date;
@@ -24,7 +25,7 @@ export function ClassesFilters(props: ClassesFiltersProps) {
   const [isMobileFiltersOpened, setIsMobileFiltersOpened] = useState(false);
 
   return (
-    <>
+    <ZIndex index={20}>
       <div
         className={clsx({
           'fixed left-0 top-0 z-20 h-full w-full bg-black transition-colors duration-300 lg:visible lg:static lg:bg-transparent lg:opacity-100 lg:transition-none':
@@ -87,6 +88,6 @@ export function ClassesFilters(props: ClassesFiltersProps) {
       >
         <FontAwesomeIcon icon={faFilter} fixedWidth size="lg" />
       </button>
-    </>
+    </ZIndex>
   );
 }

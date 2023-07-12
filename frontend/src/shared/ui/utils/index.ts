@@ -1,2 +1,3 @@
-export { Portal } from './Portal';
-export { Reveal } from './Reveal';
+export * from './Portal';
+export * from './Reveal';
+export * from './ZIndex';
