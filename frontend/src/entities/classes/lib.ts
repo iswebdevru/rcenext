@@ -30,7 +30,7 @@ export type ClassesQueryParamsOptions = (
 export function getClassesQueryParams(params: ClassesQueryParamsOptions) {
   return `?type=${params.classesType}&group__name=${params.groupName}&block=${
     params.collegeBlock
-  }&cabinet=${params.cabinet}&${
+  }&cabinet=${params.cabinet}${
     params.classesType === 'main'
       ? `&week_type=${params.weekType}&week_day=${params.weekDay}`
       : `&date=${params.date}`
