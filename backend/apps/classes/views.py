@@ -14,7 +14,8 @@ class ClassesScheduleFilter(django_filters.FilterSet):
         field_name='group__name', lookup_expr='icontains')
     cabinet = django_filters.CharFilter(
         field_name='periods__cabinet',
-        lookup_expr='istartswith'
+        lookup_expr='istartswith',
+        distinct=True
     )
 
 
