@@ -1,6 +1,6 @@
 import { PropsWithChildren, createContext, useContext } from 'react';
 
-const ZIndexContext = createContext(1);
+const ZIndexContext = createContext(10);
 
 export type ZIndexProps = { index: number } & PropsWithChildren;
 

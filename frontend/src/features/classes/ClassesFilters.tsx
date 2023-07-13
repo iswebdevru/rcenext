@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { clsx } from '@/shared/lib/ui';
@@ -7,7 +7,6 @@ import { Toggles, Button } from '@/shared/ui/controls';
 import { ClassesType } from '@/entities/classes';
 import { GroupSelect } from '../groups';
 import { Portal, ZIndex } from '@/shared/ui/utils';
-import { useOnMount } from '@/shared/hooks';
 import useTransition from 'react-transition-state';
 
 export type ClassesFiltersProps = {
@@ -24,7 +23,6 @@ export type ClassesFiltersProps = {
 
 export function ClassesFilters(props: ClassesFiltersProps) {
   const mobileFiltersViewRef = useRef<HTMLDivElement>(null);
-  const [showMobileBtn, setShowMobileBtn] = useState(false);
 
   const [transitionState, toggleTransition] = useTransition({
     timeout: 300,
@@ -45,18 +43,15 @@ export function ClassesFilters(props: ClassesFiltersProps) {
     document.body.style.overflow = '';
   };
 
-  useOnMount(() => {
-    setShowMobileBtn(true);
-  });
-
   return (
     <>
       <div className="hidden h-full lg:block">
         <Filters {...props} />
       </div>
+      <FiltersButton onOpen={openFilters} />
       <ZIndex index={zIndex}>
-        {transitionState.isMounted ? (
-          <Portal>
+        <Portal>
+          {transitionState.isMounted ? (
             <div
               style={{ zIndex }}
               className={clsx({
@@ -100,19 +95,9 @@ export function ClassesFilters(props: ClassesFiltersProps) {
                 </div>
               </div>
             </div>
-          </Portal>
-        ) : null}
-      </ZIndex>
-      {showMobileBtn ? (
-        <Portal>
-          <button
-            className="fixed bottom-6 right-6 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-blue-500 text-white shadow-sm transition-colors hover:bg-blue-600 hover:text-zinc-100 hover:shadow-md dark:bg-blue-700 dark:hover:bg-blue-900 lg:hidden"
-            onClick={openFilters}
-          >
-            <FontAwesomeIcon icon={faFilter} fixedWidth size="lg" />
-          </button>
+          ) : null}
         </Portal>
-      ) : null}
+      </ZIndex>
     </>
   );
 }
@@ -137,5 +122,22 @@ function Filters(props: ClassesFiltersProps) {
         onSelect={group => props.onGroupSearchChange(group.name)}
       />
     </div>
+  );
+}
+
+type FiltersButtonProps = {
+  onOpen: () => void;
+};
+
+function FiltersButton({ onOpen }: FiltersButtonProps) {
+  return (
+    <Portal>
+      <button
+        className="fixed bottom-6 right-6 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-blue-500 text-white shadow-sm transition-colors hover:bg-blue-600 hover:text-zinc-100 hover:shadow-md dark:bg-blue-700 dark:hover:bg-blue-900 lg:hidden"
+        onClick={onOpen}
+      >
+        <FontAwesomeIcon icon={faFilter} fixedWidth size="lg" />
+      </button>
+    </Portal>
   );
 }

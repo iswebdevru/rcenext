@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
@@ -8,7 +8,7 @@ import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { clsx } from '@/shared/lib/ui';
 import { HamburgerButton } from '@/shared/ui/controls';
 import { GroupSearch } from '@/features/groups';
-import useTransition from 'react-transition-state';
+import useTransition, { TransitionStatus } from 'react-transition-state';
 import { Portal, ZIndex, useZIndex } from '@/shared/ui/utils';
 
 const ThemeTogglerWithNoSSR = dynamic(
@@ -28,7 +28,12 @@ const baseLinks = [
 ] as const;
 
 export default function Header({ wide }: HeaderProps) {
-  const [isMenuOpened, setIsMenuOpened] = useState(false);
+  const [transitionState, toggleTransition] = useTransition({
+    timeout: 300,
+    preEnter: true,
+    unmountOnExit: true,
+    mountOnEnter: true,
+  });
 
   const session = useSession();
 
@@ -37,12 +42,12 @@ export default function Header({ wide }: HeaderProps) {
     : baseLinks;
 
   const openMenu = () => {
-    setIsMenuOpened(true);
+    toggleTransition(true);
     document.body.style.overflow = 'hidden';
   };
 
   const closeMenu = () => {
-    setIsMenuOpened(false);
+    toggleTransition(false);
     document.body.style.overflow = '';
   };
 
@@ -97,7 +102,11 @@ export default function Header({ wide }: HeaderProps) {
             className="ml-auto block w-9 sm:ml-6 xl:hidden"
             onClick={openMenu}
           />
-          <HeaderMobile isOpened={isMenuOpened} onClose={closeMenu} />
+          <HeaderMobile
+            isMounted={transitionState.isMounted}
+            status={transitionState.status}
+            onClose={closeMenu}
+          />
         </div>
       </header>
     </ZIndex>
@@ -105,21 +114,15 @@ export default function Header({ wide }: HeaderProps) {
 }
 
 type HeaderMobileProps = {
-  isOpened: boolean;
+  isMounted: boolean;
+  status: TransitionStatus;
   onClose: () => void;
 };
 
-function HeaderMobile({ isOpened, onClose }: HeaderMobileProps) {
+function HeaderMobile({ isMounted, status, onClose }: HeaderMobileProps) {
   const componentRef = useRef<HTMLDivElement | null>(null);
 
   const zIndex = useZIndex();
-
-  const [transitionState, toggleTransition] = useTransition({
-    timeout: 300,
-    preEnter: true,
-    unmountOnExit: true,
-    mountOnEnter: true,
-  });
 
   const router = useRouter();
   const session = useSession();
@@ -128,92 +131,80 @@ function HeaderMobile({ isOpened, onClose }: HeaderMobileProps) {
     ? [...baseLinks, { href: '/admin', text: 'Админ' }]
     : baseLinks;
 
-  useLayoutEffect(() => {
-    if (isOpened) {
-      toggleTransition(true);
-    } else {
-      toggleTransition(false);
-    }
-  }, [isOpened]);
-
-  if (!transitionState.isMounted) {
-    return null;
-  }
-
   return (
     <Portal>
-      <div
-        style={{ zIndex }}
-        className={clsx({
-          'fixed left-0 top-0 block h-full w-full bg-black transition-colors duration-300 xl:hidden':
-            true,
-          'bg-opacity-0':
-            transitionState.status === 'preEnter' ||
-            transitionState.status === 'exiting',
-          'bg-opacity-40':
-            transitionState.status === 'entering' ||
-            transitionState.status === 'entered',
-        })}
-        onClick={e => {
-          if (
-            e.target instanceof Node &&
-            !componentRef.current?.contains(e.target)
-          ) {
-            onClose();
-          }
-        }}
-      >
+      {isMounted ? (
         <div
+          style={{ zIndex }}
           className={clsx({
-            'flex h-full flex-col overflow-y-auto bg-white px-8 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-900 sm:max-w-sm':
+            'fixed left-0 top-0 block h-full w-full bg-black transition-colors duration-300 xl:hidden':
               true,
-            '-translate-x-full opacity-0':
-              transitionState.status === 'preEnter' ||
-              transitionState.status === 'exiting',
-            'translate-x-0 opacity-100': transitionState.status === 'entering',
+            'bg-opacity-0': status === 'preEnter' || status === 'exiting',
+            'bg-opacity-40': status === 'entering' || status === 'entered',
           })}
-          ref={componentRef}
+          onClick={e => {
+            if (
+              e.target instanceof Node &&
+              !componentRef.current?.contains(e.target)
+            ) {
+              onClose();
+            }
+          }}
         >
-          <div className="mb-10 flex items-center">
-            <Link href="/" className="font-bold text-blue-400 dark:text-white">
-              Расписание РКЭ
-            </Link>
-            <HamburgerButton
-              close
-              className="ml-auto w-9 sm:ml-6 sm:hidden"
-              onClick={onClose}
-            />
-          </div>
-          <div className="mb-6 max-w-xs sm:hidden">
-            <GroupSearch />
-          </div>
-          <nav className="mb-6 max-w-xs">
-            <ul className="space-y-3">
-              {links.map(link => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className={clsx({
-                      'block w-full px-4 py-2 text-sm font-semibold transition-colors':
-                        true,
-                      'rounded-lg bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-neutral-200':
-                        link.href === router.asPath,
-                      'text-slate-500 dark:text-neutral-200':
-                        link.href !== router.asPath,
-                    })}
-                  >
-                    {link.text}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-          <div className="mt-auto flex justify-between gap-4 lg:hidden">
-            <ThemeTogglerWithNoSSR />
-            {session.data ? <LogoutButton /> : null}
+          <div
+            className={clsx({
+              'flex h-full flex-col overflow-y-auto bg-white px-8 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-900 sm:max-w-sm':
+                true,
+              '-translate-x-full opacity-0':
+                status === 'preEnter' || status === 'exiting',
+              'translate-x-0 opacity-100': status === 'entering',
+            })}
+            ref={componentRef}
+          >
+            <div className="mb-10 flex items-center">
+              <Link
+                href="/"
+                className="font-bold text-blue-400 dark:text-white"
+              >
+                Расписание РКЭ
+              </Link>
+              <HamburgerButton
+                close
+                className="ml-auto w-9 sm:ml-6 sm:hidden"
+                onClick={onClose}
+              />
+            </div>
+            <div className="mb-6 max-w-xs sm:hidden">
+              <GroupSearch />
+            </div>
+            <nav className="mb-6 max-w-xs">
+              <ul className="space-y-3">
+                {links.map(link => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className={clsx({
+                        'block w-full px-4 py-2 text-sm font-semibold transition-colors':
+                          true,
+                        'rounded-lg bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-neutral-200':
+                          link.href === router.asPath,
+                        'text-slate-500 dark:text-neutral-200':
+                          link.href !== router.asPath,
+                      })}
+                    >
+                      {link.text}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <div className="mt-auto flex justify-between gap-4 lg:hidden">
+              <ThemeTogglerWithNoSSR />
+              {session.data ? <LogoutButton /> : null}
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </Portal>
   );
 }
