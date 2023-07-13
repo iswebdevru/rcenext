@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from apps.teachers.models import Teacher
+from apps.subjects.models import Subject
 from .models import ClassesSchedule, ClassesSchedulePeriod
 
 
@@ -21,6 +22,10 @@ class ClassesScheduleMainTypeSerializer(serializers.Serializer):
 
 
 def create_period(period_data, timetable):
+    if period_data.get('subject') == None:
+        ClassesSchedulePeriod.objects.filter(
+            index=period_data.pop('index'), timetable=timetable).delete()
+        return
     teachers = period_data.pop('teachers')
     period_record, _ = ClassesSchedulePeriod.objects.update_or_create(
         index=period_data.pop('index'),
@@ -39,6 +44,9 @@ def create_periods(periods_data, timetable):
 class ClassesSchedulePeriodSerializer(serializers.HyperlinkedModelSerializer):
     teachers = serializers.HyperlinkedRelatedField(
         many=True, allow_null=True, queryset=Teacher.objects.all(), view_name='teacher-detail')
+
+    subject = serializers.HyperlinkedRelatedField(
+        allow_null=True, queryset=Subject.objects.all(), view_name='subject-detail')
 
     class Meta:
         model = ClassesSchedulePeriod
@@ -92,6 +100,10 @@ class ClassesScheduleMixedSerializer(serializers.HyperlinkedModelSerializer):
             raise serializers.ValidationError({
                 'date': 'This field is required.'
             })
+        if validated_data.get('week_type'):
+            validated_data.pop('week_type')
+        if validated_data.get('week_day'):
+            validated_data.pop('week_day')
         if view == 'table':
             if not validated_data.get('periods'):
                 raise serializers.ValidationError({
@@ -124,13 +136,22 @@ class ClassesScheduleMixedSerializer(serializers.HyperlinkedModelSerializer):
 
     def create(self, validated_data):
         periods = validated_data.pop('periods', [])
-        timetable, _ = ClassesSchedule.objects.update_or_create(
-            group=validated_data.pop('group'),
-            date=validated_data.pop('date', None),
-            week_day=validated_data.pop('week_day', None),
-            week_type=validated_data.pop('week_type', None),
-            defaults=validated_data
-        )
+        classes_type = validated_data.pop('type')
+        if classes_type == 'changes':
+            timetable, _ = ClassesSchedule.objects.update_or_create(
+                type=classes_type,
+                group=validated_data.pop('group'),
+                date=validated_data.pop('date'),
+                defaults=validated_data
+            )
+        else:
+            timetable, _ = ClassesSchedule.objects.update_or_create(
+                type=classes_type,
+                group=validated_data.pop('group'),
+                week_day=validated_data.pop('week_day'),
+                week_type=validated_data.pop('week_type'),
+                defaults=validated_data
+            )
         if validated_data['view'] == 'table':
             create_periods(periods, timetable)
         return timetable
