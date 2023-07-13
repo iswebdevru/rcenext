@@ -1,11 +1,21 @@
 from django.db.models import Q, Exists, OuterRef
 from rest_framework import viewsets, filters, mixins
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+import django_filters
 from .filters import GroupBlockFilterBackend
 from .models import ClassesSchedule
 from .serializers import ClassesScheduleMixedSerializer
 from .validators import validate_classes_query_params
 from .service import get_day_info
+
+
+class ClassesScheduleFilter(django_filters.FilterSet):
+    group__name = django_filters.CharFilter(
+        field_name='group__name', lookup_expr='icontains')
+    cabinet = django_filters.CharFilter(
+        field_name='periods__cabinet',
+        lookup_expr='istartswith'
+    )
 
 
 class ClassesScheduleViewSet(
@@ -17,8 +27,9 @@ class ClassesScheduleViewSet(
     queryset = ClassesSchedule.objects.all()
     serializer_class = ClassesScheduleMixedSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-    filter_backends = [filters.SearchFilter, GroupBlockFilterBackend]
-    search_fields = ['group__name']
+    filter_backends = [
+        django_filters.rest_framework.DjangoFilterBackend, GroupBlockFilterBackend]
+    filterset_class = ClassesScheduleFilter
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())

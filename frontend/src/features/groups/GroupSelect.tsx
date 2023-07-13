@@ -8,7 +8,6 @@ import { API_GROUPS, Group } from '@/shared/api';
 export type GroupSelectProps = {
   onSelect: (group: Group) => void;
   groupSearch: string;
-  groupSearchDebounced: string;
   onGroupSearchChange: (groupSearch: string) => void;
 };
 
@@ -16,10 +15,11 @@ export function GroupSelect({
   onSelect,
   groupSearch,
   onGroupSearchChange,
-  groupSearchDebounced,
 }: GroupSelectProps) {
   const [isRevealed, setIsRevealed] = useState(false);
   const hide = () => setIsRevealed(false);
+
+  const groupSearchDebounced = useDebounce(groupSearch);
 
   const { data, lastElementRef } = usePaginatedFetch<Group>(
     isRevealed ? `${API_GROUPS}?search=${groupSearchDebounced}` : null,
@@ -31,6 +31,8 @@ export function GroupSelect({
       onClose={hide}
       inputElement={
         <SearchField
+          name="group"
+          autoComplete="off"
           placeholder="Группа"
           onFocus={() => setIsRevealed(true)}
           value={groupSearch}
@@ -60,11 +62,10 @@ export function GroupSelect({
 export function GroupSearch() {
   const router = useRouter();
   const [groupSearch, setGroupSearch] = useState('');
-  const groupSearchDebounced = useDebounce(groupSearch);
+
   return (
     <GroupSelect
       groupSearch={groupSearch}
-      groupSearchDebounced={groupSearchDebounced}
       onGroupSearchChange={setGroupSearch}
       onSelect={() => router.push('/')}
     />

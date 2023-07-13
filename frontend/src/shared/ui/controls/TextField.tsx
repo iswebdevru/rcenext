@@ -27,19 +27,19 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           ref={ref}
           className={classNameWithDefaults(
             clsx({
-              'w-full min-w-0 rounded-md border-none bg-white px-3 py-1.5 text-sm leading-6 text-black outline-none ring-1 ring-inset transition duration-75 placeholder:text-zinc-400 focus:ring-2 focus:ring-primary-500':
+              'h-8 w-full min-w-0 rounded-md border-none bg-white px-3 text-sm leading-6 text-black outline-none ring-1 ring-inset transition duration-75 placeholder:text-zinc-400 focus:ring-2 focus:ring-primary-500':
                 true,
               'ring-zinc-200': props.error === undefined,
               'ring-green-600 dark:ring-green-600': props.error === null,
               'ring-red-500 dark:ring-red-500': typeof props.error === 'string',
               'dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400 dark:focus:ring-blue-700':
                 !props.variant,
-              'dark:ring-zinc-600': !props.variant && props.error === undefined,
+              'dark:ring-zinc-700': !props.variant && props.error === undefined,
             }),
-            props.className
+            props.className,
           )}
         />
       </div>
     );
-  }
+  },
 );

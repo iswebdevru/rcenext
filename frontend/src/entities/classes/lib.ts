@@ -22,14 +22,15 @@ export type ClassesQueryParamsOptions = (
       date: string;
     }
 ) & {
-  groupSearch: string;
+  groupName: string;
   collegeBlock: number;
+  cabinet: string;
 };
 
 export function getClassesQueryParams(params: ClassesQueryParamsOptions) {
-  return `?type=${params.classesType}&search=${params.groupSearch}&block=${
+  return `?type=${params.classesType}&group__name=${params.groupName}&block=${
     params.collegeBlock
-  }${
+  }&cabinet=${params.cabinet}&${
     params.classesType === 'main'
       ? `&week_type=${params.weekType}&week_day=${params.weekDay}`
       : `&date=${params.date}`

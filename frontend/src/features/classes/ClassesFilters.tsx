@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { clsx } from '@/shared/lib/ui';
 import { Calendar } from '@/shared/ui/calendar';
-import { Toggles, Button } from '@/shared/ui/controls';
+import { Toggles, Button, SearchField } from '@/shared/ui/controls';
 import { ClassesType } from '@/entities/classes';
 import { GroupSelect } from '../groups';
 import { Portal, ZIndex } from '@/shared/ui/utils';
@@ -17,8 +17,9 @@ export type ClassesFiltersProps = {
   classesType: ClassesType;
   onClassesTypeChange: (classesType: ClassesType) => void;
   groupSearch: string;
-  groupSearchDebounced: string;
   onGroupSearchChange: (groupSearch: string) => void;
+  cabinet: string;
+  onCabinetChange: (cabinet: string) => void;
 };
 
 export function ClassesFilters(props: ClassesFiltersProps) {
@@ -104,7 +105,7 @@ export function ClassesFilters(props: ClassesFiltersProps) {
 
 function Filters(props: ClassesFiltersProps) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <Calendar date={props.date} onDateChange={props.onDateChange} />
       <Toggles value={props.collegeBlock} onToggle={props.onCollegeBlockChange}>
         <Toggles.Variant value={-1}>Все</Toggles.Variant>
@@ -117,9 +118,15 @@ function Filters(props: ClassesFiltersProps) {
       </Toggles>
       <GroupSelect
         groupSearch={props.groupSearch}
-        groupSearchDebounced={props.groupSearchDebounced}
         onGroupSearchChange={props.onGroupSearchChange}
         onSelect={group => props.onGroupSearchChange(group.name)}
+      />
+      <SearchField
+        name="cabinet"
+        autoComplete="off"
+        placeholder="Кабинет"
+        value={props.cabinet}
+        onChange={e => props.onCabinetChange(e.currentTarget.value)}
       />
     </div>
   );

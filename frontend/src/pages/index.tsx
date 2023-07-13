@@ -23,21 +23,21 @@ export default function Classes() {
   const [date, setDate] = useState(getAppDate);
   const [collegeBlock, setCollegeBlock] = useState<number>(-1);
   const [classesType, setClassesType] = useState<ClassesType>('mixed');
-  const [groupSearch, setGroupSearch] = useState('');
+  const [groupName, setGroupName] = useState('');
+  const [cabinet, setCabinet] = useState('');
+
+  // Derived
   const weekType = getWeekType(date);
   const weekDay = WEEKDAYS_MAP[date.getDay()];
-  const dateStr = formatDate(date);
-
-  // Debounced
-  const groupSearchDebounced = useDebounce(groupSearch);
 
   const queryParams = getClassesQueryParams({
-    classesType,
-    weekDay,
-    weekType,
-    date: dateStr,
-    groupSearch: groupSearchDebounced,
-    collegeBlock,
+    classesType: useDebounce(classesType),
+    weekDay: useDebounce(weekDay),
+    weekType: useDebounce(weekType),
+    date: useDebounce(formatDate(date)),
+    collegeBlock: useDebounce(collegeBlock),
+    groupName: useDebounce(groupName),
+    cabinet: useDebounce(cabinet),
   });
 
   const {
@@ -84,9 +84,10 @@ export default function Classes() {
               onClassesTypeChange={setClassesType}
               collegeBlock={collegeBlock}
               onCollegeBlockChange={setCollegeBlock}
-              groupSearch={groupSearch}
-              onGroupSearchChange={setGroupSearch}
-              groupSearchDebounced={groupSearchDebounced}
+              groupSearch={groupName}
+              onGroupSearchChange={setGroupName}
+              cabinet={cabinet}
+              onCabinetChange={setCabinet}
             />
           </div>
         </div>
