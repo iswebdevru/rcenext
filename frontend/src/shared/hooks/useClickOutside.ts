@@ -1,16 +1,10 @@
 import { MutableRefObject } from 'react';
 import { useEvent } from './useEvent';
+import { ignoreClick } from '../lib/dom';
 
 export function useClickOutside(
   ref: MutableRefObject<HTMLElement | null>,
   onClick: (e: MouseEvent) => void,
 ) {
-  useEvent('click', e => {
-    if (!ref.current || !(e.target instanceof Node)) {
-      return;
-    }
-    if (!ref.current.contains(e.target)) {
-      onClick(e);
-    }
-  });
+  useEvent('click', ignoreClick(ref.current, onClick));
 }

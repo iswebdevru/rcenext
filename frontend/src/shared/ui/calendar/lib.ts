@@ -19,7 +19,7 @@ export const HUMAN_READABLE_MONTHS = {
   11: 'Декабрь',
 } as const;
 
-const DAY = 86400000;
+export const DAY = 86400000;
 
 export function getDaysAroundCurrentMonth(date: Date) {
   const nextMonth = (date.getMonth() + 1) % 12;

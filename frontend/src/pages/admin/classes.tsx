@@ -86,14 +86,6 @@ export default function Classes() {
       return;
     }
     setIsSaving(true);
-    dispatch({
-      type: 'remove',
-      payload: validatedClassesDataList.map(({ group }) => group.url),
-      classesType: debouncedClassesType,
-      weekDay: debouncedWeekDay,
-      weekType: debouncedWeekType,
-      date: debouncedStrDate,
-    });
     const updated = await Promise.all(
       validatedClassesDataList.map(({ group, draft }) => {
         return createEntity<ClassesScheduleMixed, unknown>(API_CLASSES, {
@@ -105,14 +97,19 @@ export default function Classes() {
             week_type: debouncedWeekType,
             group: group.url,
             message: draft.view === 'message' ? draft.message : undefined,
-            periods:
-              draft.view === 'table'
-                ? draft.periods.filter(period => period.subject !== null)
-                : undefined,
+            periods: draft.view === 'table' ? draft.periods : undefined,
           },
         });
       }),
     );
+    dispatch({
+      type: 'remove',
+      payload: validatedClassesDataList.map(({ group }) => group.url),
+      classesType: debouncedClassesType,
+      weekDay: debouncedWeekDay,
+      weekType: debouncedWeekType,
+      date: debouncedStrDate,
+    });
     updated.forEach(data => {
       if (!data) {
         return;

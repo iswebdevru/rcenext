@@ -10,6 +10,7 @@ import {
 } from 'react';
 import useTransition from 'react-transition-state';
 import { Portal, useZIndex } from '../utils';
+import { ignoreClick } from '@/shared/lib/dom';
 
 export type SelectBetaProps = {
   onClose: () => void;
@@ -23,7 +24,8 @@ export function SelectBeta({
   onClose,
   isRevealed,
 }: SelectBetaProps) {
-  const componentRef = useRef<HTMLDivElement>(null);
+  const outerRef = useRef<HTMLDivElement>(null);
+  const optionsListRef = useRef<HTMLDivElement>(null);
 
   const zIndex = useZIndex();
 
@@ -34,10 +36,9 @@ export function SelectBeta({
     unmountOnExit: true,
   });
 
-  const { width, left, top, recalculatePosition } =
-    usePositionCoords(componentRef);
+  const { width, left, top, recalculatePosition } = usePositionCoords(outerRef);
 
-  useClickOutside(componentRef, onClose);
+  useClickOutside(optionsListRef, ignoreClick(outerRef.current, onClose));
 
   useLayoutEffect(() => {
     if (isRevealed) {
@@ -49,11 +50,12 @@ export function SelectBeta({
   }, [isRevealed, recalculatePosition]);
 
   return (
-    <div ref={componentRef}>
+    <div ref={outerRef}>
       {inputElement}
-      {transitionState.isMounted ? (
-        <Portal>
+      <Portal>
+        {transitionState.isMounted ? (
           <div
+            ref={optionsListRef}
             style={
               {
                 '--tw-translate-x': `${left}px`,
@@ -75,8 +77,8 @@ export function SelectBeta({
           >
             <ul>{children}</ul>
           </div>
-        </Portal>
-      ) : null}
+        ) : null}
+      </Portal>
     </div>
   );
 }

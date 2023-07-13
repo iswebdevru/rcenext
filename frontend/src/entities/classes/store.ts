@@ -63,13 +63,13 @@ export function hasInitAndDraftDiff(data: ClassesDataWithDraft) {
       return true;
     }
     return data.init.periods[i].teachers.some(
-      teacher => !data.draft.periods[i].teachers.includes(teacher)
+      teacher => !data.draft.periods[i].teachers.includes(teacher),
     );
   });
 }
 
 function createClassesDataWithHistoryFromPayload(
-  payload: ClassesScheduleMixed
+  payload: ClassesScheduleMixed,
 ): ClassesDataWithDraft {
   return {
     init: {
@@ -93,7 +93,7 @@ function createClassesDataWithHistoryFromPayload(
 
 const classesStoreReducer: Reducer<ClassesStore, ClassesStoreAction> = (
   state,
-  action
+  action,
 ) => {
   switch (action.type) {
     case 'init-empty': {
@@ -107,7 +107,9 @@ const classesStoreReducer: Reducer<ClassesStore, ClassesStoreAction> = (
       const key = getClassesDataKey(action);
       clone.set(
         key,
-        structuredClone(createClassesDataWithHistoryFromPayload(action.payload))
+        structuredClone(
+          createClassesDataWithHistoryFromPayload(action.payload),
+        ),
       );
       return clone;
     }
