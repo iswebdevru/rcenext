@@ -15,7 +15,7 @@ export default function Subjects() {
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   const { data, lastElementRef, mutate } = usePaginatedFetch<Subject>(
-    `${API_SUBJECTS}?search=${searchFilterDebounced}`
+    `${API_SUBJECTS}?search=${searchFilterDebounced}`,
   );
 
   const deleteSubjects = async (urls: string[]) => {
@@ -32,15 +32,17 @@ export default function Subjects() {
         <div className="h-full p-6">
           <div className="flex items-center justify-between px-6 pb-6">
             <Title>Предметы</Title>
-            <Button
-              type="button"
-              variant="primary"
-              onClick={() => {
-                setIsFormVisible(true);
-              }}
-            >
-              Добавить
-            </Button>
+            <div>
+              <Button
+                type="button"
+                variant="primary"
+                onClick={() => {
+                  setIsFormVisible(true);
+                }}
+              >
+                Добавить
+              </Button>
+            </div>
           </div>
           <Reveal isVisible={isFormVisible}>
             <div className="mb-6">

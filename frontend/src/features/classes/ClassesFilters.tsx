@@ -107,15 +107,6 @@ function Filters(props: ClassesFiltersProps) {
   return (
     <div className="space-y-4">
       <Calendar date={props.date} onDateChange={props.onDateChange} />
-      <Toggles value={props.collegeBlock} onToggle={props.onCollegeBlockChange}>
-        <Toggles.Variant value={-1}>Все</Toggles.Variant>
-        <Toggles.Variant value={1}>1-5</Toggles.Variant>
-        <Toggles.Variant value={6}>6</Toggles.Variant>
-      </Toggles>
-      <Toggles value={props.classesType} onToggle={props.onClassesTypeChange}>
-        <Toggles.Variant value="main">Основное</Toggles.Variant>
-        <Toggles.Variant value="mixed">С изменениями</Toggles.Variant>
-      </Toggles>
       <GroupSelect
         groupSearch={props.groupSearch}
         onGroupSearchChange={props.onGroupSearchChange}
@@ -128,6 +119,15 @@ function Filters(props: ClassesFiltersProps) {
         value={props.cabinet}
         onChange={e => props.onCabinetChange(e.currentTarget.value)}
       />
+      <Toggles value={props.collegeBlock} onToggle={props.onCollegeBlockChange}>
+        <Toggles.Variant value={-1}>Все</Toggles.Variant>
+        <Toggles.Variant value={1}>1-5</Toggles.Variant>
+        <Toggles.Variant value={6}>6</Toggles.Variant>
+      </Toggles>
+      <Toggles value={props.classesType} onToggle={props.onClassesTypeChange}>
+        <Toggles.Variant value="main">Основное</Toggles.Variant>
+        <Toggles.Variant value="mixed">С изменениями</Toggles.Variant>
+      </Toggles>
     </div>
   );
 }

@@ -17,7 +17,7 @@ export default function Groups() {
   const [isFormVisible, setIsFormVisible] = useState(false);
 
   const { data, lastElementRef, mutate } = usePaginatedFetch<Group>(
-    `${API_GROUPS}?search=${searchFilterDebounce}`
+    `${API_GROUPS}?search=${searchFilterDebounce}`,
   );
 
   const deleteGroups = async (urls: string[]) => {
@@ -38,15 +38,17 @@ export default function Groups() {
         <div className="h-full p-6">
           <div className="flex items-center justify-between px-6 pb-6">
             <Title>Группы</Title>
-            <Button
-              type="button"
-              variant="primary"
-              onClick={() => {
-                setIsFormVisible(true);
-              }}
-            >
-              Добавить
-            </Button>
+            <div>
+              <Button
+                type="button"
+                variant="primary"
+                onClick={() => {
+                  setIsFormVisible(true);
+                }}
+              >
+                Добавить
+              </Button>
+            </div>
           </div>
           <Reveal isVisible={isFormVisible}>
             <div className="mb-6">

@@ -26,47 +26,56 @@ import { formatDate, getAppDate } from '@/shared/lib/date';
 import Head from 'next/head';
 
 export default function Classes() {
+  const [classesStore, dispatch] = useClassesStore();
+
   // State
   const [classesType, setClassesType] =
     useState<Exclude<ClassesType, 'mixed'>>('changes');
   const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
   const [date, setDate] = useState(getAppDate);
-
-  const debouncedDate = useDebounce(date, 500);
-  const prevDebouncedDate = usePrevious(debouncedDate);
-
-  const [classesStore, dispatch] = useClassesStore();
   const [isSaving, setIsSaving] = useState(false);
 
-  const strDate = formatDate(debouncedDate);
+  // Debounced
+  const debouncedClassesType = useDebounce(classesType);
+  const debouncedWeekType = useDebounce(weekType);
+  const debouncedWeekDay = useDebounce(weekDay);
+  const debouncedDate = useDebounce(date);
+
+  // Previous states
+  const prevDebouncedClassesType = usePrevious(classesType);
+  const prevDebouncedWeekType = usePrevious(weekType);
+  const prevDebouncedWeekDay = usePrevious(weekDay);
+  const prevDebouncedDate = usePrevious(debouncedDate);
+
+  // Derived
+  const debouncedStrDate = formatDate(debouncedDate);
 
   const { data: groups, lastElementRef } = usePaginatedFetch<Group>(API_GROUPS);
 
   const validatedClassesDataList =
     groups
       ?.flatMap(data => data.results)
-      .map(group => group.url)
       .map(
         group =>
           [
             group,
             classesStore.get(
               getClassesDataKey({
-                group,
-                classesType,
-                date: strDate,
-                weekDay,
-                weekType,
-              })
+                group: group.url,
+                classesType: debouncedClassesType,
+                date: debouncedStrDate,
+                weekDay: debouncedWeekDay,
+                weekType: debouncedWeekType,
+              }),
             ),
-          ] as const
+          ] as const,
       )
       .filter(
-        ([group, classesData]) =>
+        ([_, classesData]) =>
           classesData &&
           hasInitAndDraftDiff(classesData) &&
-          validateClassesDataDraft(classesData.draft)
+          validateClassesDataDraft(classesData.draft),
       )
       .map(([group, data]) => ({ group, draft: data!.draft })) ?? [];
 
@@ -79,22 +88,22 @@ export default function Classes() {
     setIsSaving(true);
     dispatch({
       type: 'remove',
-      payload: validatedClassesDataList.map(({ group }) => group),
-      classesType,
-      weekDay,
-      weekType,
-      date: strDate,
+      payload: validatedClassesDataList.map(({ group }) => group.url),
+      classesType: debouncedClassesType,
+      weekDay: debouncedWeekDay,
+      weekType: debouncedWeekType,
+      date: debouncedStrDate,
     });
     const updated = await Promise.all(
       validatedClassesDataList.map(({ group, draft }) => {
         return createEntity<ClassesScheduleMixed, unknown>(API_CLASSES, {
           body: {
-            type: classesType,
+            type: debouncedClassesType,
             view: draft.view,
-            date: strDate,
-            week_day: weekDay,
-            week_type: weekType,
-            group,
+            date: debouncedStrDate,
+            week_day: debouncedWeekDay,
+            week_type: debouncedWeekType,
+            group: group.url,
             message: draft.view === 'message' ? draft.message : undefined,
             periods:
               draft.view === 'table'
@@ -102,7 +111,7 @@ export default function Classes() {
                 : undefined,
           },
         });
-      })
+      }),
     );
     updated.forEach(data => {
       if (!data) {
@@ -110,11 +119,11 @@ export default function Classes() {
       }
       dispatch({
         type: 'init-defined',
-        classesType,
+        classesType: debouncedClassesType,
         group: data.group,
-        weekDay,
-        weekType,
-        date: strDate,
+        weekDay: debouncedWeekDay,
+        weekType: debouncedWeekType,
+        date: debouncedStrDate,
         payload: data,
       });
     });
@@ -122,18 +131,29 @@ export default function Classes() {
   }
 
   useEffect(() => {
-    if (groups && prevDebouncedDate) {
+    if (
+      groups &&
+      prevDebouncedDate &&
+      prevDebouncedClassesType &&
+      prevDebouncedWeekDay &&
+      prevDebouncedWeekType
+    ) {
       dispatch({
         type: 'remove',
         payload: groups.flatMap(data => data.results).map(group => group.url),
-        classesType,
+        classesType: prevDebouncedClassesType,
         date: formatDate(prevDebouncedDate),
-        weekDay,
-        weekType,
+        weekDay: prevDebouncedWeekDay,
+        weekType: prevDebouncedWeekType,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedDate]);
+  }, [
+    debouncedClassesType,
+    debouncedDate,
+    debouncedWeekDay,
+    debouncedWeekType,
+  ]);
 
   return (
     <>
@@ -142,13 +162,13 @@ export default function Classes() {
       </Head>
       <AdminLayout>
         <div className="p-4">
-          <div className="mb-4 rounded-md border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800/40">
+          <div className="mb-5 rounded-md border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
             <div className="flex items-start gap-4">
               <Toggles value={classesType} onToggle={setClassesType}>
                 <Toggles.Variant value="main">Основное</Toggles.Variant>
                 <Toggles.Variant value="changes">Изменения</Toggles.Variant>
               </Toggles>
-              {classesType === 'main' ? (
+              {debouncedClassesType === 'main' ? (
                 <div className="flex gap-2">
                   <div>
                     <SelectWeekDay weekDayId={weekDay} onSelect={setWeekDay} />
@@ -167,36 +187,35 @@ export default function Classes() {
                   onDateChange={setDate}
                 />
               )}
-
-              <Button
-                className="ml-auto"
-                disabled={isSaving}
-                variant="danger-outline"
-              >
-                Удалить
-              </Button>
-              <Button
-                variant="primary"
-                disabled={!canSave || isSaving}
-                onClick={handleSave}
-              >
-                Сохранить
-              </Button>
+              <div className="ml-auto">
+                <Button disabled={isSaving} variant="danger-outline">
+                  Удалить
+                </Button>
+              </div>
+              <div>
+                <Button
+                  variant="primary"
+                  disabled={!canSave || isSaving}
+                  onClick={handleSave}
+                >
+                  Сохранить
+                </Button>
+              </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             {groups
               ?.flatMap(page => page.results)
               .map((group, i, a) =>
-                classesType === 'main' ? (
+                debouncedClassesType === 'main' ? (
                   <ClassesEditor
-                    key={`${weekType}${weekDay}${group.id}`}
-                    type={classesType}
+                    key={`${debouncedWeekType}${debouncedWeekDay}${group.id}`}
+                    type={debouncedClassesType}
                     dispatch={action => {
                       dispatch({
-                        classesType: 'main',
-                        weekDay,
-                        weekType,
+                        classesType: debouncedClassesType,
+                        weekDay: debouncedWeekDay,
+                        weekType: debouncedWeekType,
                         group: group.url,
                         ...action,
                       });
@@ -204,23 +223,23 @@ export default function Classes() {
                     group={group}
                     classes={classesStore.get(
                       getClassesDataKey({
-                        classesType: 'main',
+                        classesType: debouncedClassesType,
                         group: group.url,
-                        weekType,
-                        weekDay,
-                      })
+                        weekDay: debouncedWeekDay,
+                        weekType: debouncedWeekType,
+                      }),
                     )}
-                    searchParams={`?type=${classesType}&week_day=${weekDay}&week_type=${weekType}`}
+                    searchParams={`?type=${debouncedClassesType}&week_day=${debouncedWeekDay}&week_type=${debouncedWeekType}`}
                     ref={a.length - 1 === i ? lastElementRef : null}
                   />
                 ) : (
                   <ClassesEditor
-                    key={`${strDate}${group.id}`}
-                    type={classesType}
+                    key={`${debouncedStrDate}${group.id}`}
+                    type={debouncedClassesType}
                     dispatch={action => {
                       dispatch({
-                        classesType: 'changes',
-                        date: strDate,
+                        classesType: debouncedClassesType,
+                        date: debouncedStrDate,
                         group: group.url,
                         ...action,
                       });
@@ -228,15 +247,15 @@ export default function Classes() {
                     group={group}
                     classes={classesStore.get(
                       getClassesDataKey({
-                        classesType: 'changes',
+                        classesType: debouncedClassesType,
                         group: group.url,
-                        date: strDate,
-                      })
+                        date: debouncedStrDate,
+                      }),
                     )}
-                    searchParams={`?date=${strDate}`}
+                    searchParams={`?date=${debouncedStrDate}`}
                     ref={a.length - 1 === i ? lastElementRef : null}
                   />
-                )
+                ),
               )}
           </div>
         </div>

@@ -16,7 +16,7 @@ export default function Teachers() {
   const searchFilterDebounced = useDebounce(searchFilter);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const { data, lastElementRef, mutate } = usePaginatedFetch<Teacher>(
-    `${API_TEACHERS}?search=${searchFilterDebounced}`
+    `${API_TEACHERS}?search=${searchFilterDebounced}`,
   );
 
   const deleteTeachers = async (urls: string[]) => {
@@ -33,15 +33,17 @@ export default function Teachers() {
         <div className="h-full p-6">
           <div className="flex items-center justify-between px-6 pb-6">
             <Title>Преподаватели</Title>
-            <Button
-              type="button"
-              variant="primary"
-              onClick={() => {
-                setIsFormVisible(true);
-              }}
-            >
-              Добавить
-            </Button>
+            <div>
+              <Button
+                type="button"
+                variant="primary"
+                onClick={() => {
+                  setIsFormVisible(true);
+                }}
+              >
+                Добавить
+              </Button>
+            </div>
           </div>
           <Reveal isVisible={isFormVisible}>
             <div className="mb-6">

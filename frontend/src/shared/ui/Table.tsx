@@ -102,15 +102,16 @@ Table.Controls = function TableControls<T extends Id>({
         autoComplete="off"
         className="max-w-lg"
       />
-      <Button
-        type="button"
-        variant="danger-outline"
-        disabled={!itemsToDelete.length || isDisabled}
-        className="ml-auto"
-        onClick={handleDelete}
-      >
-        Удалить
-      </Button>
+      <div className="ml-auto">
+        <Button
+          type="button"
+          variant="danger-outline"
+          disabled={!itemsToDelete.length || isDisabled}
+          onClick={handleDelete}
+        >
+          Удалить
+        </Button>
+      </div>
     </div>
   );
 };
@@ -200,7 +201,7 @@ Table.Body = function TableBody<T extends Id>({
 
 Table.SelectRowCheckbox = function TableSelectRowCheckbox() {
   const { isSelected, toggleSelect } = useContext(
-    TableRowContext
+    TableRowContext,
   ) as TableRowContext;
   return <input type="checkbox" checked={isSelected} onChange={toggleSelect} />;
 };
@@ -297,7 +298,7 @@ export type TableRowProps<T extends Id = Id> = {
 
 Table.Row = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
   { className, rowId, ...props },
-  ref
+  ref,
 ) {
   return (
     <tr
@@ -307,7 +308,7 @@ Table.Row = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
         clsx({
           'group/row rounded-md transition-[background]': true,
         }),
-        className
+        className,
       )}
     />
   );
@@ -333,7 +334,7 @@ Table.DataCell = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
               true,
             'bg-zinc-50 dark:bg-zinc-800': !!ctx?.isSelected,
           }),
-          className
+          className,
         )}
         {...props}
       >
@@ -346,7 +347,7 @@ Table.DataCell = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
         </div>
       </td>
     );
-  }
+  },
 );
 
 Table.HeadCell = function TableHeadCell({ children }: PropsWithChildren) {

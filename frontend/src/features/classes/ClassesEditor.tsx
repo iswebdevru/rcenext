@@ -33,7 +33,7 @@ export type ClassesEditorProps = {
 export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
   function ClassesEditorComponent(
     { type, group, searchParams, classes, dispatch },
-    ref
+    ref,
   ) {
     useSWR<ClassesScheduleChanges>(
       classes ? null : `${group.classes}${searchParams}`,
@@ -52,14 +52,14 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
             payload: data,
           });
         },
-      }
+      },
     );
 
     const isChanged = classes ? hasInitAndDraftDiff(classes) : false;
 
     return (
       <div
-        className="flex flex-col rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800/40"
+        className="flex flex-col rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800"
         ref={ref}
       >
         <div className="flex items-center justify-between px-2 py-1">
@@ -101,7 +101,7 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 type ModeButtonProps = { isActive?: boolean } & ComponentProps<'button'>;
@@ -184,7 +184,7 @@ function Settings({ view, onViewChange }: SettingsProps) {
 const ModeButton = forwardRef<HTMLButtonElement, ModeButtonProps>(
   function ModeButtonComponent(
     { children, className, isActive, ...props },
-    ref
+    ref,
   ) {
     return (
       <button
@@ -197,14 +197,14 @@ const ModeButton = forwardRef<HTMLButtonElement, ModeButtonProps>(
             'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900  dark:text-zinc-400 dark:hover:bg-zinc-600 dark:hover:text-zinc-50':
               !isActive,
           }),
-          className
+          className,
         )}
         {...props}
       >
         {children}
       </button>
     );
-  }
+  },
 );
 
 type ClassesTableViewProps = {
