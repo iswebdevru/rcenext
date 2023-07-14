@@ -1,13 +1,18 @@
 import { classNameWithDefaults, clsx } from '@/shared/lib/ui';
-import { forwardRef } from 'react';
-import { DAY, getDaysAroundCurrentMonth, HUMAN_READABLE_MONTHS } from './lib';
+import { Dispatch, SetStateAction, forwardRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '../controls';
+import {
+  DAY,
+  HUMAN_READABLE_MONTHS,
+  getDaysAroundCurrentMonth,
+} from '@/shared/lib/date';
+import { SelectYear } from '../select';
 
 export type CalendarProps = {
   date: Date;
-  onDateChange: (date: Date) => void;
+  onDateChange: Dispatch<SetStateAction<Date>>;
   className?: string;
   disabled?: boolean;
 };
@@ -16,7 +21,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
   function CalendarComponent({ date, onDateChange, className, disabled }, ref) {
     const currentMonth = date.getMonth() as keyof typeof HUMAN_READABLE_MONTHS;
     const currentDate = date.getDate();
-    const currentYear = date.getFullYear();
+
     const days = getDaysAroundCurrentMonth(date);
 
     return (
@@ -49,9 +54,9 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
           >
             <FontAwesomeIcon fixedWidth icon={faAngleLeft} />
           </button>
-          <p className="text-lg font-bold text-slate-900 dark:text-zinc-200">
-            {HUMAN_READABLE_MONTHS[currentMonth]} {currentYear}
-          </p>
+          <div className="grow">
+            <SelectYear date={date} onChange={onDateChange} />
+          </div>
           <button
             disabled={disabled}
             className="h-8 w-8 rounded-xl border border-zinc-200 text-zinc-900 shadow-sm shadow-zinc-900/5 transition-colors hover:bg-zinc-100 dark:border-none dark:bg-zinc-700 dark:text-zinc-200 dark:shadow-zinc-900/30 dark:hover:bg-zinc-600"
@@ -100,12 +105,13 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
                 disabled
               }
               className={clsx({
-                'aspect-square select-none rounded-lg p-1.5 text-center leading-none outline-none outline outline-1 outline-offset-0 transition-[outline,color,background]':
+                'aspect-square select-none rounded-lg p-1.5 text-center leading-none transition-colors duration-75':
                   true,
-                'text-zinc-700 hover:bg-zinc-200 focus:bg-zinc-200 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:focus:bg-zinc-700':
+                'text-zinc-700 hover:bg-zinc-100 focus:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:hover:text-white dark:focus:bg-zinc-700':
                   day.month === currentMonth && day.date !== currentDate,
-                'text-zinc-300 dark:text-zinc-600': day.month !== currentMonth,
-                'bg-blue-50 text-blue-400 outline-blue-400 dark:bg-blue-600 dark:text-blue-50 dark:outline-transparent':
+                'text-zinc-300 dark:text-zinc-400/30':
+                  day.month !== currentMonth,
+                'bg-blue-50 text-blue-400 outline-blue-400 ring-1 ring-inset ring-primary-400 dark:bg-primary-600 dark:text-white dark:outline-transparent dark:ring-transparent':
                   day.month === currentMonth && day.date === currentDate,
               })}
             >

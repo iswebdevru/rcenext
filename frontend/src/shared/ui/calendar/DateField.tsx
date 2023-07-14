@@ -7,13 +7,13 @@ import useTransition from 'react-transition-state';
 import { Portal, useZIndex } from '../utils';
 import { ignoreClick } from '@/shared/lib/dom';
 
-export type InputDateProps = CalendarProps;
+export type DateFieldProps = CalendarProps;
 
-export function InputDate({
+export function DateField({
   date,
   onDateChange: setDate,
   disabled,
-}: InputDateProps) {
+}: DateFieldProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const componentRef = useRef<HTMLDivElement>(null);
 
@@ -48,26 +48,29 @@ export function InputDate({
         {isMounted ? (
           <div
             ref={componentRef}
-            style={{
-              zIndex,
-              left: componentRef.current
-                ? left - (componentRef.current!.clientWidth - width) / 2
-                : undefined,
-              top,
-            }}
-            className={clsx({
-              'fixed rounded-xl shadow-sm transition-[opacity,transform] duration-200':
-                true,
-              'translate-y-0 scale-100 opacity-100': status === 'entering',
-              '-translate-y-12 scale-75 opacity-0':
-                status === 'exiting' || status === 'preEnter',
-            })}
+            style={
+              {
+                zIndex,
+                '--tw-translate-x': componentRef.current
+                  ? `${
+                      left - (componentRef.current!.clientWidth - width) / 2
+                    }px`
+                  : undefined,
+                '--tw-translate-y': `${top}px`,
+              } as React.CSSProperties
+            }
+            className="fixed left-0 top-0 transform"
           >
-            <Calendar
-              date={date}
-              className="min-w-[280px] shadow-sm"
-              onDateChange={setDate}
-            />
+            <div
+              className={clsx({
+                'rounded-xl shadow-sm transition-[opacity,transform] duration-200':
+                  true,
+                '-translate-y-12 scale-75 opacity-0':
+                  status === 'exiting' || status === 'preEnter',
+              })}
+            >
+              <Calendar date={date} onDateChange={setDate} />
+            </div>
           </div>
         ) : null}
       </Portal>

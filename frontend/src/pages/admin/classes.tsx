@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/controls';
-import { InputDate } from '@/shared/ui/calendar';
+import { DateField } from '@/shared/ui/calendar';
 import { SelectWeekType, SelectWeekDay } from '@/shared/ui/select';
 import { Toggles } from '@/shared/ui/controls';
 import { AdminLayout } from '@/layouts';
@@ -183,7 +183,7 @@ export default function Classes({ date: initDate }: ClassesProps) {
                   </div>
                 </div>
               ) : (
-                <InputDate
+                <DateField
                   disabled={isSaving}
                   date={date}
                   onDateChange={setDate}

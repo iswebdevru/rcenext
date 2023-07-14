@@ -4,7 +4,11 @@ import { getAppDate } from '@/shared/lib/date';
 import { Table } from '@/shared/ui/Table';
 import { Calendar } from '@/shared/ui/calendar';
 import Head from 'next/head';
-import { SelectBeta, SelectBetaOption } from '@/shared/ui/select';
+import {
+  SelectBeta,
+  SelectBetaOption,
+  useSelectTransition,
+} from '@/shared/ui/select';
 import { Button } from '@/shared/ui/controls';
 import { GetServerSideProps } from 'next';
 
@@ -80,14 +84,16 @@ type SelectBellsTypeProps = {
 };
 
 function SelectBellsType({ type, onChange }: SelectBellsTypeProps) {
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [transitionState, toggleTransition] = useSelectTransition();
 
   return (
     <SelectBeta
-      isRevealed={isRevealed}
-      onClose={() => setIsRevealed(false)}
+      transitionState={transitionState}
+      onClose={() => toggleTransition(false)}
       inputElement={
-        <Button onClick={() => setIsRevealed(true)}>{BELLS_TYPES[type]}</Button>
+        <Button onClick={() => toggleTransition(true)}>
+          {BELLS_TYPES[type]}
+        </Button>
       }
     >
       {Object.entries(BELLS_TYPES).map(([key, value]) => (

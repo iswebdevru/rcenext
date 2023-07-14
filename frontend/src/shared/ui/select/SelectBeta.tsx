@@ -5,55 +5,38 @@ import {
   PropsWithChildren,
   ReactNode,
   forwardRef,
-  useLayoutEffect,
   useRef,
 } from 'react';
-import useTransition from 'react-transition-state';
+import useTransition, { TransitionState } from 'react-transition-state';
 import { Portal, useZIndex } from '../utils';
 import { ignoreClick } from '@/shared/lib/dom';
 
 export type SelectBetaProps = {
   onClose: () => void;
-  isRevealed: boolean;
   inputElement: ReactNode;
+  transitionState: TransitionState;
 } & PropsWithChildren;
 
 export function SelectBeta({
   children,
   inputElement,
   onClose,
-  isRevealed,
+  transitionState: { status, isMounted },
 }: SelectBetaProps) {
   const outerRef = useRef<HTMLDivElement>(null);
   const optionsListRef = useRef<HTMLDivElement>(null);
 
   const zIndex = useZIndex();
 
-  const [transitionState, toggleTransition] = useTransition({
-    timeout: 200,
-    preEnter: true,
-    mountOnEnter: true,
-    unmountOnExit: true,
-  });
-
-  const { width, left, top, recalculatePosition } = usePositionCoords(outerRef);
+  const { width, left, top } = usePositionCoords(outerRef, [isMounted]);
 
   useClickOutside(optionsListRef, ignoreClick(outerRef.current, onClose));
-
-  useLayoutEffect(() => {
-    if (isRevealed) {
-      recalculatePosition();
-      toggleTransition(true);
-    } else {
-      toggleTransition(false);
-    }
-  }, [isRevealed, recalculatePosition]);
 
   return (
     <div ref={outerRef}>
       {inputElement}
       <Portal>
-        {transitionState.isMounted ? (
+        {isMounted ? (
           <div
             ref={optionsListRef}
             style={
@@ -64,18 +47,18 @@ export function SelectBeta({
                 zIndex,
               } as React.CSSProperties
             }
-            className={clsx({
-              'fixed left-0 top-0 max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600':
-                true,
-              'scale-90 opacity-0':
-                transitionState.status === 'preEnter' ||
-                transitionState.status === 'exiting',
-              'transition-[opacity,transform] duration-200':
-                transitionState.status === 'entering' ||
-                transitionState.status === 'exiting',
-            })}
+            className="fixed left-0 top-0 transform"
           >
-            <ul>{children}</ul>
+            <div
+              className={clsx({
+                'max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-200 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600':
+                  true,
+                '-translate-y-2 opacity-0':
+                  status === 'preEnter' || status === 'exiting',
+              })}
+            >
+              <ul>{children}</ul>
+            </div>
           </div>
         ) : null}
       </Portal>
@@ -110,3 +93,12 @@ export const SelectBetaOption = forwardRef<
     </li>
   );
 });
+
+export function useSelectTransition() {
+  return useTransition({
+    timeout: 200,
+    mountOnEnter: true,
+    preEnter: true,
+    unmountOnExit: true,
+  });
+}

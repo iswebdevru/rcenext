@@ -2,7 +2,11 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { SearchField } from '@/shared/ui/controls';
-import { SelectBeta, SelectBetaOption } from '@/shared/ui/select';
+import {
+  SelectBeta,
+  SelectBetaOption,
+  useSelectTransition,
+} from '@/shared/ui/select';
 import { API_GROUPS, Group } from '@/shared/api';
 
 export type GroupSelectProps = {
@@ -16,25 +20,26 @@ export function GroupSelect({
   groupSearch,
   onGroupSearchChange,
 }: GroupSelectProps) {
-  const [isRevealed, setIsRevealed] = useState(false);
-  const hide = () => setIsRevealed(false);
+  const [transitionState, toggleTransition] = useSelectTransition();
 
   const groupSearchDebounced = useDebounce(groupSearch);
 
   const { data, lastElementRef } = usePaginatedFetch<Group>(
-    isRevealed ? `${API_GROUPS}?search=${groupSearchDebounced}` : null,
+    transitionState.isMounted
+      ? `${API_GROUPS}?search=${groupSearchDebounced}`
+      : null,
   );
 
   return (
     <SelectBeta
-      isRevealed={isRevealed}
-      onClose={hide}
+      transitionState={transitionState}
+      onClose={() => toggleTransition(false)}
       inputElement={
         <SearchField
           name="group"
           autoComplete="off"
           placeholder="Группа"
-          onFocus={() => setIsRevealed(true)}
+          onFocus={() => toggleTransition(true)}
           value={groupSearch}
           onChange={e => onGroupSearchChange(e.currentTarget.value)}
         />
@@ -49,7 +54,7 @@ export function GroupSelect({
             selected={group.name === groupSearch}
             onSelect={() => {
               onSelect(group);
-              hide();
+              toggleTransition(false);
             }}
           >
             {group.name}

@@ -1,2 +1,2 @@
 export * from './Calendar';
-export * from './InputDate';
+export * from './DateField';

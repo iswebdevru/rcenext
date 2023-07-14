@@ -1,10 +1,13 @@
-import { RefObject, useCallback, useState } from 'react';
+import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useEvent } from './useEvent';
 
 const MAX_HEIGHT = 240;
 const OFFSET = 8;
 
-export function usePositionCoords(ref: RefObject<HTMLElement>) {
+export function usePositionCoords(
+  ref: RefObject<HTMLElement>,
+  deps: unknown[] = [],
+) {
   const [width, setWidth] = useState(0);
   const [left, setLeft] = useState(0);
   const [top, setTop] = useState(0);
@@ -26,6 +29,11 @@ export function usePositionCoords(ref: RefObject<HTMLElement>) {
 
   useEvent('scroll', recalculatePosition, undefined, true);
   useEvent('resize', recalculatePosition);
+
+  useEffect(() => {
+    recalculatePosition();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recalculatePosition, ...deps]);
 
   return { width, left, top, recalculatePosition };
 }

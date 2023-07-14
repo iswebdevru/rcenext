@@ -1,7 +1,10 @@
-import { useState } from 'react';
 import { WEEK_TYPES } from '@/shared/constants';
 import { WeekType } from '@/shared/api';
-import { SelectBeta, SelectBetaOption } from './SelectBeta';
+import {
+  SelectBeta,
+  SelectBetaOption,
+  useSelectTransition,
+} from './SelectBeta';
 import { Button } from '../controls';
 
 export type SelectWeekTypeProps<T extends WeekType> = {
@@ -13,13 +16,17 @@ export function SelectWeekType<T extends WeekType>({
   weekTypeId,
   onSelect,
 }: SelectWeekTypeProps<T>) {
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [transitionState, toggleTransition] = useSelectTransition();
+
   return (
     <SelectBeta
-      isRevealed={isRevealed}
-      onClose={() => setIsRevealed(false)}
+      transitionState={transitionState}
+      onClose={() => toggleTransition(false)}
       inputElement={
-        <Button className="min-w-[120px]" onClick={() => setIsRevealed(true)}>
+        <Button
+          className="min-w-[120px]"
+          onClick={() => toggleTransition(true)}
+        >
           {WEEK_TYPES.get(weekTypeId)}
         </Button>
       }
@@ -30,7 +37,7 @@ export function SelectWeekType<T extends WeekType>({
           selected={weekTypeId === id}
           onSelect={() => {
             onSelect(id);
-            setIsRevealed(false);
+            toggleTransition(false);
           }}
         >
           {value}

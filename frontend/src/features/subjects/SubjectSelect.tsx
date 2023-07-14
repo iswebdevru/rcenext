@@ -2,7 +2,11 @@ import useSWR from 'swr';
 import { useRef, useState } from 'react';
 import { API_SUBJECTS, Hyperlink, Subject, fetcher } from '@/shared/api';
 import { usePaginatedFetch } from '@/shared/hooks';
-import { SelectBeta, SelectBetaOption } from '@/shared/ui/select';
+import {
+  SelectBeta,
+  SelectBetaOption,
+  useSelectTransition,
+} from '@/shared/ui/select';
 
 export type SubjectSelect = {
   selectedSubjectURL: Hyperlink | null;
@@ -13,21 +17,21 @@ export type SubjectSelect = {
  * Select 1 subject
  */
 export function SubjectSelect({ selectedSubjectURL, onSelect }: SubjectSelect) {
+  const [transitionState, toggleTransition] = useSelectTransition();
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isRevealed, setIsRevealed] = useState(false);
   const [searchStr, setSearchStr] = useState('');
   const { data: pages, lastElementRef } = usePaginatedFetch<Subject>(
-    isRevealed ? `${API_SUBJECTS}?search=${searchStr}` : null
+    transitionState.isMounted ? `${API_SUBJECTS}?search=${searchStr}` : null,
   );
   const { data: selectedSubject } = useSWR<Subject>(
     selectedSubjectURL,
-    fetcher
+    fetcher,
   );
 
   return (
     <SelectBeta
-      isRevealed={isRevealed}
-      onClose={() => setIsRevealed(false)}
+      transitionState={transitionState}
+      onClose={() => toggleTransition(false)}
       inputElement={
         <>
           <input
@@ -36,15 +40,15 @@ export function SubjectSelect({ selectedSubjectURL, onSelect }: SubjectSelect) {
             value={searchStr}
             onChange={e => setSearchStr(e.target.value)}
             className="w-full bg-transparent px-1 py-0.5 text-sm"
-            hidden={!isRevealed}
+            hidden={!transitionState.isMounted}
             ref={inputRef}
           />
           <button
             onClick={() => {
-              setIsRevealed(true);
+              toggleTransition(true);
               setTimeout(() => inputRef.current?.focus());
             }}
-            hidden={isRevealed}
+            hidden={transitionState.isMounted}
             className="w-full px-1 py-0.5 text-left text-sm"
           >
             {selectedSubject ? selectedSubject.name : '-------------'}
@@ -60,7 +64,7 @@ export function SubjectSelect({ selectedSubjectURL, onSelect }: SubjectSelect) {
             selected={subject.url === selectedSubjectURL}
             onSelect={() => {
               onSelect(selectedSubjectURL === subject.url ? null : subject.url);
-              setIsRevealed(false);
+              toggleTransition(false);
             }}
             ref={a.length - 1 === i ? lastElementRef : null}
           >

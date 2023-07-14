@@ -1,5 +1,8 @@
-import { useState } from 'react';
-import { SelectBeta, SelectBetaOption } from './SelectBeta';
+import {
+  SelectBeta,
+  SelectBetaOption,
+  useSelectTransition,
+} from './SelectBeta';
 import { Button } from '../controls';
 import { WEEK_DAYS } from '@/shared/constants';
 import { WeekDay } from '@/shared/api';
@@ -13,16 +16,17 @@ export function SelectWeekDay<T extends WeekDay>({
   weekDayId,
   onSelect,
 }: SelectWeekDayProps<T>) {
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [transitionState, toggleTransition] = useSelectTransition();
+
   return (
     <SelectBeta
-      onClose={() => setIsRevealed(false)}
-      isRevealed={isRevealed}
+      onClose={() => toggleTransition(false)}
+      transitionState={transitionState}
       inputElement={
         <Button
           variant="common"
           className="min-w-[120px]"
-          onClick={() => setIsRevealed(true)}
+          onClick={() => toggleTransition(true)}
         >
           {WEEK_DAYS.get(weekDayId)}
         </Button>
@@ -31,7 +35,7 @@ export function SelectWeekDay<T extends WeekDay>({
       {[...WEEK_DAYS.entries()].map(([id, value]) => (
         <SelectBetaOption
           onSelect={() => {
-            setIsRevealed(false);
+            toggleTransition(false);
             onSelect(id);
           }}
           key={id}
