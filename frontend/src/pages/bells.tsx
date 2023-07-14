@@ -6,9 +6,14 @@ import { Calendar } from '@/shared/ui/calendar';
 import Head from 'next/head';
 import { SelectBeta, SelectBetaOption } from '@/shared/ui/select';
 import { Button } from '@/shared/ui/controls';
+import { GetServerSideProps } from 'next';
 
-export default function Bells() {
-  const [date, setDate] = useState(getAppDate);
+type BellsProps = {
+  date: string;
+};
+
+export default function Bells({ date: initDate }: BellsProps) {
+  const [date, setDate] = useState(new Date(initDate));
   const [bellsType, setBellsType] = useState<BellsType>('normal');
 
   return (
@@ -97,3 +102,11 @@ function SelectBellsType({ type, onChange }: SelectBellsTypeProps) {
     </SelectBeta>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<BellsProps> = async () => {
+  return {
+    props: {
+      date: getAppDate(),
+    },
+  };
+};

@@ -25,9 +25,7 @@ export const WEEKDAYS_MAP: WeekDay[] = [
 ];
 
 export function getAppDate() {
-  return new Date(
-    new Date().toLocaleDateString('en', {
-      timeZone: APP_TIMEZONE,
-    }),
-  );
+  return new Date().toLocaleDateString('en', {
+    timeZone: APP_TIMEZONE,
+  });
 }

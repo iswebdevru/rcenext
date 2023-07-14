@@ -17,10 +17,15 @@ import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { LoaderCircle } from '@/shared/ui/Loader';
 import { ClassesFilters } from '@/features/classes';
 import Head from 'next/head';
+import { GetServerSideProps } from 'next';
 
-export default function Classes() {
+type ClassesProps = {
+  date: string;
+};
+
+export default function Classes({ date: initDate }: ClassesProps) {
   // State
-  const [date, setDate] = useState(getAppDate);
+  const [date, setDate] = useState(new Date(initDate));
   const [collegeBlock, setCollegeBlock] = useState<number>(-1);
   const [classesType, setClassesType] = useState<ClassesType>('mixed');
   const [groupName, setGroupName] = useState('');
@@ -95,3 +100,11 @@ export default function Classes() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  return {
+    props: {
+      date: getAppDate(),
+    },
+  };
+};

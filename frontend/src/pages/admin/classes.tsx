@@ -24,8 +24,13 @@ import {
 import { ClassesEditor } from '@/features/classes';
 import { formatDate, getAppDate } from '@/shared/lib/date';
 import Head from 'next/head';
+import { GetServerSideProps } from 'next';
 
-export default function Classes() {
+type ClassesProps = {
+  date: string;
+};
+
+export default function Classes({ date: initDate }: ClassesProps) {
   const [classesStore, dispatch] = useClassesStore();
 
   // State
@@ -33,7 +38,7 @@ export default function Classes() {
     useState<Exclude<ClassesType, 'mixed'>>('changes');
   const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
-  const [date, setDate] = useState(getAppDate);
+  const [date, setDate] = useState(new Date(initDate));
   const [isSaving, setIsSaving] = useState(false);
 
   // Debounced
@@ -260,3 +265,11 @@ export default function Classes() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  return {
+    props: {
+      date: getAppDate(),
+    },
+  };
+};
