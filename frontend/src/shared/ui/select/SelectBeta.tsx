@@ -1,4 +1,8 @@
-import { useClickOutside, usePositionCoords } from '@/shared/hooks';
+import {
+  useClickOutside,
+  usePositionCoords,
+  withOutsideClickExceptionsContext,
+} from '@/shared/hooks';
 import { clsx } from '@/shared/lib/ui';
 import {
   MouseEventHandler,
@@ -17,54 +21,56 @@ export type SelectBetaProps = {
   transitionState: TransitionState;
 } & PropsWithChildren;
 
-export function SelectBeta({
-  children,
-  inputElement,
-  onClose,
-  transitionState: { status, isMounted },
-}: SelectBetaProps) {
-  const outerRef = useRef<HTMLDivElement>(null);
-  const optionsListRef = useRef<HTMLDivElement>(null);
+export const SelectBeta = withOutsideClickExceptionsContext(
+  function SelectBeta({
+    children,
+    inputElement,
+    onClose,
+    transitionState: { status, isMounted },
+  }: SelectBetaProps) {
+    const outerRef = useRef<HTMLDivElement>(null);
+    const optionsListRef = useRef<HTMLDivElement>(null);
 
-  const zIndex = useZIndex();
+    const zIndex = useZIndex();
 
-  const { width, left, top } = usePositionCoords(outerRef, [isMounted]);
+    const { width, left, top } = usePositionCoords(outerRef, [isMounted]);
 
-  useClickOutside(optionsListRef, ignoreClick(outerRef.current, onClose));
+    useClickOutside(optionsListRef, ignoreClick(outerRef, onClose));
 
-  return (
-    <div ref={outerRef}>
-      {inputElement}
-      <Portal>
-        {isMounted ? (
-          <div
-            ref={optionsListRef}
-            style={
-              {
-                '--tw-translate-x': `${left}px`,
-                '--tw-translate-y': `${top}px`,
-                width,
-                zIndex,
-              } as React.CSSProperties
-            }
-            className="fixed left-0 top-0 transform"
-          >
+    return (
+      <div ref={outerRef}>
+        {inputElement}
+        <Portal>
+          {isMounted ? (
             <div
-              className={clsx({
-                'max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-200 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600':
-                  true,
-                '-translate-y-2 opacity-0':
-                  status === 'preEnter' || status === 'exiting',
-              })}
+              ref={optionsListRef}
+              style={
+                {
+                  '--tw-translate-x': `${left}px`,
+                  '--tw-translate-y': `${top}px`,
+                  width,
+                  zIndex,
+                } as React.CSSProperties
+              }
+              className="fixed left-0 top-0 transform"
             >
-              <ul>{children}</ul>
+              <div
+                className={clsx({
+                  'max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-200 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600':
+                    true,
+                  '-translate-y-2 opacity-0':
+                    status === 'preEnter' || status === 'exiting',
+                })}
+              >
+                <ul>{children}</ul>
+              </div>
             </div>
-          </div>
-        ) : null}
-      </Portal>
-    </div>
-  );
-}
+          ) : null}
+        </Portal>
+      </div>
+    );
+  },
+);
 
 export type SelectBetaOptionProps = {
   selected: boolean;

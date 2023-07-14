@@ -5,7 +5,7 @@ import { Button } from '@/shared/ui/controls/Button';
 import { Title } from '@/shared/ui/Typography';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { API_TEACHERS, deleteEntities, Teacher } from '@/shared/api';
-import { ListInLine } from '@/shared/ui/ListInLine';
+import { ListInLine, ListInLineItem } from '@/shared/ui/ListInLine';
 import { SubjectTextView } from '@/entities/subjects';
 import { TeacherEditingRow, TeacherCreateForm } from '@/features/teachers';
 import { AdminLayout } from '@/layouts';
@@ -94,9 +94,9 @@ export default function Teachers() {
                       <Table.DataCell>
                         <ListInLine>
                           {teacher.subjects.map(subjectUrl => (
-                            <ListInLine.Item key={subjectUrl}>
+                            <ListInLineItem key={subjectUrl}>
                               <SubjectTextView url={subjectUrl} />
-                            </ListInLine.Item>
+                            </ListInLineItem>
                           ))}
                         </ListInLine>
                       </Table.DataCell>

@@ -2,7 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { TextField } from '@/shared/ui/controls';
 import { Table } from '@/shared/ui/Table';
-import { fetcher, partiallyUpdateEntity, Teacher } from '@/shared/api';
+import {
+  fetcher,
+  Hyperlink,
+  partiallyUpdateEntity,
+  Teacher,
+} from '@/shared/api';
 import { SelectSubjects } from '../subjects/SelectSubjects'; // TODO: fix one-level cross import
 
 export type TeacherEditingRowProps = {
@@ -17,15 +22,15 @@ export function TeacherEditingRow({
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const patronymicRef = useRef<HTMLInputElement>(null);
-  const [selectedSubjects, setSelectedSubjects] = useState<string[] | null>(
-    null
+  const [selectedSubjects, setSelectedSubjects] = useState<Set<Hyperlink>>(
+    new Set<Hyperlink>(),
   );
 
   const { data: teacher, mutate } = useSWR<Teacher>(url, fetcher);
 
   useEffect(() => {
-    if (!selectedSubjects && teacher) {
-      setSelectedSubjects(teacher.subjects);
+    if (teacher) {
+      setSelectedSubjects(new Set(teacher.subjects));
     }
   }, [selectedSubjects, teacher]);
 
@@ -39,7 +44,7 @@ export function TeacherEditingRow({
         first_name: firstNameRef.current?.value,
         last_name: lastNameRef.current?.value,
         patronymic: patronymicRef.current?.value,
-        subjects: selectedSubjects,
+        subjects: [...selectedSubjects],
       },
     });
     return Promise.all([refresh(), mutate()]);
@@ -69,7 +74,7 @@ export function TeacherEditingRow({
       {selectedSubjects ? (
         <Table.DataCell>
           <SelectSubjects
-            value={selectedSubjects}
+            selectedSubjects={selectedSubjects}
             onChange={setSelectedSubjects}
           />
         </Table.DataCell>

@@ -4,5 +4,8 @@ export { useOnMount } from './useOnMount';
 export { usePagination } from './usePagination';
 export { usePaginatedFetch } from './usePaginatedFetch';
 export { useEvent } from './useEvent';
-export { useClickOutside } from './useClickOutside';
+export {
+  useClickOutside,
+  withOutsideClickExceptionsContext,
+} from './useClickOutside';
 export { usePositionCoords } from './usePositionCoords';

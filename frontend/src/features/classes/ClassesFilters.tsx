@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { Dispatch, SetStateAction, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { clsx } from '@/shared/lib/ui';
@@ -11,7 +11,7 @@ import useTransition from 'react-transition-state';
 
 export type ClassesFiltersProps = {
   date: Date;
-  onDateChange: (date: Date) => void;
+  onDateChange: Dispatch<SetStateAction<Date>>;
   collegeBlock: number;
   onCollegeBlockChange: (collegeBlock: number) => void;
   classesType: ClassesType;

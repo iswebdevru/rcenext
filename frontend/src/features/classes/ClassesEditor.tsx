@@ -9,7 +9,10 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SubjectSelect } from '../subjects';
 import { classNameWithDefaults, clsx } from '@/shared/lib/ui';
-import { useClickOutside } from '@/shared/hooks';
+import {
+  useClickOutside,
+  withOutsideClickExceptionsContext,
+} from '@/shared/hooks';
 import { Button } from '@/shared/ui/controls';
 import {
   ClassesDataWithDraft,
@@ -111,7 +114,10 @@ type SettingsProps = {
   onViewChange: (view: 'table' | 'message') => void;
 };
 
-function Settings({ view, onViewChange }: SettingsProps) {
+const Settings = withOutsideClickExceptionsContext(function Settings({
+  view,
+  onViewChange,
+}: SettingsProps) {
   const settingsRef = useRef<HTMLDivElement>(null);
   const [isSettingsOpened, setIsSettingsOpened] = useState(false);
 
@@ -179,7 +185,7 @@ function Settings({ view, onViewChange }: SettingsProps) {
       </div>
     </div>
   );
-}
+});
 
 const ModeButton = forwardRef<HTMLButtonElement, ModeButtonProps>(
   function ModeButtonComponent(

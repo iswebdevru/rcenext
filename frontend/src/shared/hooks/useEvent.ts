@@ -27,7 +27,9 @@ export function useEvent<
   useEffect(() => {
     if (target && handler) {
       target.addEventListener(type, handler, options);
-      return () => target.removeEventListener(type, handler, options);
+      return () => {
+        target.removeEventListener(type, handler, options);
+      };
     }
   }, [type, handler, target, options]);
 }

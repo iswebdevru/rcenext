@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { TextField, Button } from '@/shared/ui/controls';
-import { API_TEACHERS, createEntity } from '@/shared/api';
+import { API_TEACHERS, Hyperlink, createEntity } from '@/shared/api';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 
 export type TeachersFormCreateProps = {
@@ -22,13 +22,13 @@ export function TeacherCreateForm({
   const { register, handleSubmit, formState } = useForm<TeacherCreateFormData>({
     mode: 'all',
   });
-  const [subjects, setSubjects] = useState<string[]>([]);
+  const [subjects, setSubjects] = useState(new Set<Hyperlink>());
 
   const onValid = async (data: TeacherCreateFormData) => {
     await createEntity(API_TEACHERS, {
       body: {
         ...data,
-        subjects: subjects,
+        subjects: [...subjects],
       },
     });
     onClose();
@@ -82,7 +82,7 @@ export function TeacherCreateForm({
           <label className="mb-1 block text-sm text-zinc-700" htmlFor="">
             Предметы
           </label>
-          <SelectSubjects value={subjects} onChange={setSubjects} />
+          <SelectSubjects selectedSubjects={subjects} onChange={setSubjects} />
         </div>
       </div>
       <div className="flex justify-end gap-5 p-4">
