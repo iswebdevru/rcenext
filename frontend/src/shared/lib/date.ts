@@ -1,5 +1,5 @@
 import { WeekDay, WeekType } from '../api';
-import { APP_TIMEZONE } from '../constants';
+import { APP_TIMEZONE } from '../config';
 
 const baseTimestamp = new Date(2000, 0, 3);
 const DAY = 86400000;
