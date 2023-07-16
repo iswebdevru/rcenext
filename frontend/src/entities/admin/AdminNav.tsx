@@ -81,7 +81,7 @@ function AdminNavMobile({ onClose, isMounted, status }: AdminNavMobileProps) {
   const { asPath } = useRouter();
   const componentRef = useRef<HTMLDivElement>(null);
 
-  const zIndex = 20;
+  const zIndex = 30;
 
   return (
     <ZIndex index={zIndex}>

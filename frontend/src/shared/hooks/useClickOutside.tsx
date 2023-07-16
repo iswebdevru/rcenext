@@ -57,7 +57,7 @@ export function withOutsideClickExceptionsContext<T>(
   };
 }
 
-function useRegisterOutsideClickException(ref: RefObject<Node>) {
+export function useRegisterOutsideClickException(ref: RefObject<Node>) {
   const ctx = useContext(OutsideClickExceptionsContext);
 
   if (!ctx) {

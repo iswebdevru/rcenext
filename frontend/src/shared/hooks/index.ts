@@ -7,5 +7,6 @@ export { useEvent } from './useEvent';
 export {
   useClickOutside,
   withOutsideClickExceptionsContext,
+  useRegisterOutsideClickException,
 } from './useClickOutside';
 export { usePositionCoords } from './usePositionCoords';

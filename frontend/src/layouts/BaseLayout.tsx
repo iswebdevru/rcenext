@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import Header, { HeaderProps } from '@/widgets/Header';
+import { Header, HeaderProps } from '@/widgets/Header';
 
 export type BaseLayout = HeaderProps & PropsWithChildren;
 

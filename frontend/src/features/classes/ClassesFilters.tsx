@@ -8,6 +8,11 @@ import { ClassesType } from '@/entities/classes';
 import { GroupSelect } from '../groups';
 import { Portal, ZIndex } from '@/shared/ui/utils';
 import useTransition from 'react-transition-state';
+import {
+  useClickOutside,
+  useRegisterOutsideClickException,
+  withOutsideClickExceptionsContext,
+} from '@/shared/hooks';
 
 export type ClassesFiltersProps = {
   date: Date;
@@ -22,57 +27,52 @@ export type ClassesFiltersProps = {
   onCabinetChange: (cabinet: string) => void;
 };
 
-export function ClassesFilters(props: ClassesFiltersProps) {
-  const mobileFiltersViewRef = useRef<HTMLDivElement>(null);
+export const ClassesFilters = withOutsideClickExceptionsContext(
+  function ClassesFilters(props: ClassesFiltersProps) {
+    const mobileFiltersViewRef = useRef<HTMLDivElement>(null);
 
-  const [transitionState, toggleTransition] = useTransition({
-    timeout: 300,
-    mountOnEnter: true,
-    preEnter: true,
-    unmountOnExit: true,
-  });
+    const [transitionState, toggleTransition] = useTransition({
+      timeout: 300,
+      mountOnEnter: true,
+      preEnter: true,
+      unmountOnExit: true,
+    });
 
-  const zIndex = 20;
+    const zIndex = 30;
 
-  const openFilters = () => {
-    toggleTransition(true);
-    document.body.style.overflow = 'hidden';
-  };
+    const openFilters = () => {
+      toggleTransition(true);
+      document.body.style.overflow = 'hidden';
+    };
 
-  const closeFilters = () => {
-    toggleTransition(false);
-    document.body.style.overflow = '';
-  };
+    const closeFilters = () => {
+      toggleTransition(false);
+      document.body.style.overflow = '';
+    };
 
-  return (
-    <>
-      <div className="hidden h-full lg:block">
-        <Filters {...props} />
-      </div>
-      <FiltersButton onOpen={openFilters} />
-      <ZIndex index={zIndex}>
-        <Portal>
-          {transitionState.isMounted ? (
+    useClickOutside(mobileFiltersViewRef, closeFilters);
+
+    return (
+      <>
+        <div className="hidden h-full lg:block">
+          <Filters {...props} />
+        </div>
+        <FiltersButton onOpen={openFilters} />
+        <ZIndex index={zIndex}>
+          <Portal>
             <div
               style={{ zIndex }}
               className={clsx({
-                'fixed left-0 top-0 h-full w-full overflow-hidden bg-black transition-colors duration-300 lg:hidden':
+                'fixed left-0 top-0 h-full w-full overflow-hidden bg-black bg-opacity-0 transition-colors duration-300 lg:hidden':
                   true,
-                'bg-opacity-50':
+                'sm:bg-opacity-50':
                   transitionState.status === 'entering' ||
                   transitionState.status === 'entered',
-                'bg-opacity-0':
+                'sm:bg-opacity-0':
                   transitionState.status === 'preEnter' ||
                   transitionState.status === 'exiting',
+                hidden: transitionState.status === 'unmounted',
               })}
-              onClick={e => {
-                if (
-                  !(e.target instanceof Node) ||
-                  !mobileFiltersViewRef.current?.contains(e.target)
-                ) {
-                  closeFilters();
-                }
-              }}
             >
               <div
                 className={clsx({
@@ -96,12 +96,12 @@ export function ClassesFilters(props: ClassesFiltersProps) {
                 </div>
               </div>
             </div>
-          ) : null}
-        </Portal>
-      </ZIndex>
-    </>
-  );
-}
+          </Portal>
+        </ZIndex>
+      </>
+    );
+  },
+);
 
 function Filters(props: ClassesFiltersProps) {
   return (
@@ -136,10 +136,17 @@ type FiltersButtonProps = {
   onOpen: () => void;
 };
 
-function FiltersButton({ onOpen }: FiltersButtonProps) {
+const FiltersButton = withOutsideClickExceptionsContext(function FiltersButton({
+  onOpen,
+}: FiltersButtonProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  useRegisterOutsideClickException(ref);
+
   return (
     <Portal>
       <button
+        ref={ref}
         className="fixed bottom-6 right-6 z-20 flex h-11 w-11 items-center justify-center rounded-full bg-blue-500 text-white shadow-sm transition-colors hover:bg-blue-600 hover:text-zinc-100 hover:shadow-md dark:bg-blue-700 dark:hover:bg-blue-900 lg:hidden"
         onClick={onOpen}
       >
@@ -147,4 +154,4 @@ function FiltersButton({ onOpen }: FiltersButtonProps) {
       </button>
     </Portal>
   );
-}
+});
