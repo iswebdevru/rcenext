@@ -55,12 +55,11 @@ export const SelectBeta = withOutsideClickExceptionsContext(
               className="fixed left-0 top-0 transform"
             >
               <div
-                className={clsx({
-                  'max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-200 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600':
-                    true,
-                  '-translate-y-2 opacity-0':
-                    status === 'preEnter' || status === 'exiting',
-                })}
+                className={clsx(
+                  'max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-200 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600',
+                  (status === 'preEnter' || status === 'exiting') &&
+                    '-translate-y-2 opacity-0',
+                )}
               >
                 <ul>{children}</ul>
               </div>
@@ -83,11 +82,12 @@ export const SelectBetaOption = forwardRef<
 >(function Option({ children, selected, onSelect }, ref) {
   return (
     <li
-      className={clsx({
-        'border-b border-b-zinc-200 last:border-b-0 dark:border-b-zinc-700':
-          true,
-        'bg-zinc-100 dark:bg-zinc-700': selected,
-      })}
+      className={clsx(
+        'border-b border-b-zinc-200 last:border-b-0 dark:border-b-zinc-700',
+        {
+          'bg-zinc-100 dark:bg-zinc-700': selected,
+        },
+      )}
       ref={ref}
     >
       <button

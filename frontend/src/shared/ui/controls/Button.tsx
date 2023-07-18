@@ -1,4 +1,4 @@
-import { classNameWithDefaults, clsx } from '@/shared/lib/ui';
+import { clsx } from '@/shared/lib/ui';
 import { ComponentPropsWithRef, forwardRef } from 'react';
 
 export type ButtonProps = {
@@ -6,25 +6,21 @@ export type ButtonProps = {
 } & ComponentPropsWithRef<'button'>;
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  function Button(
-    { variant = 'common', className: addClassName, ...props },
-    ref,
-  ) {
+  function Button({ variant = 'common', className, ...props }, ref) {
     return (
       <button
         {...props}
-        className={classNameWithDefaults(
-          clsx({
-            'w-full select-none rounded-md border px-3 py-1 text-sm font-medium transition-[background,color,border-color]':
-              true,
+        className={clsx(
+          className,
+          'w-full select-none rounded-md border px-3 py-1 text-sm font-medium transition-[background,color,border-color]',
+          {
             'border-transparent bg-blue-600 text-white enabled:hover:bg-blue-800 disabled:bg-blue-600/50 disabled:text-blue-50/75':
               variant === 'primary',
             'border-red-500 bg-white text-red-500 enabled:hover:bg-red-600 enabled:hover:text-white disabled:border-red-200 disabled:text-red-200 dark:border-red-600 dark:bg-transparent dark:text-red-600 dark:enabled:hover:bg-red-700 dark:enabled:hover:text-white dark:disabled:border-red-900 dark:disabled:text-red-900':
               variant === 'danger-outline',
             'border-transparent bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 dark:hover:text-white':
               variant === 'common',
-          }),
-          addClassName,
+          },
         )}
         ref={ref}
       ></button>
@@ -52,14 +48,9 @@ export const HamburgerButton = forwardRef<
   ref,
 ) {
   return (
-    <button
-      {...props}
-      ref={ref}
-      className={classNameWithDefaults('group/hamburger', className)}
-    >
+    <button {...props} ref={ref} className={clsx('group/hamburger', className)}>
       <svg
-        className={clsx({
-          'w-full transition-colors': true,
+        className={clsx('w-full transition-colors', {
           'fill-zinc-700 group-hover/hamburger:fill-zinc-400 dark:fill-zinc-200 dark:group-hover/hamburger:fill-zinc-200':
             variant === 'zinc',
           'fill-white group-hover/hamburger:fill-zinc-100':

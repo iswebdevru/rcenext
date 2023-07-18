@@ -48,7 +48,8 @@
       "args": ["http://localhost:3000"],
       "presentation": {
         "showReuseMessage": false,
-        "reveal": "never"
+        "reveal": "never",
+        "close": true
       }
     }
   ]

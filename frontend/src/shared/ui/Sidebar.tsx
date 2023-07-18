@@ -8,8 +8,7 @@ export type SidebarProps = {
 export function Sidebar({ children, opened }: SidebarProps) {
   return (
     <div
-      className={clsx({
-        'fixed top-0 h-full right-0 transition lg:static': true,
+      className={clsx('fixed right-0 top-0 h-full transition lg:static', {
         'translate-x-full lg:translate-x-0': !opened,
         'translate-x-0': opened,
       })}

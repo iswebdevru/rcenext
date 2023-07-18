@@ -1,4 +1,4 @@
-import { classNameWithDefaults, clsx } from '@/shared/lib/ui';
+import { clsx } from '@/shared/lib/ui';
 import { Dispatch, SetStateAction, forwardRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
@@ -27,7 +27,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
     return (
       <div
         ref={ref}
-        className={classNameWithDefaults(
+        className={clsx(
           'space-y-4 overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-700 dark:bg-zinc-800',
           className,
         )}
@@ -104,16 +104,17 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
                 (day.month === currentMonth && day.date === currentDate) ||
                 disabled
               }
-              className={clsx({
-                'aspect-square select-none rounded-lg p-1.5 text-center leading-none transition-colors duration-75':
-                  true,
-                'text-zinc-700 hover:bg-zinc-100 focus:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:hover:text-white dark:focus:bg-zinc-700':
-                  day.month === currentMonth && day.date !== currentDate,
-                'text-zinc-300 dark:text-zinc-400/30':
-                  day.month !== currentMonth,
-                'bg-blue-50 text-blue-400 outline-blue-400 ring-1 ring-inset ring-primary-400 dark:bg-primary-600 dark:text-white dark:outline-transparent dark:ring-transparent':
-                  day.month === currentMonth && day.date === currentDate,
-              })}
+              className={clsx(
+                'aspect-square select-none rounded-lg p-1.5 text-center leading-none transition-colors duration-75',
+                {
+                  'text-zinc-700 hover:bg-zinc-100 focus:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-700 dark:hover:text-white dark:focus:bg-zinc-700':
+                    day.month === currentMonth && day.date !== currentDate,
+                  'text-zinc-300 dark:text-zinc-400/30':
+                    day.month !== currentMonth,
+                  'bg-blue-50 text-blue-400 outline-blue-400 ring-1 ring-inset ring-primary-400 dark:bg-primary-600 dark:text-white dark:outline-transparent dark:ring-transparent':
+                    day.month === currentMonth && day.date === currentDate,
+                },
+              )}
             >
               {day.date}
             </button>

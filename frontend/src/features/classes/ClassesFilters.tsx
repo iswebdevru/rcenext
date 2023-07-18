@@ -62,28 +62,30 @@ export const ClassesFilters = withOutsideClickExceptionsContext(
           <Portal>
             <div
               style={{ zIndex }}
-              className={clsx({
-                'fixed left-0 top-0 h-full w-full overflow-hidden bg-black bg-opacity-0 transition-colors duration-300 lg:hidden':
-                  true,
-                'sm:bg-opacity-50':
-                  transitionState.status === 'entering' ||
-                  transitionState.status === 'entered',
-                'sm:bg-opacity-0':
-                  transitionState.status === 'preEnter' ||
-                  transitionState.status === 'exiting',
-                hidden: transitionState.status === 'unmounted',
-              })}
-            >
-              <div
-                className={clsx({
-                  'ml-auto flex h-full flex-col items-center gap-6 overflow-y-auto bg-white px-6 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-900 sm:max-w-xs':
-                    true,
-                  'translate-y-full opacity-0 sm:translate-x-full sm:translate-y-0':
+              className={clsx(
+                'fixed left-0 top-0 h-full w-full overflow-hidden bg-black bg-opacity-0 transition-colors duration-300 lg:hidden',
+                {
+                  'sm:bg-opacity-50':
+                    transitionState.status === 'entering' ||
+                    transitionState.status === 'entered',
+                  'sm:bg-opacity-0':
                     transitionState.status === 'preEnter' ||
                     transitionState.status === 'exiting',
-                  'translate-y-0 opacity-100 sm:translate-x-0':
-                    transitionState.status === 'entering',
-                })}
+                  hidden: transitionState.status === 'unmounted',
+                },
+              )}
+            >
+              <div
+                className={clsx(
+                  'ml-auto flex h-full flex-col items-center gap-6 overflow-y-auto bg-white px-6 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-900 sm:max-w-xs',
+                  {
+                    'translate-y-full opacity-0 sm:translate-x-full sm:translate-y-0':
+                      transitionState.status === 'preEnter' ||
+                      transitionState.status === 'exiting',
+                    'translate-y-0 opacity-100 sm:translate-x-0':
+                      transitionState.status === 'entering',
+                  },
+                )}
                 ref={mobileFiltersViewRef}
               >
                 <div className="w-full max-w-xs">

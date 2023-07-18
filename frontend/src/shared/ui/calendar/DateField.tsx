@@ -64,12 +64,11 @@ export const DateField = withOutsideClickExceptionsContext<DateFieldProps>(
               className="fixed left-0 top-0 transform"
             >
               <div
-                className={clsx({
-                  'rounded-xl shadow-sm transition-[opacity,transform] duration-200':
-                    true,
-                  '-translate-y-12 scale-75 opacity-0':
-                    status === 'exiting' || status === 'preEnter',
-                })}
+                className={clsx(
+                  'rounded-xl shadow-sm transition-[opacity,transform] duration-200',
+                  (status === 'exiting' || status === 'preEnter') &&
+                    '-translate-y-12 scale-75 opacity-0',
+                )}
               >
                 <Calendar date={date} onDateChange={setDate} />
               </div>

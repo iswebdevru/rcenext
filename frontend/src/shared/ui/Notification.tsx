@@ -62,7 +62,7 @@ const useNotification = create<NotificationState>((set, get) => ({
           : {
               ...n,
               isRemoving: true,
-            }
+            },
       ),
     }));
     set(state => ({
@@ -79,21 +79,23 @@ type NotificationProps = {
 function Notification({ data, onRemove }: NotificationProps) {
   return (
     <div
-      className={clsx({
-        'flex animate-notification-add items-center gap-4 rounded-2xl border p-2 shadow-sm dark:border-slate-700 dark:bg-slate-800':
-          true,
-        'animate-notification-remove': data.isRemoving,
-        'border-green-500 bg-green-50': data.kind === 'success',
-        'border-red-200 bg-red-50': data.kind === 'error',
-      })}
+      className={clsx(
+        'animate-notification-add flex items-center gap-4 rounded-2xl border p-2 shadow-sm dark:border-slate-700 dark:bg-slate-800',
+        {
+          'animate-notification-remove': data.isRemoving,
+          'border-green-500 bg-green-50': data.kind === 'success',
+          'border-red-200 bg-red-50': data.kind === 'error',
+        },
+      )}
     >
       <div
-        className={clsx({
-          'flex h-10 w-10 items-center justify-center rounded-2xl text-2xl text-white dark:bg-slate-700':
-            true,
-          'bg-red-700 dark:text-red-400': data.kind === 'error',
-          'bg-green-500 dark:text-green-500': data.kind === 'success',
-        })}
+        className={clsx(
+          'flex h-10 w-10 items-center justify-center rounded-2xl text-2xl text-white dark:bg-slate-700',
+          {
+            'bg-red-700 dark:text-red-400': data.kind === 'error',
+            'bg-green-500 dark:text-green-500': data.kind === 'success',
+          },
+        )}
       >
         <FontAwesomeIcon fixedWidth={true} icon={iconsMap[data.kind]} />
       </div>

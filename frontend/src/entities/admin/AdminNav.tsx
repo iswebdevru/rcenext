@@ -89,12 +89,13 @@ function AdminNavMobile({ onClose, isMounted, status }: AdminNavMobileProps) {
         {isMounted ? (
           <div
             style={{ zIndex }}
-            className={clsx({
-              'fixed left-0 top-0 block h-full w-full bg-black transition-colors duration-300 lg:hidden':
-                true,
-              'bg-opacity-0': status === 'preEnter' || status === 'exiting',
-              'bg-opacity-40': status === 'entering' || status === 'entered',
-            })}
+            className={clsx(
+              'fixed left-0 top-0 block h-full w-full bg-black transition-colors duration-300 lg:hidden',
+              {
+                'bg-opacity-0': status === 'preEnter' || status === 'exiting',
+                'bg-opacity-40': status === 'entering' || status === 'entered',
+              },
+            )}
             onClick={e => {
               if (
                 !(e.target instanceof Node) ||
@@ -105,14 +106,15 @@ function AdminNavMobile({ onClose, isMounted, status }: AdminNavMobileProps) {
             }}
           >
             <div
-              className={clsx({
-                'h-full w-64 overflow-y-auto bg-white px-6 py-12 transition-[opacity,transform] duration-300 dark:bg-zinc-900':
-                  true,
-                '-translate-x-full opacity-0':
-                  status === 'preEnter' || status === 'exiting',
-                'translate-x-0 opacity-100':
-                  status === 'entering' || status === 'entered',
-              })}
+              className={clsx(
+                'h-full w-64 overflow-y-auto bg-white px-6 py-12 transition-[opacity,transform] duration-300 dark:bg-zinc-900',
+                {
+                  '-translate-x-full opacity-0':
+                    status === 'preEnter' || status === 'exiting',
+                  'translate-x-0 opacity-100':
+                    status === 'entering' || status === 'entered',
+                },
+              )}
               ref={componentRef}
             >
               <ul className="space-y-3">
@@ -159,13 +161,14 @@ function AdminNavLink({ href, isActive, text, icon }: AdminNavLinkProps) {
   return (
     <Link
       href={href}
-      className={clsx({
-        'transition-color block p-2 font-semibold hover:text-blue-500 dark:hover:text-zinc-50':
-          true,
-        'rounded-md bg-slate-100 text-blue-500 dark:bg-zinc-800 dark:text-white':
-          isActive,
-        'text-slate-800 dark:text-zinc-400': !isActive,
-      })}
+      className={clsx(
+        'transition-color block p-2 font-semibold hover:text-blue-500 dark:hover:text-zinc-50',
+        {
+          'rounded-md bg-slate-100 text-blue-500 dark:bg-zinc-800 dark:text-white':
+            isActive,
+          'text-slate-800 dark:text-zinc-400': !isActive,
+        },
+      )}
     >
       <div className="flex items-center gap-4">
         <div className="items-place-center grid">

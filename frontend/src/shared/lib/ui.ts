@@ -1,12 +1,36 @@
-export function clsx(classes: Record<string, boolean>) {
-  return Object.entries(classes)
-    .filter(([_, shouldCommit]) => shouldCommit)
-    .map(([v]) => v)
-    .join(' ');
-}
+/**
+ * Concatenates class names depending on condition
+ */
+export function clsx(
+  ...classes: (
+    | Record<string, boolean | null | undefined>
+    | string
+    | number
+    | null
+    | undefined
+    | boolean
+  )[]
+) {
+  let result = '';
 
-export function classNameWithDefaults(defaults: string, additional?: string) {
-  return additional ? `${defaults} ${additional}` : defaults;
+  for (let i = 0; i < classes.length; i++) {
+    const entry = classes[i];
+    if (!entry) {
+      continue;
+    }
+    switch (typeof entry) {
+      case 'number':
+      case 'string':
+        result += ` ${entry}`;
+        break;
+      case 'object':
+        result += ` ${Object.entries(entry)
+          .filter(([_, value]) => !!value)
+          .map(([key]) => key)
+          .join(' ')}`;
+    }
+  }
+  return result;
 }
 
 /**

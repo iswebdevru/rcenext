@@ -73,8 +73,7 @@ export const Header = withOutsideClickExceptionsContext(function Header({
         className="fixed left-0 top-0 h-14 w-full border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800"
       >
         <div
-          className={clsx({
-            'flex h-full items-center': true,
+          className={clsx('flex h-full items-center', {
             container: !wide,
             'px-6': !!wide,
           })}
@@ -115,22 +114,25 @@ export const Header = withOutsideClickExceptionsContext(function Header({
           <Portal>
             <div
               style={{ zIndex }}
-              className={clsx({
-                'fixed left-0 top-0 block h-full w-full bg-black transition-colors duration-300 xl:hidden':
-                  true,
-                'bg-opacity-0': status === 'preEnter' || status === 'exiting',
-                'bg-opacity-40': status === 'entering' || status === 'entered',
-                hidden: status === 'unmounted',
-              })}
+              className={clsx(
+                'fixed left-0 top-0 block h-full w-full bg-black transition-colors duration-300 xl:hidden',
+                {
+                  'bg-opacity-0': status === 'preEnter' || status === 'exiting',
+                  'bg-opacity-40':
+                    status === 'entering' || status === 'entered',
+                  hidden: status === 'unmounted',
+                },
+              )}
             >
               <div
-                className={clsx({
-                  'flex h-full flex-col overflow-y-auto bg-white px-8 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-900 sm:max-w-sm':
-                    true,
-                  '-translate-x-full opacity-0':
-                    status === 'preEnter' || status === 'exiting',
-                  'translate-x-0 opacity-100': status === 'entering',
-                })}
+                className={clsx(
+                  'flex h-full flex-col overflow-y-auto bg-white px-8 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-900 sm:max-w-sm',
+                  {
+                    '-translate-x-full opacity-0':
+                      status === 'preEnter' || status === 'exiting',
+                    'translate-x-0 opacity-100': status === 'entering',
+                  },
+                )}
                 ref={mobileComponentRef}
               >
                 <div className="mb-10 flex items-center">
@@ -155,14 +157,15 @@ export const Header = withOutsideClickExceptionsContext(function Header({
                       <li key={link.href}>
                         <Link
                           href={link.href}
-                          className={clsx({
-                            'block w-full px-4 py-2 text-sm font-semibold transition-colors':
-                              true,
-                            'rounded-lg bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-neutral-200':
-                              link.href === router.asPath,
-                            'text-slate-500 dark:text-neutral-200':
-                              link.href !== router.asPath,
-                          })}
+                          className={clsx(
+                            'block w-full px-4 py-2 text-sm font-semibold transition-colors',
+                            {
+                              'rounded-lg bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-neutral-200':
+                                link.href === router.asPath,
+                              'text-slate-500 dark:text-neutral-200':
+                                link.href !== router.asPath,
+                            },
+                          )}
                         >
                           {link.text}
                         </Link>

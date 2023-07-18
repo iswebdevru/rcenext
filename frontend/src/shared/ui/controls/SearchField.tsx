@@ -1,4 +1,4 @@
-import { classNameWithDefaults, clsx } from '@/shared/lib/ui';
+import { clsx } from '@/shared/lib/ui';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ComponentPropsWithRef, forwardRef } from 'react';
@@ -11,14 +11,11 @@ export const SearchField = forwardRef<HTMLInputElement, InputSearchProps>(
   function SearchField(props, ref) {
     return (
       <div
-        className={classNameWithDefaults(
-          clsx({
-            'group/search flex h-8 w-full items-center gap-2 rounded-md bg-white p-3 text-sm ring-1 ring-inset ring-zinc-200 transition duration-75 focus-within:ring-2 focus-within:ring-primary-500':
-              true,
-            'dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:focus-within:ring-blue-700':
-              !props.variant,
-          }),
+        className={clsx(
           props.className,
+          'group/search flex h-8 w-full items-center gap-2 rounded-md bg-white p-3 text-sm ring-1 ring-inset ring-zinc-200 transition duration-75 focus-within:ring-2 focus-within:ring-primary-500',
+          !props.variant &&
+            'dark:bg-zinc-800 dark:text-zinc-100 dark:ring-zinc-700 dark:focus-within:ring-blue-700',
         )}
       >
         <FontAwesomeIcon

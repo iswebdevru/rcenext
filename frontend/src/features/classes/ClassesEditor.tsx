@@ -8,7 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SubjectSelect } from '../subjects';
-import { classNameWithDefaults, clsx } from '@/shared/lib/ui';
+import { clsx } from '@/shared/lib/ui';
 import {
   useClickOutside,
   withOutsideClickExceptionsContext,
@@ -126,13 +126,14 @@ const Settings = withOutsideClickExceptionsContext(function Settings({
   return (
     <div className="relative" ref={settingsRef}>
       <button
-        className={clsx({
-          'flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-100 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-700 dark:hover:text-zinc-50':
-            true,
-          'bg-zinc-100 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-50':
-            isSettingsOpened,
-          'text-zinc-500': !isSettingsOpened,
-        })}
+        className={clsx(
+          'flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-100 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-700 dark:hover:text-zinc-50',
+          {
+            'bg-zinc-100 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-50':
+              isSettingsOpened,
+            'text-zinc-500': !isSettingsOpened,
+          },
+        )}
         onClick={() => setIsSettingsOpened(true)}
       >
         <FontAwesomeIcon
@@ -143,13 +144,14 @@ const Settings = withOutsideClickExceptionsContext(function Settings({
         />
       </button>
       <div
-        className={clsx({
-          'absolute right-0 top-full mt-2 flex flex-col overflow-hidden rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] dark:border-zinc-700 dark:bg-zinc-800':
-            true,
-          'opacity-1 z-10 translate-y-0 scale-100': isSettingsOpened,
-          'pointer-events-none invisible -translate-y-12 scale-75 opacity-0':
-            !isSettingsOpened,
-        })}
+        className={clsx(
+          'absolute right-0 top-full mt-2 flex flex-col overflow-hidden rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] dark:border-zinc-700 dark:bg-zinc-800',
+          {
+            'opacity-1 z-10 translate-y-0 scale-100': isSettingsOpened,
+            'pointer-events-none invisible -translate-y-12 scale-75 opacity-0':
+              !isSettingsOpened,
+          },
+        )}
       >
         <div className="flex">
           <ModeButton
@@ -195,15 +197,15 @@ const ModeButton = forwardRef<HTMLButtonElement, ModeButtonProps>(
     return (
       <button
         ref={ref}
-        className={classNameWithDefaults(
-          clsx({
-            'flex items-center justify-center transition duration-100': true,
+        className={clsx(
+          className,
+          'flex items-center justify-center transition duration-100',
+          {
             'bg-blue-50 text-blue-500 dark:bg-zinc-700 dark:text-zinc-50':
               !!isActive,
             'text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900  dark:text-zinc-400 dark:hover:bg-zinc-600 dark:hover:text-zinc-50':
               !isActive,
-          }),
-          className,
+          },
         )}
         {...props}
       >

@@ -35,16 +35,17 @@ export const ListInLine = withOutsideClickExceptionsContext(
         </div>
         {status === 'exited' ? null : (
           <ul
-            className={clsx({
-              'absolute right-0 top-full z-10 mt-2 flex flex-wrap gap-2 rounded-md border border-zinc-100 bg-white p-3 shadow-md shadow-zinc-300 dark:border-zinc-700 dark:bg-zinc-800 dark:shadow-zinc-900':
-                true,
-              'translate-x--translate-y-8 -translate-y-8 scale-75 opacity-0':
-                status === 'preEnter',
-              'scale-100 opacity-100 transition-[transform,opacity]':
-                status === 'entering',
-              'translate-x--translate-y-8 -translate-y-8 scale-75 opacity-0 transition-[transform,opacity]':
-                status === 'exiting',
-            })}
+            className={clsx(
+              'absolute right-0 top-full z-10 mt-2 flex flex-wrap gap-2 rounded-md border border-zinc-100 bg-white p-3 shadow-md shadow-zinc-300 dark:border-zinc-700 dark:bg-zinc-800 dark:shadow-zinc-900',
+              {
+                'translate-x--translate-y-8 -translate-y-8 scale-75 opacity-0':
+                  status === 'preEnter',
+                'scale-100 opacity-100 transition-[transform,opacity]':
+                  status === 'entering',
+                'translate-x--translate-y-8 -translate-y-8 scale-75 opacity-0 transition-[transform,opacity]':
+                  status === 'exiting',
+              },
+            )}
           >
             {children}
           </ul>

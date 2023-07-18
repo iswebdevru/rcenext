@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { GetServerSideProps } from 'next';
+import Head from 'next/head';
 import { Button } from '@/shared/ui/controls';
 import { DateField } from '@/shared/ui/calendar';
 import { SelectWeekType, SelectWeekDay } from '@/shared/ui/select';
@@ -23,8 +25,6 @@ import {
 } from '@/entities/classes';
 import { ClassesEditor } from '@/features/classes';
 import { formatDate, getAppDate } from '@/shared/lib/date';
-import Head from 'next/head';
-import { GetServerSideProps } from 'next';
 
 type ClassesProps = {
   date: string;

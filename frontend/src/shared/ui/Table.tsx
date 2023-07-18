@@ -17,7 +17,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { classNameWithDefaults, clsx } from '../lib/ui';
+import { clsx } from '../lib/ui';
 import { Button, SearchField } from './controls';
 
 export type Id = string | number;
@@ -304,11 +304,9 @@ Table.Row = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
     <tr
       {...props}
       ref={ref}
-      className={classNameWithDefaults(
-        clsx({
-          'group/row rounded-md transition-[background]': true,
-        }),
+      className={clsx(
         className,
+        'group/row rounded-md transition-[background]',
       )}
     />
   );
@@ -328,23 +326,14 @@ Table.DataCell = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
 
     return (
       <td
-        className={classNameWithDefaults(
-          clsx({
-            'border-b border-zinc-200 p-0 text-sm text-black group-last/row:border-0 group-last/row:first:rounded-bl-md group-last:last:rounded-br-md dark:border-zinc-700 dark:text-zinc-200':
-              true,
-            'bg-zinc-50 dark:bg-zinc-800': !!ctx?.isSelected,
-          }),
+        className={clsx(
           className,
+          'border-b border-zinc-200 p-0 text-sm text-black group-last/row:border-0 group-last/row:first:rounded-bl-md group-last:last:rounded-br-md dark:border-zinc-700 dark:text-zinc-200',
+          !!ctx?.isSelected && 'bg-zinc-50 dark:bg-zinc-800',
         )}
         {...props}
       >
-        <div
-          className={clsx({
-            'flex items-center px-6 py-3': true,
-          })}
-        >
-          {children}
-        </div>
+        <div className="flex items-center px-6 py-3">{children}</div>
       </td>
     );
   },
