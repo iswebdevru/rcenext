@@ -1,6 +1,6 @@
 import { clsx } from '@/shared/lib/ui';
-import { HamburgerButton } from '@/shared/ui/controls/Button';
-import { Portal, ZIndex } from '@/shared/ui/utils';
+import { HamburgerButton } from '@/shared/ui/Controls/Button';
+import { Portal, ZIndex } from '@/shared/ui/Utils';
 import {
   IconDefinition,
   faBell,

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { TextField } from '@/shared/ui/controls';
+import { TextField } from '@/shared/ui/Controls';
 import { Table } from '@/shared/ui/Table';
 import {
   fetcher,

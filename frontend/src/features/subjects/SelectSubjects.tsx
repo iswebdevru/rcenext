@@ -1,10 +1,6 @@
 import { API_SUBJECTS, Hyperlink, Subject } from '@/shared/api';
 import { usePaginatedFetch } from '@/shared/hooks';
-import {
-  SelectBeta,
-  SelectBetaOption,
-  useSelectTransition,
-} from '@/shared/ui/select';
+import { Select, SelectOption, useSelectTransition } from '@/shared/ui/Select';
 import { Dispatch, SetStateAction } from 'react';
 
 export type SelectSubjectsProps = {
@@ -21,7 +17,18 @@ export function SelectSubjects({
   const { data, lastElementRef } = usePaginatedFetch<Subject>(API_SUBJECTS);
 
   return (
-    <SelectBeta
+    <Select<Hyperlink>
+      onSelect={subject => {
+        onChange(prev => {
+          const clone = new Set(prev);
+          if (clone.has(subject)) {
+            clone.delete(subject);
+          } else {
+            clone.add(subject);
+          }
+          return clone;
+        });
+      }}
       inputElement={
         <button type="button" onClick={() => toggleTransition()}>
           select
@@ -33,25 +40,15 @@ export function SelectSubjects({
       {data
         ?.flatMap(page => page.results)
         .map((subject, i, a) => (
-          <SelectBetaOption
+          <SelectOption
             ref={a.length === i + 1 ? lastElementRef : null}
             key={subject.url}
             selected={selectedSubjects.has(subject.url)}
-            onSelect={() => {
-              onChange(prev => {
-                const clone = new Set(prev);
-                if (clone.has(subject.url)) {
-                  clone.delete(subject.url);
-                } else {
-                  clone.add(subject.url);
-                }
-                return clone;
-              });
-            }}
+            value={subject.url}
           >
             {subject.name}
-          </SelectBetaOption>
+          </SelectOption>
         ))}
-    </SelectBeta>
+    </Select>
   );
 }

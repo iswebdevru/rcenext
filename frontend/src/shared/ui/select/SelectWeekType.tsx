@@ -1,11 +1,7 @@
 import { WEEK_TYPES } from '@/shared/constants';
 import { WeekType } from '@/shared/api';
-import {
-  SelectBeta,
-  SelectBetaOption,
-  useSelectTransition,
-} from './SelectBeta';
-import { Button } from '../controls';
+import { Select, SelectOption, useSelectTransition } from './Select';
+import { Button } from '../Controls';
 
 export type SelectWeekTypeProps<T extends WeekType> = {
   weekTypeId: T;
@@ -19,7 +15,11 @@ export function SelectWeekType<T extends WeekType>({
   const [transitionState, toggleTransition] = useSelectTransition();
 
   return (
-    <SelectBeta
+    <Select<WeekType>
+      onSelect={id => {
+        onSelect(id);
+        toggleTransition(false);
+      }}
       transitionState={transitionState}
       onClose={() => toggleTransition(false)}
       inputElement={
@@ -32,17 +32,10 @@ export function SelectWeekType<T extends WeekType>({
       }
     >
       {[...WEEK_TYPES.entries()].map(([id, value]) => (
-        <SelectBetaOption
-          key={id}
-          selected={weekTypeId === id}
-          onSelect={() => {
-            onSelect(id);
-            toggleTransition(false);
-          }}
-        >
+        <SelectOption key={id} selected={weekTypeId === id} value={id}>
           {value}
-        </SelectBetaOption>
+        </SelectOption>
       ))}
-    </SelectBeta>
+    </Select>
   );
 }

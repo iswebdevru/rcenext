@@ -14,7 +14,7 @@ export default function App({
   pageProps: { session, ...pageProps },
 }: AppProps) {
   return (
-    <div className={clsx(openSans.variable, 'h-full, font-sans')}>
+    <div className={clsx(openSans.variable, 'h-full font-sans')}>
       <SessionProvider session={session}>
         <Component {...pageProps} />
       </SessionProvider>

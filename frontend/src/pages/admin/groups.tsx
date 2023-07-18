@@ -7,8 +7,8 @@ import { GroupCreateForm } from '@/features/groups';
 import GroupEditingRow from '@/features/groups/GroupEditingRow';
 import { API_GROUPS, deleteEntities, Group } from '@/shared/api';
 import { Title } from '@/shared/ui/Typography';
-import { Button } from '@/shared/ui/controls';
-import { Reveal } from '@/shared/ui/utils';
+import { Button } from '@/shared/ui/Controls';
+import { Reveal } from '@/shared/ui/Utils';
 
 export default function Groups() {
   const [searchFilter, setSearchFilter] = useState('');

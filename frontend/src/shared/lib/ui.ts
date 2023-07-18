@@ -11,7 +11,7 @@ export function clsx(
     | boolean
   )[]
 ) {
-  let result = '';
+  const result: string[] = [];
 
   for (let i = 0; i < classes.length; i++) {
     const entry = classes[i];
@@ -21,16 +21,18 @@ export function clsx(
     switch (typeof entry) {
       case 'number':
       case 'string':
-        result += ` ${entry}`;
+        result.push(entry.toString());
         break;
       case 'object':
-        result += ` ${Object.entries(entry)
-          .filter(([_, value]) => !!value)
-          .map(([key]) => key)
-          .join(' ')}`;
+        result.push(
+          Object.entries(entry)
+            .filter(([_, value]) => !!value)
+            .map(([key]) => key)
+            .join(' '),
+        );
     }
   }
-  return result;
+  return result.join(' ');
 }
 
 /**

@@ -2,13 +2,13 @@ import { clsx } from '@/shared/lib/ui';
 import { Dispatch, SetStateAction, forwardRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
-import { Button } from '../controls';
+import { Button } from '../Controls';
 import {
   DAY,
   HUMAN_READABLE_MONTHS,
   getDaysAroundCurrentMonth,
 } from '@/shared/lib/date';
-import { SelectYear } from '../select';
+import { SelectYear } from '../Select';
 
 export type CalendarProps = {
   date: Date;

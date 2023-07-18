@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import { Table } from '@/shared/ui/Table';
-import { Button } from '@/shared/ui/controls/Button';
+import { Button } from '@/shared/ui/Controls/Button';
 import { Title } from '@/shared/ui/Typography';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { API_TEACHERS, deleteEntities, Teacher } from '@/shared/api';
@@ -9,7 +9,7 @@ import { ListInLine, ListInLineItem } from '@/shared/ui/ListInLine';
 import { SubjectTextView } from '@/entities/subjects';
 import { TeacherEditingRow, TeacherCreateForm } from '@/features/teachers';
 import { AdminLayout } from '@/layouts';
-import { Reveal } from '@/shared/ui/utils/Reveal';
+import { Reveal } from '@/shared/ui/Utils/Reveal';
 
 export default function Teachers() {
   const [searchFilter, setSearchFilter] = useState('');

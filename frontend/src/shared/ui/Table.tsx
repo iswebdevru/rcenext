@@ -18,7 +18,7 @@ import {
   useState,
 } from 'react';
 import { clsx } from '../lib/ui';
-import { Button, SearchField } from './controls';
+import { Button, SearchField } from './Controls';
 
 export type Id = string | number;
 

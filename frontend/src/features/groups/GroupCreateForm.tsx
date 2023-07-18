@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { API_GROUPS, createEntity } from '@/shared/api';
-import { Button } from '@/shared/ui/controls/Button';
-import { TextField } from '@/shared/ui/controls';
+import { Button } from '@/shared/ui/Controls/Button';
+import { TextField } from '@/shared/ui/Controls';
 
 export type GroupCreateForm = {
   refresh: () => Promise<unknown>;

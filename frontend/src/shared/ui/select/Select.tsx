@@ -5,39 +5,59 @@ import {
 } from '@/shared/hooks';
 import { clsx } from '@/shared/lib/ui';
 import {
-  MouseEventHandler,
+  ForwardedRef,
   PropsWithChildren,
   ReactNode,
+  RefCallback,
+  createContext,
   forwardRef,
+  useCallback,
+  useContext,
   useRef,
 } from 'react';
 import useTransition, { TransitionState } from 'react-transition-state';
-import { Portal, useZIndex } from '../utils';
 import { ignoreClick } from '@/shared/lib/dom';
+import { Portal, useZIndex } from '../Utils';
 
-export type SelectBetaProps = {
+type SelectContext = {
+  onSelect: (selected: any) => void;
+  scrollIntoViewSelected: boolean;
+};
+
+const SelectContext = createContext<SelectContext>({} as any);
+
+export type SelectProps<T> = {
   onClose: () => void;
   inputElement: ReactNode;
   transitionState: TransitionState;
+  scrollIntoViewSelected?: boolean;
+  onSelect: (selected: T) => void;
 } & PropsWithChildren;
 
-export const SelectBeta = withOutsideClickExceptionsContext(
-  function SelectBeta({
-    children,
-    inputElement,
-    onClose,
-    transitionState: { status, isMounted },
-  }: SelectBetaProps) {
-    const outerRef = useRef<HTMLDivElement>(null);
-    const optionsListRef = useRef<HTMLDivElement>(null);
+export const Select = withOutsideClickExceptionsContext(function Select<T>({
+  children,
+  inputElement,
+  onClose,
+  onSelect,
+  scrollIntoViewSelected = false,
+  transitionState: { status, isMounted },
+}: SelectProps<T>) {
+  const outerRef = useRef<HTMLDivElement>(null);
+  const optionsListRef = useRef<HTMLDivElement>(null);
 
-    const zIndex = useZIndex();
+  const zIndex = useZIndex();
 
-    const { width, left, top } = usePositionCoords(outerRef, [isMounted]);
+  const { width, left, top } = usePositionCoords(outerRef, [isMounted]);
 
-    useClickOutside(optionsListRef, ignoreClick(outerRef, onClose));
+  useClickOutside(optionsListRef, ignoreClick(outerRef, onClose));
 
-    return (
+  return (
+    <SelectContext.Provider
+      value={{
+        onSelect,
+        scrollIntoViewSelected,
+      }}
+    >
       <div ref={outerRef}>
         {inputElement}
         <Portal>
@@ -67,19 +87,34 @@ export const SelectBeta = withOutsideClickExceptionsContext(
           ) : null}
         </Portal>
       </div>
-    );
-  },
-);
+    </SelectContext.Provider>
+  );
+});
 
-export type SelectBetaOptionProps = {
+export type SelectOptionProps<T> = {
   selected: boolean;
-  onSelect: MouseEventHandler<HTMLButtonElement>;
+  value: T;
 } & PropsWithChildren;
 
-export const SelectBetaOption = forwardRef<
-  HTMLLIElement,
-  SelectBetaOptionProps
->(function Option({ children, selected, onSelect }, ref) {
+export const SelectOption = forwardRef(function SelectOption<T>(
+  { children, selected, value }: SelectOptionProps<T>,
+  ref: ForwardedRef<HTMLLIElement>,
+) {
+  const { onSelect, scrollIntoViewSelected } = useContext(SelectContext);
+
+  const scrollIntoViewCallback: RefCallback<HTMLButtonElement> = useCallback(
+    elem => {
+      if (!elem) {
+        return;
+      }
+      elem.scrollIntoView({
+        behavior: 'instant',
+        block: 'center',
+      });
+    },
+    [],
+  );
+
   return (
     <li
       className={clsx(
@@ -92,7 +127,8 @@ export const SelectBetaOption = forwardRef<
     >
       <button
         className="w-full select-none overflow-hidden overflow-ellipsis whitespace-nowrap px-3 py-2 text-left text-sm text-zinc-700 dark:text-zinc-200"
-        onClick={onSelect}
+        onClick={() => onSelect(value)}
+        ref={scrollIntoViewSelected && selected ? scrollIntoViewCallback : null}
       >
         {children}
       </button>

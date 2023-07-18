@@ -4,10 +4,10 @@ import { SubjectCreateForm, SubjectEditingRow } from '@/features/subjects';
 import { AdminLayout } from '@/layouts';
 import { API_SUBJECTS, deleteEntities, Subject } from '@/shared/api';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
-import { Button } from '@/shared/ui/controls/Button';
+import { Button } from '@/shared/ui/Controls/Button';
 import { Table } from '@/shared/ui/Table';
 import { Title } from '@/shared/ui/Typography';
-import { Reveal } from '@/shared/ui/utils/Reveal';
+import { Reveal } from '@/shared/ui/Utils/Reveal';
 
 export default function Subjects() {
   const [searchFilter, setSearchFilter] = useState('');

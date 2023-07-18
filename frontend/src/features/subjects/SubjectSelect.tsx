@@ -2,11 +2,7 @@ import useSWR from 'swr';
 import { useRef, useState } from 'react';
 import { API_SUBJECTS, Hyperlink, Subject, fetcher } from '@/shared/api';
 import { usePaginatedFetch } from '@/shared/hooks';
-import {
-  SelectBeta,
-  SelectBetaOption,
-  useSelectTransition,
-} from '@/shared/ui/select';
+import { Select, SelectOption, useSelectTransition } from '@/shared/ui/Select';
 
 export type SubjectSelect = {
   selectedSubjectURL: Hyperlink | null;
@@ -29,7 +25,11 @@ export function SubjectSelect({ selectedSubjectURL, onSelect }: SubjectSelect) {
   );
 
   return (
-    <SelectBeta
+    <Select<Hyperlink>
+      onSelect={subjectUrl => {
+        onSelect(selectedSubjectURL === subjectUrl ? null : subjectUrl);
+        toggleTransition(false);
+      }}
       transitionState={transitionState}
       onClose={() => toggleTransition(false)}
       inputElement={
@@ -59,18 +59,15 @@ export function SubjectSelect({ selectedSubjectURL, onSelect }: SubjectSelect) {
       {pages
         ?.flatMap(page => page.results)
         .map((subject, i, a) => (
-          <SelectBetaOption
+          <SelectOption
             key={subject.id}
+            value={subject.url}
             selected={subject.url === selectedSubjectURL}
-            onSelect={() => {
-              onSelect(selectedSubjectURL === subject.url ? null : subject.url);
-              toggleTransition(false);
-            }}
             ref={a.length - 1 === i ? lastElementRef : null}
           >
             {subject.name}
-          </SelectBetaOption>
+          </SelectOption>
         ))}
-    </SelectBeta>
+    </Select>
   );
 }

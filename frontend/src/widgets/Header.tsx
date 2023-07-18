@@ -6,10 +6,10 @@ import { signOut, useSession } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { clsx } from '@/shared/lib/ui';
-import { HamburgerButton } from '@/shared/ui/controls';
+import { HamburgerButton } from '@/shared/ui/Controls';
 import { GroupSearch } from '@/features/groups';
 import useTransition from 'react-transition-state';
-import { Portal, ZIndex } from '@/shared/ui/utils';
+import { Portal, ZIndex } from '@/shared/ui/Utils';
 import {
   useClickOutside,
   useRegisterOutsideClickException,

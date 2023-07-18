@@ -1,12 +1,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
-import { SearchField } from '@/shared/ui/controls';
-import {
-  SelectBeta,
-  SelectBetaOption,
-  useSelectTransition,
-} from '@/shared/ui/select';
+import { SearchField } from '@/shared/ui/Controls';
+import { Select, SelectOption, useSelectTransition } from '@/shared/ui/Select';
 import { API_GROUPS, Group } from '@/shared/api';
 
 export type GroupSelectProps = {
@@ -31,9 +27,13 @@ export function GroupSelect({
   );
 
   return (
-    <SelectBeta
+    <Select<Group>
       transitionState={transitionState}
       onClose={() => toggleTransition(false)}
+      onSelect={group => {
+        onSelect(group);
+        toggleTransition(false);
+      }}
       inputElement={
         <SearchField
           name="group"
@@ -48,19 +48,16 @@ export function GroupSelect({
       {data
         ?.flatMap(page => page.results)
         .map((group, i, arr) => (
-          <SelectBetaOption
+          <SelectOption
             key={group.id}
             ref={i === arr.length - 1 ? lastElementRef : null}
             selected={group.name === groupSearch}
-            onSelect={() => {
-              onSelect(group);
-              toggleTransition(false);
-            }}
+            value={group}
           >
             {group.name}
-          </SelectBetaOption>
+          </SelectOption>
         ))}
-    </SelectBeta>
+    </Select>
   );
 }
 

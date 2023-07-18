@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { TextField, Button } from '@/shared/ui/controls';
+import { TextField, Button } from '@/shared/ui/Controls';
 import { API_TEACHERS, Hyperlink, createEntity } from '@/shared/api';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 

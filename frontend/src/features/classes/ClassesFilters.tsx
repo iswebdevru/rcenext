@@ -3,10 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { clsx } from '@/shared/lib/ui';
 import { Calendar } from '@/shared/ui/calendar';
-import { Toggles, Button, SearchField } from '@/shared/ui/controls';
+import {
+  Toggles,
+  Button,
+  SearchField,
+  CheckboxField,
+} from '@/shared/ui/Controls';
 import { ClassesType } from '@/entities/classes';
 import { GroupSelect } from '../groups';
-import { Portal, ZIndex } from '@/shared/ui/utils';
+import { Portal, ZIndex } from '@/shared/ui/Utils';
 import useTransition from 'react-transition-state';
 import {
   useClickOutside,
@@ -130,6 +135,7 @@ function Filters(props: ClassesFiltersProps) {
         <Toggles.Variant value="main">Основное</Toggles.Variant>
         <Toggles.Variant value="mixed">С изменениями</Toggles.Variant>
       </Toggles>
+      <CheckboxField label="Показывать звонки" />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { GetServerSideProps } from 'next';
 import { getServerSession } from 'next-auth';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { TextField, Button } from '@/shared/ui/controls';
+import { TextField, Button } from '@/shared/ui/Controls';
 import { FormEventHandler, useId, useState } from 'react';
 import { authOptions } from './api/auth/[...nextauth]';
 import Link from 'next/link';

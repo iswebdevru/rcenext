@@ -1,9 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import {
-  SelectBeta,
-  SelectBetaOption,
-  useSelectTransition,
-} from './SelectBeta';
+import { Select, SelectOption, useSelectTransition } from './Select';
 import { HUMAN_READABLE_MONTHS, getYearsAroundDate } from '@/shared/lib/date';
 
 export type SelectYearProps = {
@@ -20,7 +16,15 @@ export function SelectYear({ date, onChange }: SelectYearProps) {
   const currentMonth = date.getMonth() as keyof typeof HUMAN_READABLE_MONTHS;
 
   return (
-    <SelectBeta
+    <Select<number>
+      onSelect={year => {
+        toggleTransition(false);
+        onChange(prev => {
+          const clone = new Date(prev);
+          clone.setFullYear(year);
+          return clone;
+        });
+      }}
       transitionState={transitionState}
       onClose={() => toggleTransition(false)}
       inputElement={
@@ -31,23 +35,13 @@ export function SelectYear({ date, onChange }: SelectYearProps) {
           {HUMAN_READABLE_MONTHS[currentMonth]} {currentYear}
         </button>
       }
+      scrollIntoViewSelected
     >
       {years.map(year => (
-        <SelectBetaOption
-          key={year}
-          selected={currentYear === year}
-          onSelect={() => {
-            toggleTransition(false);
-            onChange(prev => {
-              const clone = new Date(prev);
-              clone.setFullYear(year);
-              return clone;
-            });
-          }}
-        >
+        <SelectOption key={year} selected={currentYear === year} value={year}>
           {HUMAN_READABLE_MONTHS[currentMonth]} {year}
-        </SelectBetaOption>
+        </SelectOption>
       ))}
-    </SelectBeta>
+    </Select>
   );
 }

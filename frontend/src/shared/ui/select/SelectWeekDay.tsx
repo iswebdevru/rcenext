@@ -1,9 +1,5 @@
-import {
-  SelectBeta,
-  SelectBetaOption,
-  useSelectTransition,
-} from './SelectBeta';
-import { Button } from '../controls';
+import { Select, SelectOption, useSelectTransition } from './Select';
+import { Button } from '../Controls';
 import { WEEK_DAYS } from '@/shared/constants';
 import { WeekDay } from '@/shared/api';
 
@@ -19,7 +15,11 @@ export function SelectWeekDay<T extends WeekDay>({
   const [transitionState, toggleTransition] = useSelectTransition();
 
   return (
-    <SelectBeta
+    <Select<WeekDay>
+      onSelect={dayId => {
+        toggleTransition(false);
+        onSelect(dayId);
+      }}
       onClose={() => toggleTransition(false)}
       transitionState={transitionState}
       inputElement={
@@ -33,17 +33,10 @@ export function SelectWeekDay<T extends WeekDay>({
       }
     >
       {[...WEEK_DAYS.entries()].map(([id, value]) => (
-        <SelectBetaOption
-          onSelect={() => {
-            toggleTransition(false);
-            onSelect(id);
-          }}
-          key={id}
-          selected={weekDayId === id}
-        >
+        <SelectOption key={id} selected={weekDayId === id} value={id}>
           {value}
-        </SelectBetaOption>
+        </SelectOption>
       ))}
-    </SelectBeta>
+    </Select>
   );
 }

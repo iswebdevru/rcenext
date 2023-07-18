@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import { Button } from '@/shared/ui/controls';
+import { Button } from '@/shared/ui/Controls';
 import { DateField } from '@/shared/ui/calendar';
-import { SelectWeekType, SelectWeekDay } from '@/shared/ui/select';
-import { Toggles } from '@/shared/ui/controls';
+import { SelectWeekType, SelectWeekDay } from '@/shared/ui/Select';
+import { Toggles } from '@/shared/ui/Controls';
 import { AdminLayout } from '@/layouts';
 import { useDebounce, usePaginatedFetch, usePrevious } from '@/shared/hooks';
 import {

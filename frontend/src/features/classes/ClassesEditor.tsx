@@ -13,7 +13,7 @@ import {
   useClickOutside,
   withOutsideClickExceptionsContext,
 } from '@/shared/hooks';
-import { Button } from '@/shared/ui/controls';
+import { Button } from '@/shared/ui/Controls';
 import {
   ClassesDataWithDraft,
   ClassesPartialPeriod,

@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Button } from '../controls/Button';
+import { Button } from '../Controls/Button';
 import { Calendar, CalendarProps } from './Calendar';
 import { clsx } from '@/shared/lib/ui';
 import {
@@ -8,7 +8,7 @@ import {
   withOutsideClickExceptionsContext,
 } from '@/shared/hooks';
 import useTransition from 'react-transition-state';
-import { Portal, useZIndex } from '../utils';
+import { Portal, useZIndex } from '../Utils';
 import { ignoreClick } from '@/shared/lib/dom';
 
 export type DateFieldProps = CalendarProps;
