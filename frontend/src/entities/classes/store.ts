@@ -1,8 +1,6 @@
 import {
-  ClassesScheduleMixed,
-  Hyperlink,
-  WeekDay,
-  WeekType,
+  ClassesScheduleMessageView,
+  ClassesScheduleTableView,
 } from '@/shared/api';
 import { Reducer, useReducer } from 'react';
 import { withBlankPeriods } from './lib';
@@ -13,27 +11,6 @@ import {
   ClassesStoreAction,
 } from './types';
 import { defaultClassesDataWithHistory, defaultPeriods } from './constants';
-
-export type GetStoreKeyOptions = {
-  group: Hyperlink;
-} & (
-  | {
-      classesType: 'main';
-      weekType: WeekType;
-      weekDay: WeekDay;
-    }
-  | {
-      classesType: 'changes';
-      date: string;
-    }
-);
-
-export function getClassesDataKey(options: GetStoreKeyOptions) {
-  if (options.classesType === 'main') {
-    return `main/${options.weekType}${options.weekDay}/${options.group}`;
-  }
-  return `changes/${options.date}/${options.group}`;
-}
 
 export function validateClassesDataDraft(data: ClassesData) {
   if (data.view === 'message') {
@@ -69,7 +46,7 @@ export function hasInitAndDraftDiff(data: ClassesDataWithDraft) {
 }
 
 function createClassesDataWithHistoryFromPayload(
-  payload: ClassesScheduleMixed,
+  payload: ClassesScheduleTableView | ClassesScheduleMessageView,
 ): ClassesDataWithDraft {
   return {
     init: {
@@ -98,64 +75,61 @@ const classesStoreReducer: Reducer<ClassesStore, ClassesStoreAction> = (
   switch (action.type) {
     case 'init-empty': {
       const clone = structuredClone(state);
-      const key = getClassesDataKey(action);
-      clone.set(key, structuredClone(defaultClassesDataWithHistory));
+      clone.set(
+        action.payload.group,
+        structuredClone(defaultClassesDataWithHistory),
+      );
       return clone;
     }
     case 'init-defined': {
       const clone = structuredClone(state);
-      const key = getClassesDataKey(action);
       clone.set(
-        key,
+        action.payload.group,
         structuredClone(
-          createClassesDataWithHistoryFromPayload(action.payload),
+          createClassesDataWithHistoryFromPayload(action.payload.data),
         ),
       );
       return clone;
     }
     case 'change-view': {
       const clone = structuredClone(state);
-      const key = getClassesDataKey(action);
-      const data = clone.get(key);
+      const data = clone.get(action.payload.group);
       if (!data) {
         return state;
       }
-      data.draft.view = action.payload;
+      data.draft.view = action.payload.data;
       return clone;
     }
     case 'change-period': {
       const clone = structuredClone(state);
-      const key = getClassesDataKey(action);
-      const data = clone.get(key);
+      const data = clone.get(action.payload.group);
       if (!data) {
         return state;
       }
       data.draft.periods = data.draft.periods.map(period => {
-        if (action.payload.index !== period.index) {
+        if (action.payload.data.index !== period.index) {
           return period;
         }
         return {
           ...period,
-          ...action.payload,
+          ...action.payload.data,
         };
       });
       return clone;
     }
     case 'change-message': {
       const clone = structuredClone(state);
-      const key = getClassesDataKey(action);
-      const data = clone.get(key);
+      const data = clone.get(action.payload.group);
       if (!data) {
         return state;
       }
-      data.draft.message = action.payload;
+      data.draft.message = action.payload.data;
       return clone;
     }
     case 'remove': {
       const clone = structuredClone(state);
-      action.payload.forEach(group => {
-        const key = getClassesDataKey({ ...action, group });
-        clone.delete(key);
+      action.payload.groups.forEach(group => {
+        clone.delete(group);
       });
       return clone;
     }

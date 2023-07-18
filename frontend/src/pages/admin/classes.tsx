@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { Button } from '@/shared/ui/Controls';
@@ -6,7 +6,7 @@ import { DateField } from '@/shared/ui/calendar';
 import { SelectWeekType, SelectWeekDay } from '@/shared/ui/Select';
 import { Toggles } from '@/shared/ui/Controls';
 import { AdminLayout } from '@/layouts';
-import { useDebounce, usePaginatedFetch, usePrevious } from '@/shared/hooks';
+import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import {
   API_CLASSES,
   API_GROUPS,
@@ -18,7 +18,6 @@ import {
 } from '@/shared/api';
 import {
   ClassesType,
-  getClassesDataKey,
   hasInitAndDraftDiff,
   useClassesStore,
   validateClassesDataDraft,
@@ -47,12 +46,6 @@ export default function Classes({ date: initDate }: ClassesProps) {
   const debouncedWeekDay = useDebounce(weekDay);
   const debouncedDate = useDebounce(date);
 
-  // Previous states
-  const prevDebouncedClassesType = usePrevious(classesType);
-  const prevDebouncedWeekType = usePrevious(weekType);
-  const prevDebouncedWeekDay = usePrevious(weekDay);
-  const prevDebouncedDate = usePrevious(debouncedDate);
-
   // Derived
   const debouncedStrDate = formatDate(debouncedDate);
 
@@ -61,21 +54,7 @@ export default function Classes({ date: initDate }: ClassesProps) {
   const validatedClassesDataList =
     groups
       ?.flatMap(data => data.results)
-      .map(
-        group =>
-          [
-            group,
-            classesStore.get(
-              getClassesDataKey({
-                group: group.url,
-                classesType: debouncedClassesType,
-                date: debouncedStrDate,
-                weekDay: debouncedWeekDay,
-                weekType: debouncedWeekType,
-              }),
-            ),
-          ] as const,
-      )
+      .map(group => [group, classesStore.get(group.url)] as const)
       .filter(
         ([_, classesData]) =>
           classesData &&
@@ -109,11 +88,9 @@ export default function Classes({ date: initDate }: ClassesProps) {
     );
     dispatch({
       type: 'remove',
-      payload: validatedClassesDataList.map(({ group }) => group.url),
-      classesType: debouncedClassesType,
-      weekDay: debouncedWeekDay,
-      weekType: debouncedWeekType,
-      date: debouncedStrDate,
+      payload: {
+        groups: validatedClassesDataList.map(({ group }) => group.url),
+      },
     });
     updated.forEach(data => {
       if (!data) {
@@ -121,41 +98,14 @@ export default function Classes({ date: initDate }: ClassesProps) {
       }
       dispatch({
         type: 'init-defined',
-        classesType: debouncedClassesType,
-        group: data.group,
-        weekDay: debouncedWeekDay,
-        weekType: debouncedWeekType,
-        date: debouncedStrDate,
-        payload: data,
+        payload: {
+          group: data.group,
+          data: data as any,
+        },
       });
     });
     setIsSaving(false);
   }
-
-  useEffect(() => {
-    if (
-      groups &&
-      prevDebouncedDate &&
-      prevDebouncedClassesType &&
-      prevDebouncedWeekDay &&
-      prevDebouncedWeekType
-    ) {
-      dispatch({
-        type: 'remove',
-        payload: groups.flatMap(data => data.results).map(group => group.url),
-        classesType: prevDebouncedClassesType,
-        date: formatDate(prevDebouncedDate),
-        weekDay: prevDebouncedWeekDay,
-        weekType: prevDebouncedWeekType,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    debouncedClassesType,
-    debouncedDate,
-    debouncedWeekDay,
-    debouncedWeekType,
-  ]);
 
   return (
     <>
@@ -208,57 +158,20 @@ export default function Classes({ date: initDate }: ClassesProps) {
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             {groups
               ?.flatMap(page => page.results)
-              .map((group, i, a) =>
-                debouncedClassesType === 'main' ? (
-                  <ClassesEditor
-                    key={`${debouncedWeekType}${debouncedWeekDay}${group.id}`}
-                    type={debouncedClassesType}
-                    dispatch={action => {
-                      dispatch({
-                        classesType: debouncedClassesType,
-                        weekDay: debouncedWeekDay,
-                        weekType: debouncedWeekType,
-                        group: group.url,
-                        ...action,
-                      });
-                    }}
-                    group={group}
-                    classes={classesStore.get(
-                      getClassesDataKey({
-                        classesType: debouncedClassesType,
-                        group: group.url,
-                        weekDay: debouncedWeekDay,
-                        weekType: debouncedWeekType,
-                      }),
-                    )}
-                    searchParams={`?type=${debouncedClassesType}&week_day=${debouncedWeekDay}&week_type=${debouncedWeekType}`}
-                    ref={a.length - 1 === i ? lastElementRef : null}
-                  />
-                ) : (
-                  <ClassesEditor
-                    key={`${debouncedStrDate}${group.id}`}
-                    type={debouncedClassesType}
-                    dispatch={action => {
-                      dispatch({
-                        classesType: debouncedClassesType,
-                        date: debouncedStrDate,
-                        group: group.url,
-                        ...action,
-                      });
-                    }}
-                    group={group}
-                    classes={classesStore.get(
-                      getClassesDataKey({
-                        classesType: debouncedClassesType,
-                        group: group.url,
-                        date: debouncedStrDate,
-                      }),
-                    )}
-                    searchParams={`?date=${debouncedStrDate}`}
-                    ref={a.length - 1 === i ? lastElementRef : null}
-                  />
-                ),
-              )}
+              .map((group, i, a) => (
+                <ClassesEditor
+                  key={group.id}
+                  dispatch={dispatch}
+                  group={group}
+                  classes={classesStore.get(group.url)}
+                  searchParams={
+                    debouncedClassesType === 'main'
+                      ? `?type=${debouncedClassesType}&week_day=${debouncedWeekDay}&week_type=${debouncedWeekType}`
+                      : `?type=${debouncedClassesType}&date=${debouncedStrDate}`
+                  }
+                  ref={a.length - 1 === i ? lastElementRef : null}
+                />
+              ))}
           </div>
         </div>
       </AdminLayout>

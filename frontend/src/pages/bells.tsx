@@ -4,9 +4,8 @@ import { getAppDate } from '@/shared/lib/date';
 import { Table } from '@/shared/ui/Table';
 import { Calendar } from '@/shared/ui/calendar';
 import Head from 'next/head';
-import { Select, SelectOption, useSelectTransition } from '@/shared/ui/Select';
-import { Button } from '@/shared/ui/Controls';
 import { GetServerSideProps } from 'next';
+import { BellsType, SelectBellsType } from '@/shared/ui/Select';
 
 type BellsProps = {
   date: string;
@@ -64,41 +63,6 @@ export default function Bells({ date: initDate }: BellsProps) {
         </div>
       </BaseLayout>
     </>
-  );
-}
-
-const BELLS_TYPES = {
-  normal: 'Основной',
-  reduced: 'Сокращенный',
-} as const;
-
-type BellsType = keyof typeof BELLS_TYPES;
-
-type SelectBellsTypeProps = {
-  type: BellsType;
-  onChange: (type: BellsType) => void;
-};
-
-function SelectBellsType({ type, onChange }: SelectBellsTypeProps) {
-  const [transitionState, toggleTransition] = useSelectTransition();
-
-  return (
-    <Select<BellsType>
-      onSelect={key => onChange(key)}
-      transitionState={transitionState}
-      onClose={() => toggleTransition(false)}
-      inputElement={
-        <Button onClick={() => toggleTransition(true)}>
-          {BELLS_TYPES[type]}
-        </Button>
-      }
-    >
-      {Object.entries(BELLS_TYPES).map(([key, value]) => (
-        <SelectOption key={key} selected={type === key} value={key}>
-          {value}
-        </SelectOption>
-      ))}
-    </Select>
   );
 }
 

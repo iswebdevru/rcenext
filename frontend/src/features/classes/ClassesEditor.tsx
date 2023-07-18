@@ -1,5 +1,5 @@
-import { ComponentProps, Dispatch, forwardRef, useRef, useState } from 'react';
-import useSWR from 'swr';
+import { ComponentProps, forwardRef, useRef, useState } from 'react';
+import useSWRImmutable from 'swr/immutable';
 import { ClassesScheduleChanges, Group, fetcher } from '@/shared/api';
 import {
   faComment,
@@ -17,8 +17,7 @@ import { Button } from '@/shared/ui/Controls';
 import {
   ClassesDataWithDraft,
   ClassesPartialPeriod,
-  ClassesStoreGroupAction,
-  ClassesType,
+  ClassesStoreAction,
   hasInitAndDraftDiff,
 } from '@/entities/classes';
 import { LoaderRect } from '@/shared/ui/Loader';
@@ -26,39 +25,44 @@ import { LoaderRect } from '@/shared/ui/Loader';
 export const classPeriods = [0, 1, 2, 3, 4, 5, 6, 7] as const;
 
 export type ClassesEditorProps = {
-  type: ClassesType;
-  group: Group;
   searchParams: string;
   classes?: ClassesDataWithDraft;
-  dispatch: Dispatch<ClassesStoreGroupAction>;
+  group: Group;
+  dispatch: (value: ClassesStoreAction) => void;
 };
 
 export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
   function ClassesEditorComponent(
-    { type, group, searchParams, classes, dispatch },
+    { group, searchParams, classes, dispatch },
     ref,
   ) {
-    useSWR<ClassesScheduleChanges>(
-      classes ? null : `${group.classes}${searchParams}`,
+    const { isValidating } = useSWRImmutable<ClassesScheduleChanges>(
+      `${group.classes}${searchParams}`,
       fetcher,
       {
-        revalidateOnMount: true,
         shouldRetryOnError: false,
         onError() {
           dispatch({
             type: 'init-empty',
+            payload: {
+              group: group.url,
+            },
           });
         },
         onSuccess(data) {
           dispatch({
             type: 'init-defined',
-            payload: data,
+            payload: {
+              group: group.url,
+              data: data as any,
+            },
           });
         },
       },
     );
 
-    const isChanged = classes ? hasInitAndDraftDiff(classes) : false;
+    const isChanged =
+      classes && !isValidating ? hasInitAndDraftDiff(classes) : false;
 
     return (
       <div
@@ -74,11 +78,14 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
               Изменено
             </div>
           ) : null}
-          {classes ? (
+          {classes && !isValidating ? (
             <Settings
               view={classes.draft.view}
               onViewChange={view =>
-                dispatch({ type: 'change-view', payload: view })
+                dispatch({
+                  type: 'change-view',
+                  payload: { group: group.url, data: view },
+                })
               }
             />
           ) : (
@@ -87,16 +94,18 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
             </div>
           )}
         </div>
-        {classes ? (
+        {classes && !isValidating ? (
           classes.draft.view === 'table' ? (
             <ClassesTableView
               periods={classes.draft.periods}
               dispatch={dispatch}
+              group={group}
             />
           ) : (
             <ClassesMessageView
               message={classes.draft.message}
               dispatch={dispatch}
+              group={group}
             />
           )
         ) : (
@@ -217,10 +226,11 @@ const ModeButton = forwardRef<HTMLButtonElement, ModeButtonProps>(
 
 type ClassesTableViewProps = {
   periods: ClassesPartialPeriod[];
-  dispatch: Dispatch<ClassesStoreGroupAction>;
+  group: Group;
+  dispatch: (value: ClassesStoreAction) => void;
 };
 
-function ClassesTableView({ periods, dispatch }: ClassesTableViewProps) {
+function ClassesTableView({ periods, dispatch, group }: ClassesTableViewProps) {
   return (
     <div className="shrink-0 border-t border-zinc-200 dark:border-zinc-700">
       <table className="w-full">
@@ -250,7 +260,10 @@ function ClassesTableView({ periods, dispatch }: ClassesTableViewProps) {
                   onSelect={subject =>
                     dispatch({
                       type: 'change-period',
-                      payload: { index: period.index, subject },
+                      payload: {
+                        group: group.url,
+                        data: { index: period.index, subject },
+                      },
                     })
                   }
                 />
@@ -265,8 +278,11 @@ function ClassesTableView({ periods, dispatch }: ClassesTableViewProps) {
                     dispatch({
                       type: 'change-period',
                       payload: {
-                        index: period.index,
-                        cabinet: e.currentTarget.value,
+                        group: group.url,
+                        data: {
+                          index: period.index,
+                          cabinet: e.currentTarget.value,
+                        },
                       },
                     });
                   }}
@@ -282,17 +298,28 @@ function ClassesTableView({ periods, dispatch }: ClassesTableViewProps) {
 
 type ClassesMessageViewProps = {
   message: string;
-  dispatch: Dispatch<ClassesStoreGroupAction>;
+  group: Group;
+  dispatch: (value: ClassesStoreAction) => void;
 };
 
-function ClassesMessageView({ message, dispatch }: ClassesMessageViewProps) {
+function ClassesMessageView({
+  message,
+  dispatch,
+  group,
+}: ClassesMessageViewProps) {
   return (
     <div className="shrink-0 flex-grow border-t border-zinc-200 p-2 dark:border-zinc-700">
       <textarea
         className="h-full w-full resize-none"
         value={message}
         onChange={e => {
-          dispatch({ type: 'change-message', payload: e.currentTarget.value });
+          dispatch({
+            type: 'change-message',
+            payload: {
+              group: group.url,
+              data: e.currentTarget.value,
+            },
+          });
         }}
         placeholder="Сообщение вместо расписания"
       />

@@ -1,8 +1,7 @@
 import {
-  ClassesScheduleMixed,
+  ClassesScheduleMessageView,
+  ClassesScheduleTableView,
   Hyperlink,
-  WeekDay,
-  WeekType,
 } from '@/shared/api';
 
 // Store related types
@@ -27,7 +26,7 @@ export type ClassesDataWithDraft = {
   init: ClassesData;
   draft: ClassesData;
 };
-export type ClassesStore = Map<string, ClassesDataWithDraft>;
+export type ClassesStore = Map<Hyperlink, ClassesDataWithDraft>;
 
 /**
  *
@@ -43,50 +42,43 @@ export type ClassesStore = Map<string, ClassesDataWithDraft>;
  */
 
 // Actions
-export type ClassesChangesStoreAction = {
-  classesType: 'changes';
-  date: string;
-};
-export type ClassesMainStoreAction = {
-  classesType: 'main';
-  weekType: WeekType;
-  weekDay: WeekDay;
-};
-export type ClassesStoreGroupActionBase = { group: Hyperlink };
+export type ClassesStoreGroupActionPayload<T = undefined> = {
+  group: Hyperlink;
+} & (T extends undefined ? {} : { data: T });
+export type ClassesStoreGroupsActionPayload<T = undefined> = {
+  groups: Hyperlink[];
+} & (T extends undefined ? {} : { data: T });
 
 export type ClassesStoreInitEmptyAction = {
   type: 'init-empty';
+  payload: ClassesStoreGroupActionPayload;
 };
 export type ClassesStoreInitDefinedAction = {
   type: 'init-defined';
-  payload: ClassesScheduleMixed;
+  payload: ClassesStoreGroupActionPayload<
+    ClassesScheduleTableView | ClassesScheduleMessageView
+  >;
 };
 export type ClassesStoreChangeViewAction = {
   type: 'change-view';
-  payload: 'table' | 'message';
+  payload: ClassesStoreGroupActionPayload<'table' | 'message'>;
 };
 export type ClassesStoreChangePeriodAction = {
   type: 'change-period';
-  payload: ClassesUpdatePeriod;
+  payload: ClassesStoreGroupActionPayload<ClassesUpdatePeriod>;
 };
 export type ClassesStoreChangeMessageAction = {
   type: 'change-message';
-  payload: string;
+  payload: ClassesStoreGroupActionPayload<string>;
 };
 export type ClassesStoreRemoveAction = {
   type: 'remove';
-  payload: Hyperlink[];
+  payload: ClassesStoreGroupsActionPayload;
 };
-export type ClassesStoreGroupAction =
+export type ClassesStoreAction =
   | ClassesStoreInitEmptyAction
   | ClassesStoreInitDefinedAction
   | ClassesStoreChangeViewAction
   | ClassesStoreChangePeriodAction
-  | ClassesStoreChangeMessageAction;
-
-export type ClassesStoreAction =
-  | (
-      | (ClassesStoreGroupAction & ClassesStoreGroupActionBase)
-      | ClassesStoreRemoveAction
-    ) &
-      (ClassesMainStoreAction | ClassesChangesStoreAction);
+  | ClassesStoreChangeMessageAction
+  | ClassesStoreRemoveAction;
