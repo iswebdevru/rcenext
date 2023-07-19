@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'apps.subjects',
     'apps.groups',
     'apps.classes',
+    'apps.bells'
 ]
 
 MIDDLEWARE = [

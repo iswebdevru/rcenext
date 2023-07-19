@@ -7,12 +7,14 @@ from apps.subjects.views import SubjectViewSet
 from apps.groups.views import GroupViewSet
 from apps.login.views import LoginView
 from apps.classes.views import ClassesScheduleViewSet
+from apps.bells.views import BellsViewSet
 
 router = DefaultRouter()
 router.register('teachers', TeacherViewSet)
 router.register('subjects', SubjectViewSet)
 router.register('groups', GroupViewSet)
 router.register('classes', ClassesScheduleViewSet)
+router.register('bells', BellsViewSet)
 
 urlpatterns = router.urls
 urlpatterns += [

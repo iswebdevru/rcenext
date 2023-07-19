@@ -2,6 +2,7 @@ from rest_framework import serializers
 from apps.teachers.models import Teacher
 from apps.subjects.models import Subject
 from .models import ClassesSchedule, ClassesSchedulePeriod
+from apps.core.models import WeekDay
 
 
 class ClassesScheduleCreateTypeSerializer(serializers.Serializer):
@@ -10,14 +11,8 @@ class ClassesScheduleCreateTypeSerializer(serializers.Serializer):
     )
 
 
-class ClassesScheduleTypeSerializer(serializers.Serializer):
-    type = serializers.ChoiceField(
-        ['main', 'changes', 'mixed'], default='mixed'
-    )
-
-
 class ClassesScheduleMainTypeSerializer(serializers.Serializer):
-    week_day = serializers.ChoiceField(ClassesSchedule.WeekDay.choices)
+    week_day = serializers.ChoiceField(WeekDay.choices)
     week_type = serializers.ChoiceField(ClassesSchedule.WeekType.choices)
 
 
@@ -61,12 +56,6 @@ class ClassesSchedulePeriodSerializer(serializers.HyperlinkedModelSerializer):
 class ClassesScheduleMixedSerializer(serializers.HyperlinkedModelSerializer):
     view = serializers.ChoiceField(
         ClassesSchedule.ViewMode.choices, required=False)
-    date = serializers.DateField(required=False)
-    week_day = serializers.ChoiceField(
-        ClassesSchedule.WeekDay.choices, required=False)
-    week_type = serializers.ChoiceField(
-        ClassesSchedule.WeekType.choices, required=False)
-    message = serializers.CharField(required=False)
     periods = ClassesSchedulePeriodSerializer(
         many=True, required=False)
 

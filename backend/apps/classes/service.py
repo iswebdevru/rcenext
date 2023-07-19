@@ -21,6 +21,7 @@ day_info_index_map = (
 # День, от которого будет вычисляться тип недели (числитель/знаменатель)
 base_timestamp = datetime.date(2000, 1, 3)
 
+
 def get_day_info(date: datetime.date):
     delta = date - base_timestamp
     index = int((delta.total_seconds() / 86400) % 14)

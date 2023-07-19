@@ -7,3 +7,18 @@ class TimestampModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class ScheduleType(models.TextChoices):
+    CHANGES = 'changes'
+    MAIN = 'main'
+
+
+class WeekDay(models.TextChoices):
+    MONDAY = 'ПН'
+    TUESDAY = 'ВТ'
+    WEDNESDAY = 'СР'
+    THURSDAY = 'ЧТ'
+    FRIDAY = 'ПТ'
+    SATURDAY = 'СБ'
+    SUNDAY = 'ВС'

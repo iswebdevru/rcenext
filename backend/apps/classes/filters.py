@@ -1,5 +1,6 @@
 
 from rest_framework import filters, serializers
+import django_filters
 
 
 class GroupBlockFilterGetParamsSerializer(serializers.Serializer):
@@ -18,3 +19,13 @@ class GroupBlockFilterBackend(filters.BaseFilterBackend):
         if block == 1:
             return queryset.filter(group__main_block__lt=6)
         return queryset
+
+
+class ClassesScheduleFilter(django_filters.FilterSet):
+    group__name = django_filters.CharFilter(
+        field_name='group__name', lookup_expr='icontains')
+    cabinet = django_filters.CharFilter(
+        field_name='periods__cabinet',
+        lookup_expr='istartswith',
+        distinct=True
+    )
