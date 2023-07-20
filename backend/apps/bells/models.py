@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models import Q
 from apps.core.models import TimestampModel, ScheduleType, WeekDay
+from django.core.validators import MaxValueValidator
+from datetime import timedelta
 
 
 class Bells(TimestampModel):
@@ -39,12 +41,16 @@ class BellsPeriod(TimestampModel):
         Bells, on_delete=models.CASCADE, related_name='periods')
     index = models.PositiveSmallIntegerField()
     has_break = models.BooleanField()
-    period_from = models.DurationField(db_column='from')
-    period_to = models.DurationField(db_column='to')
+    period_from = models.DurationField(db_column='from', validators=[
+                                       MaxValueValidator(timedelta(hours=23, minutes=59))])
+    period_to = models.DurationField(db_column='to', validators=[
+        MaxValueValidator(timedelta(hours=23, minutes=59))])
     period_from_after = models.DurationField(
-        db_column='from_after', null=True, blank=True)
+        db_column='from_after', null=True, blank=True, validators=[
+            MaxValueValidator(timedelta(hours=23, minutes=59))])
     period_to_after = models.DurationField(
-        db_column='to_after', null=True, blank=True)
+        db_column='to_after', null=True, blank=True, validators=[
+            MaxValueValidator(timedelta(hours=23, minutes=59))])
 
     class Meta:
         ordering = ['index']

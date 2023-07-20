@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Button } from '../Controls/Button';
 import { Calendar, CalendarProps } from './Calendar';
 import { clsx } from '@/shared/lib/ui';
@@ -25,8 +25,10 @@ export const DateField = withOutsideClickExceptionsContext<DateFieldProps>(
       preEnter: true,
     });
 
-    const { left, width, top, recalculatePosition } =
-      usePositionCoords(outerRef);
+    const { left, top, recalculatePosition } = usePositionCoords(
+      outerRef,
+      componentRef,
+    );
 
     const zIndex = useZIndex();
 
@@ -39,6 +41,10 @@ export const DateField = withOutsideClickExceptionsContext<DateFieldProps>(
       recalculatePosition();
     };
 
+    useEffect(() => {
+      recalculatePosition();
+    }, [recalculatePosition, isMounted]);
+
     useClickOutside(componentRef, ignoreClick(outerRef, closeCalendar));
 
     return (
@@ -50,18 +56,8 @@ export const DateField = withOutsideClickExceptionsContext<DateFieldProps>(
           {isMounted ? (
             <div
               ref={componentRef}
-              style={
-                {
-                  zIndex,
-                  '--tw-translate-x': componentRef.current
-                    ? `${
-                        left - (componentRef.current!.clientWidth - width) / 2
-                      }px`
-                    : undefined,
-                  '--tw-translate-y': `${top}px`,
-                } as React.CSSProperties
-              }
-              className="fixed left-0 top-0 transform"
+              style={{ zIndex, left, top }}
+              className="fixed"
             >
               <div
                 className={clsx(

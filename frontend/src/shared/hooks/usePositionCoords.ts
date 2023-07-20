@@ -1,39 +1,47 @@
 import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useEvent } from './useEvent';
 
-const MAX_HEIGHT = 240;
 const OFFSET = 8;
 
 export function usePositionCoords(
-  ref: RefObject<HTMLElement>,
-  deps: unknown[] = [],
+  refToTrack: RefObject<HTMLElement>,
+  refToCoordinate: RefObject<HTMLElement>,
 ) {
   const [width, setWidth] = useState(0);
   const [left, setLeft] = useState(0);
   const [top, setTop] = useState(0);
 
   const recalculatePosition = useCallback(() => {
-    if (!ref.current) {
+    if (!refToTrack.current) {
       return;
     }
-    const componentRect = ref.current.getBoundingClientRect();
-    setWidth(componentRect.width);
-    setLeft(componentRect.x);
-    setTop(
-      document.body.clientHeight - componentRect.bottom <
-        MAX_HEIGHT + OFFSET * 2
-        ? componentRect.top - MAX_HEIGHT - OFFSET
-        : componentRect.bottom + OFFSET,
-    );
-  }, [ref]);
-
-  useEvent('scroll', recalculatePosition, undefined, true);
-  useEvent('resize', recalculatePosition);
+    const refToTrackRect = refToTrack.current.getBoundingClientRect();
+    const refToCoordinateRect =
+      refToCoordinate.current?.getBoundingClientRect();
+    setWidth(refToTrackRect.width);
+    if (refToCoordinateRect) {
+      setLeft(
+        refToTrackRect.x -
+          (refToCoordinateRect.width - refToTrackRect.width) / 2,
+      );
+      setTop(
+        document.body.clientHeight - refToTrackRect.bottom >
+          refToCoordinateRect.height
+          ? refToTrackRect.bottom + OFFSET
+          : refToTrackRect.top - OFFSET - refToCoordinateRect.height,
+      );
+    } else {
+      setLeft(refToTrackRect.x);
+      setTop(refToTrackRect.bottom + OFFSET);
+    }
+  }, [refToTrack, refToCoordinate]);
 
   useEffect(() => {
     recalculatePosition();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recalculatePosition, ...deps]);
+  }, [recalculatePosition]);
+
+  useEvent('scroll', recalculatePosition, undefined, true);
+  useEvent('resize', recalculatePosition);
 
   return { width, left, top, recalculatePosition };
 }

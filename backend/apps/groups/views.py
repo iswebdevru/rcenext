@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.decorators import action
 from apps.classes.serializers import ClassesScheduleMixedSerializer
 from apps.classes.validators import validate_classes_query_params
-from apps.classes.models import ClassesSchedule
+from apps.classes.models import ClassesSchedule, ScheduleType
 from .models import Group
 from .serializers import GroupSerializer
 
@@ -19,13 +19,13 @@ class GroupViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['GET'])
     def classes(self, request, pk=None):
-        query_params = validate_classes_query_params(request)
+        query_params = validate_classes_query_params(request.query_params)
         if query_params['type'] == 'changes':
             return Response(
                 ClassesScheduleMixedSerializer(
                     get_object_or_404(
                         ClassesSchedule,
-                        type=ClassesSchedule.ScheduleType.CHANGES,
+                        type=ScheduleType.CHANGES,
                         group__id=pk,
                         date=query_params['date']
                     ),
@@ -40,7 +40,7 @@ class GroupViewSet(viewsets.ModelViewSet):
                     get_object_or_404(
                         ClassesSchedule,
                         group__id=pk,
-                        type=ClassesSchedule.ScheduleType.MAIN,
+                        type=ScheduleType.MAIN,
                         week_day=query_params['week_day'],
                         week_type=query_params['week_type']
                     ),

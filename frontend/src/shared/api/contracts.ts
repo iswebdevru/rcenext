@@ -80,3 +80,38 @@ export type ClassesScheduleChanges = {
   ClassesScheduleCommon;
 
 export type ClassesScheduleMixed = ClassesScheduleMain | ClassesScheduleChanges;
+
+type BellsPeriodCommon = {
+  index: number;
+  period_from: string;
+  period_to: string;
+};
+
+export type BellsPeriodWithBreak = BellsPeriodCommon & {
+  has_break: true;
+  period_from_after: string;
+  period_to_after: string;
+};
+
+export type BellsPeriodWithoutBreak = BellsPeriodCommon & { has_break: false };
+
+export type BellsPeriod = BellsPeriodWithBreak | BellsPeriodWithoutBreak;
+
+type BellsCommon = {
+  id: number;
+  url: Hyperlink;
+  variant: 'normal' | 'reduced';
+  periods: BellsPeriod[];
+};
+
+export type BellsMain = BellsCommon & {
+  type: 'main';
+  week_day: WeekDay;
+};
+
+export type BellsChanges = BellsCommon & {
+  type: 'changes';
+  date: string;
+};
+
+export type BellsMixed = BellsMain | BellsChanges;

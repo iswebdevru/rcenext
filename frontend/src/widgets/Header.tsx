@@ -161,9 +161,9 @@ export const Header = withOutsideClickExceptionsContext(function Header({
                             'block w-full px-4 py-2 text-sm font-semibold transition-colors',
                             {
                               'rounded-lg bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-neutral-200':
-                                link.href === router.asPath,
+                                link.href === router.route,
                               'text-slate-500 dark:text-neutral-200':
-                                link.href !== router.asPath,
+                                link.href !== router.route,
                             },
                           )}
                         >

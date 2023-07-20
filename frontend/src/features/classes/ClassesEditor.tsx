@@ -1,5 +1,5 @@
 import { ComponentProps, forwardRef, useRef, useState } from 'react';
-import useSWRImmutable from 'swr/immutable';
+import useSWR from 'swr';
 import { ClassesScheduleChanges, Group, fetcher } from '@/shared/api';
 import {
   faComment,
@@ -36,11 +36,12 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
     { group, searchParams, classes, dispatch },
     ref,
   ) {
-    const { isValidating } = useSWRImmutable<ClassesScheduleChanges>(
+    const { isValidating } = useSWR<ClassesScheduleChanges>(
       `${group.classes}${searchParams}`,
       fetcher,
       {
         shouldRetryOnError: false,
+        revalidateOnFocus: false,
         onError() {
           dispatch({
             type: 'init-empty',

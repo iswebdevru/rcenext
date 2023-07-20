@@ -13,6 +13,7 @@ import {
   forwardRef,
   useCallback,
   useContext,
+  useEffect,
   useRef,
 } from 'react';
 import useTransition, { TransitionState } from 'react-transition-state';
@@ -47,9 +48,16 @@ export const Select = withOutsideClickExceptionsContext(function Select<T>({
 
   const zIndex = useZIndex();
 
-  const { width, left, top } = usePositionCoords(outerRef, [isMounted]);
+  const { width, left, top, recalculatePosition } = usePositionCoords(
+    outerRef,
+    optionsListRef,
+  );
 
   useClickOutside(optionsListRef, ignoreClick(outerRef, onClose));
+
+  useEffect(() => {
+    recalculatePosition();
+  }, [recalculatePosition, isMounted]);
 
   return (
     <SelectContext.Provider
@@ -63,18 +71,16 @@ export const Select = withOutsideClickExceptionsContext(function Select<T>({
         <Portal>
           {isMounted ? (
             <div
-              ref={optionsListRef}
-              style={
-                {
-                  '--tw-translate-x': `${left}px`,
-                  '--tw-translate-y': `${top}px`,
-                  width,
-                  zIndex,
-                } as React.CSSProperties
-              }
-              className="fixed left-0 top-0 transform"
+              style={{
+                left,
+                top,
+                width,
+                zIndex,
+              }}
+              className="fixed"
             >
               <div
+                ref={optionsListRef}
                 className={clsx(
                   'max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-200 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600',
                   (status === 'preEnter' || status === 'exiting') &&

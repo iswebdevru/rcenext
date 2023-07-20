@@ -118,9 +118,11 @@ Table.Controls = function TableControls<T extends Id>({
 
 Table.Main = function TableMain({ children }: PropsWithChildren) {
   return (
-    <table className="w-full table-fixed border-separate border-spacing-0 rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
-      {children}
-    </table>
+    <div className="overflow-auto">
+      <table className="min-w-full table-fixed border-separate border-spacing-0 rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+        {children}
+      </table>
+    </div>
   );
 };
 
@@ -341,7 +343,7 @@ Table.DataCell = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
 
 Table.HeadCell = function TableHeadCell({ children }: PropsWithChildren) {
   return (
-    <th className="sticky top-14 border-b border-zinc-200 bg-white/50 p-0 text-left text-sm font-semibold text-slate-900 backdrop-blur-md first:w-[61px] first:rounded-tl-md last:w-[114px] last:rounded-tr-md dark:border-zinc-700 dark:bg-zinc-800/50 dark:text-slate-100">
+    <th className="border-b border-zinc-200 p-0 text-left text-sm font-semibold text-slate-900 first:w-[61px] first:rounded-tl-md last:w-[114px] last:rounded-tr-md dark:border-zinc-700 dark:text-slate-100">
       <div className="flex h-12 items-center px-6 py-3">{children}</div>
     </th>
   );

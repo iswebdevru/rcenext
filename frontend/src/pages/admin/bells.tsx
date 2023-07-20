@@ -1,115 +1,115 @@
+import { BellsPeriodEditing, useBellsStore } from '@/entities/bells';
+import { BellsForm } from '@/features/bells';
 import { AdminLayout } from '@/layouts';
-import { WeekDay } from '@/shared/api';
-import { CheckboxField, TextField } from '@/shared/ui/Controls';
-import { BellsType, SelectBellsType, SelectWeekDay } from '@/shared/ui/Select';
+import {
+  API_BELLS,
+  BellsMixed,
+  WeekDay,
+  createEntity,
+  fetcher,
+} from '@/shared/api';
+import { formatDate, getAppDate } from '@/shared/lib/date';
+import { Toggles } from '@/shared/ui/Controls';
+import { BellsType, SelectWeekDay } from '@/shared/ui/Select';
+import { DateField } from '@/shared/ui/calendar';
+import { GetServerSideProps } from 'next';
 import { useState } from 'react';
+import useSWR from 'swr';
 
-type BellsPeriod = {
-  index: number;
-} & (
-  | { withBreak: false; from: string; to: string }
-  | {
-      withBreak: true;
-      fromBefore: string;
-      toBefore: string;
-      fromAfter: string;
-      toAfter: string;
-    }
-);
+type BellsProps = {
+  date: string;
+};
 
-const periods: BellsPeriod[] = [
-  {
-    index: 0,
-    withBreak: false,
-    from: '',
-    to: '',
-  },
-  {
-    index: 1,
-    withBreak: false,
-    from: '',
-    to: '',
-  },
-  {
-    index: 2,
-    withBreak: false,
-    from: '',
-    to: '',
-  },
-  {
-    index: 3,
-    withBreak: false,
-    from: '',
-    to: '',
-  },
-  {
-    index: 4,
-    withBreak: false,
-    from: '',
-    to: '',
-  },
-  {
-    index: 5,
-    withBreak: false,
-    from: '',
-    to: '',
-  },
-];
-
-export default function Bells() {
-  const [bellsType, setBellsType] = useState<BellsType>('normal');
+export default function Bells({ date: initDate }: BellsProps) {
+  const [bellsVariant, setBellsVariant] = useState<BellsType>('normal');
+  const [bellsType, setBellsType] = useState<'main' | 'changes'>('main');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
+  const [date, setDate] = useState(new Date(initDate));
+
+  const [bellsPeriods, dispatch] = useBellsStore();
+
+  useSWR<BellsMixed>(
+    `${API_BELLS}?type=${bellsType}&date=${formatDate(
+      date,
+    )}&week_day=${weekDay}&variant=${bellsVariant}`,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
+      onSuccess: data => {
+        dispatch({
+          type: 'load',
+          payload: data.periods,
+        });
+      },
+      onError: () => {
+        dispatch({ type: 'init' });
+      },
+    },
+  );
+
+  const handleSave = async (periods: BellsPeriodEditing[]) => {
+    const data = await createEntity<BellsMixed, unknown>(API_BELLS, {
+      body: {
+        type: bellsType,
+        variant: bellsVariant,
+        date: formatDate(date),
+        week_day: weekDay,
+        periods: periods,
+      },
+    });
+    if (data) {
+      dispatch({
+        type: 'load',
+        payload: data.periods,
+      });
+    }
+  };
 
   return (
     <AdminLayout>
       <div className="p-4">
-        <div className="max-w-xs">
-          <SelectWeekDay onSelect={setWeekDay} weekDayId={weekDay} />
-        </div>
-        <div className="max-w-xs">
-          <SelectBellsType type={bellsType} onChange={setBellsType} />
-        </div>
-        <div className="max-w-xs"></div>
-        <table className="border-collapse">
-          <tbody>
-            <tr>
-              <th className="p-0 text-left">№</th>
-              <th className="p-0 text-left">Начало</th>
-              <th className="p-0 text-left">Конец</th>
-              <th className="p-0 text-left">С перерывом</th>
-            </tr>
-            {periods.map(period => (
-              <tr key={period.index}>
-                <td className="p-0">{period.index}</td>
-                {period.withBreak ? (
-                  <>
-                    <td className="p-0">
-                      <TextField value={period.fromBefore} />
-                      <TextField value={period.fromAfter} />
-                    </td>
-                    <td className="p-0">
-                      <TextField value={period.toBefore} />
-                      <TextField value={period.toAfter} />
-                    </td>
-                  </>
+        <div className="flex gap-4">
+          <div className="">
+            <div className="space-y-3 rounded-md border border-zinc-200 p-3 dark:border-zinc-700 dark:bg-zinc-800">
+              <div>
+                <Toggles value={bellsType} onToggle={setBellsType}>
+                  <Toggles.Variant value="main">Основной</Toggles.Variant>
+                  <Toggles.Variant value="changes">Изменения</Toggles.Variant>
+                </Toggles>
+              </div>
+              <div>
+                <Toggles value={bellsVariant} onToggle={setBellsVariant}>
+                  <Toggles.Variant value="normal">Обычный</Toggles.Variant>
+                  <Toggles.Variant value="reduced">Сокращенный</Toggles.Variant>
+                </Toggles>
+              </div>
+              <div>
+                {bellsType === 'main' ? (
+                  <SelectWeekDay weekDayId={weekDay} onSelect={setWeekDay} />
                 ) : (
-                  <>
-                    <td className="p-6">
-                      <TextField value={period.from} />
-                    </td>
-                    <td className="p-6">
-                      <TextField value={period.to} />
-                    </td>
-                  </>
+                  <DateField date={date} onDateChange={setDate} />
                 )}
-                <td className="p-6">
-                  <CheckboxField name="with_break" label="" />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+              </div>
+            </div>
+          </div>
+          <div className="flex-auto">
+            <BellsForm
+              periods={bellsPeriods}
+              dispatch={dispatch}
+              onSave={handleSave}
+            />
+          </div>
+        </div>
       </div>
     </AdminLayout>
   );
 }
+
+export const getServerSideProps: GetServerSideProps<BellsProps> = async () => {
+  return {
+    props: {
+      date: getAppDate(),
+    },
+  };
+};

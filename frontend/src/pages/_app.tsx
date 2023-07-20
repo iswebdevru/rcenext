@@ -6,6 +6,7 @@ import { clsx } from '@/shared/lib/ui';
 import { openSans } from '@/shared/ui/fonts';
 
 import '@/application/style.css';
+import Head from 'next/head';
 
 config.autoAddCss = false;
 
@@ -14,11 +15,16 @@ export default function App({
   pageProps: { session, ...pageProps },
 }: AppProps) {
   return (
-    <div className={clsx(openSans.variable, 'h-full font-sans')}>
-      <SessionProvider session={session}>
-        <Component {...pageProps} />
-      </SessionProvider>
-      <div id="__portal"></div>
-    </div>
+    <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </Head>
+      <div className={clsx(openSans.variable, 'h-full font-sans')}>
+        <SessionProvider session={session}>
+          <Component {...pageProps} />
+        </SessionProvider>
+        <div id="__portal"></div>
+      </div>
+    </>
   );
 }

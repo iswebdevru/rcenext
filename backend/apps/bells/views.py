@@ -35,4 +35,5 @@ class BellsViewSet(
                     week_day=query_params['week_day']) & ~Exists(self.queryset.filter(Q(variant=query_params['variant']) & Q(date=query_params['date'])))))
         except Bells.DoesNotExist:
             raise Http404()
-        return Response(queryset)
+        serializer = self.get_serializer(queryset)
+        return Response(serializer.data)

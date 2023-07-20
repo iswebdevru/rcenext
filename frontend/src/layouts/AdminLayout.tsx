@@ -5,7 +5,7 @@ import { BaseLayout } from './BaseLayout';
 export function AdminLayout({ children }: PropsWithChildren) {
   return (
     <BaseLayout wide>
-      <div className="flex h-full">
+      <div className="flex h-full flex-col lg:flex-row">
         <div className="flex-none">
           <AdminNav />
         </div>

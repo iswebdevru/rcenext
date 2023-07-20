@@ -30,7 +30,7 @@ const links = [
 ] as const;
 
 export function AdminNav() {
-  const { asPath } = useRouter();
+  const { route } = useRouter();
   const [transitionState, toggleTransition] = useTransition({
     timeout: 300,
     mountOnEnter: true,
@@ -55,7 +55,7 @@ export function AdminNav() {
           <ul className="space-y-3">
             {links.map(link => (
               <li key={link.href}>
-                <AdminNavLink {...link} isActive={asPath === link.href} />
+                <AdminNavLink {...link} isActive={route === link.href} />
               </li>
             ))}
           </ul>
@@ -78,7 +78,7 @@ type AdminNavMobileProps = {
 };
 
 function AdminNavMobile({ onClose, isMounted, status }: AdminNavMobileProps) {
-  const { asPath } = useRouter();
+  const { route } = useRouter();
   const componentRef = useRef<HTMLDivElement>(null);
 
   const zIndex = 30;
@@ -120,7 +120,7 @@ function AdminNavMobile({ onClose, isMounted, status }: AdminNavMobileProps) {
               <ul className="space-y-3">
                 {links.map(link => (
                   <li key={link.href}>
-                    <AdminNavLink {...link} isActive={asPath === link.href} />
+                    <AdminNavLink {...link} isActive={route === link.href} />
                   </li>
                 ))}
               </ul>
