@@ -5,7 +5,6 @@ import {
   ClassesSchedulePeriod,
   Group,
   Subject,
-  fetcher,
 } from '@/shared/api';
 import { withBlankPeriods } from '../lib';
 import { ClassesPartialPeriod } from '../types';
@@ -18,17 +17,17 @@ export type ClassesCardProps = {
 
 export const ClassesScheduleCard = forwardRef<HTMLDivElement, ClassesCardProps>(
   function ClassesScheduleCard({ schedule, controlPanel }, ref) {
-    const { data: group } = useSWR<Group>(schedule.group, fetcher);
+    const { data: group } = useSWR<Group>(schedule.group);
 
     return (
       <div
         ref={ref}
-        className="bg-white border rounded-md border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700"
+        className="rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800"
       >
-        <div className="py-1.5 px-2.5 border-b border-zinc-200 dark:border-zinc-700">
+        <div className="border-b border-zinc-200 px-2.5 py-1.5 dark:border-zinc-700">
           <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
             {group?.name ?? (
-              <div className="w-16 h-5 overflow-hidden rounded-md">
+              <div className="h-5 w-16 overflow-hidden rounded-md">
                 <LoaderRect />
               </div>
             )}
@@ -41,7 +40,7 @@ export const ClassesScheduleCard = forwardRef<HTMLDivElement, ClassesCardProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 type ClassesCardTableViewProps = {
@@ -66,26 +65,26 @@ type ClassesCardPeriodProps = {
 };
 
 function ClassesCardPeriod({ period }: ClassesCardPeriodProps) {
-  const { data: subject } = useSWR<Subject>(period.subject, fetcher);
+  const { data: subject } = useSWR<Subject>(period.subject);
 
   return (
     <tr
       key={period.index}
-      className="text-sm border-b border-zinc-200 dark:border-zinc-700 last:border-0 text-zinc-700 dark:text-zinc-300"
+      className="border-b border-zinc-200 text-sm text-zinc-700 last:border-0 dark:border-zinc-700 dark:text-zinc-300"
     >
-      <td className="w-0 px-2.5 py-1 text-sm text-center border-r border-zinc-200 dark:border-zinc-700">
+      <td className="w-0 border-r border-zinc-200 px-2.5 py-1 text-center text-sm dark:border-zinc-700">
         {period.index}
       </td>
-      <td className="px-2 py-1 text-sm border-r border-zinc-200 dark:border-zinc-700 ">
+      <td className="border-r border-zinc-200 px-2 py-1 text-sm dark:border-zinc-700 ">
         {period.subject
           ? subject?.name ?? (
-              <div className="w-full h-4 overflow-hidden rounded-md">
+              <div className="h-4 w-full overflow-hidden rounded-md">
                 <LoaderRect />
               </div>
             )
           : ''}
       </td>
-      <td className="w-10 px-2.5 py-1 text-sm text-center">{period.cabinet}</td>
+      <td className="w-10 px-2.5 py-1 text-center text-sm">{period.cabinet}</td>
     </tr>
   );
 }

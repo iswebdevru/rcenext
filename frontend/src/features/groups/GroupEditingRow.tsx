@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import useSWR from 'swr';
-import { fetcher, Group, partiallyUpdateEntity } from '@/shared/api';
+import { Group, apiGroups } from '@/shared/api';
 import { TextField } from '@/shared/ui/Controls';
 import { Table } from '@/shared/ui/Table';
 
@@ -15,18 +15,16 @@ export default function GroupEditingRow({
 }: GroupEditingRowProps) {
   const groupNameRef = useRef<HTMLInputElement>(null);
   const mainBlockRef = useRef<HTMLInputElement>(null);
-  const { data: group, mutate } = useSWR<Group>(url, fetcher);
+  const { data: group, mutate } = useSWR<Group>(url);
 
   if (!group) {
     return null;
   }
 
   const onSave = async () => {
-    await partiallyUpdateEntity(url, {
-      body: {
-        name: groupNameRef.current!.value,
-        main_block: parseInt(mainBlockRef.current!.value),
-      },
+    await apiGroups.edit(url, {
+      name: groupNameRef.current!.value,
+      main_block: parseInt(mainBlockRef.current!.value),
     });
     return Promise.all([refresh(), mutate()]);
   };

@@ -22,6 +22,7 @@ export const ListInLine = withOutsideClickExceptionsContext(
             {children}
           </ul>
           <button
+            type="button"
             className="flex-shrink-0 scale-90 rounded-md border border-slate-300 bg-slate-100 p-0.5 text-slate-600 hover:scale-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
             onClick={() => toggle()}
           >

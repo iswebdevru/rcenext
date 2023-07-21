@@ -4,7 +4,7 @@ import { Table } from '@/shared/ui/Table';
 import { Button } from '@/shared/ui/Controls/Button';
 import { Title } from '@/shared/ui/Typography';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
-import { API_TEACHERS, deleteEntities, Teacher } from '@/shared/api';
+import { API_TEACHERS, Teacher, apiTeachers } from '@/shared/api';
 import { ListInLine, ListInLineItem } from '@/shared/ui/ListInLine';
 import { SubjectTextView } from '@/entities/subjects';
 import { TeacherEditingRow, TeacherCreateForm } from '@/features/teachers';
@@ -20,7 +20,7 @@ export default function Teachers() {
   );
 
   const deleteTeachers = async (urls: string[]) => {
-    await deleteEntities(urls);
+    await Promise.all(urls.map(apiTeachers.delete));
     return mutate();
   };
 

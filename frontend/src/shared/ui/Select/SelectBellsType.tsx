@@ -22,7 +22,7 @@ export function SelectBellsType({ type, onChange }: SelectBellsTypeProps) {
       transitionState={transitionState}
       onClose={() => toggleTransition(false)}
       inputElement={
-        <Button onClick={() => toggleTransition(true)}>
+        <Button type="button" onClick={() => toggleTransition(true)}>
           {BELLS_TYPES[type]}
         </Button>
       }

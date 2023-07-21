@@ -5,7 +5,7 @@ import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { AdminLayout } from '@/layouts';
 import { GroupCreateForm } from '@/features/groups';
 import GroupEditingRow from '@/features/groups/GroupEditingRow';
-import { API_GROUPS, deleteEntities, Group } from '@/shared/api';
+import { API_GROUPS, Group, apiGroups } from '@/shared/api';
 import { Title } from '@/shared/ui/Typography';
 import { Button } from '@/shared/ui/Controls';
 import { Reveal } from '@/shared/ui/Utils';
@@ -21,7 +21,7 @@ export default function Groups() {
   );
 
   const deleteGroups = async (urls: string[]) => {
-    await deleteEntities(urls);
+    await Promise.all(urls.map(apiGroups.delete));
     return mutate();
   };
 

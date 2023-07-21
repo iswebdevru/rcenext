@@ -44,6 +44,7 @@ Toggles.Variant = function Variant({ value, children }: VariantProps) {
   return (
     <li className="group grow">
       <button
+        type="button"
         disabled={value === selected}
         className={clsx(
           'block w-full select-none rounded-md px-1.5 py-0.5 text-sm font-semibold outline-none outline-1 outline-offset-0 transition-[outline,color,background]',

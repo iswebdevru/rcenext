@@ -7,15 +7,7 @@ import { SelectWeekType, SelectWeekDay } from '@/shared/ui/Select';
 import { Toggles } from '@/shared/ui/Controls';
 import { AdminLayout } from '@/layouts';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
-import {
-  API_CLASSES,
-  API_GROUPS,
-  ClassesScheduleMixed,
-  Group,
-  WeekDay,
-  WeekType,
-  createEntity,
-} from '@/shared/api';
+import { API_GROUPS, Group, WeekDay, WeekType, apiClasses } from '@/shared/api';
 import {
   ClassesType,
   hasInitAndDraftDiff,
@@ -72,18 +64,16 @@ export default function Classes({ date: initDate }: ClassesProps) {
     setIsSaving(true);
     const updated = await Promise.all(
       validatedClassesDataList.map(({ group, draft }) => {
-        return createEntity<ClassesScheduleMixed, unknown>(API_CLASSES, {
-          body: {
-            type: debouncedClassesType,
-            view: draft.view,
-            date: debouncedStrDate,
-            week_day: debouncedWeekDay,
-            week_type: debouncedWeekType,
-            group: group.url,
-            message: draft.view === 'message' ? draft.message : undefined,
-            periods: draft.view === 'table' ? draft.periods : undefined,
-          },
-        });
+        return apiClasses.create({
+          type: debouncedClassesType,
+          view: draft.view,
+          date: debouncedStrDate,
+          week_day: debouncedWeekDay,
+          week_type: debouncedWeekType,
+          group: group.url,
+          message: draft.view === 'message' ? draft.message : undefined,
+          periods: draft.view === 'table' ? draft.periods : undefined,
+        } as any);
       }),
     );
     dispatch({

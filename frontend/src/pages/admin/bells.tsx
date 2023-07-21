@@ -1,20 +1,13 @@
-import { BellsPeriodEditing, useBellsStore } from '@/entities/bells';
 import { BellsForm } from '@/features/bells';
 import { AdminLayout } from '@/layouts';
-import {
-  API_BELLS,
-  BellsMixed,
-  WeekDay,
-  createEntity,
-  fetcher,
-} from '@/shared/api';
-import { formatDate, getAppDate } from '@/shared/lib/date';
+import { WeekDay } from '@/shared/api';
+import { useDebounce } from '@/shared/hooks';
+import { getAppDate } from '@/shared/lib/date';
 import { Toggles } from '@/shared/ui/Controls';
 import { BellsType, SelectWeekDay } from '@/shared/ui/Select';
 import { DateField } from '@/shared/ui/calendar';
 import { GetServerSideProps } from 'next';
 import { useState } from 'react';
-import useSWR from 'swr';
 
 type BellsProps = {
   date: string;
@@ -25,46 +18,6 @@ export default function Bells({ date: initDate }: BellsProps) {
   const [bellsType, setBellsType] = useState<'main' | 'changes'>('main');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
   const [date, setDate] = useState(new Date(initDate));
-
-  const [bellsPeriods, dispatch] = useBellsStore();
-
-  useSWR<BellsMixed>(
-    `${API_BELLS}?type=${bellsType}&date=${formatDate(
-      date,
-    )}&week_day=${weekDay}&variant=${bellsVariant}`,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      shouldRetryOnError: false,
-      onSuccess: data => {
-        dispatch({
-          type: 'load',
-          payload: data.periods,
-        });
-      },
-      onError: () => {
-        dispatch({ type: 'init' });
-      },
-    },
-  );
-
-  const handleSave = async (periods: BellsPeriodEditing[]) => {
-    const data = await createEntity<BellsMixed, unknown>(API_BELLS, {
-      body: {
-        type: bellsType,
-        variant: bellsVariant,
-        date: formatDate(date),
-        week_day: weekDay,
-        periods: periods,
-      },
-    });
-    if (data) {
-      dispatch({
-        type: 'load',
-        payload: data.periods,
-      });
-    }
-  };
 
   return (
     <AdminLayout>
@@ -95,9 +48,10 @@ export default function Bells({ date: initDate }: BellsProps) {
           </div>
           <div className="flex-auto">
             <BellsForm
-              periods={bellsPeriods}
-              dispatch={dispatch}
-              onSave={handleSave}
+              date={useDebounce(date)}
+              type={useDebounce(bellsType)}
+              variant={useDebounce(bellsVariant)}
+              weekDay={useDebounce(weekDay)}
             />
           </div>
         </div>

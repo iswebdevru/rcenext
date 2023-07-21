@@ -1,4 +1,4 @@
-import { API_SUBJECTS, createEntity } from '@/shared/api';
+import { apiSubjects } from '@/shared/api';
 import { TextField, Button } from '@/shared/ui/Controls';
 import { useForm } from 'react-hook-form';
 
@@ -20,8 +20,8 @@ export function SubjectCreateForm({
   });
 
   const onSave = async (data: SubjectCreateFormData) => {
-    await createEntity(API_SUBJECTS, {
-      body: { name: data.subject },
+    await apiSubjects.create({
+      name: data.subject,
     });
     onClose();
     return refresh();

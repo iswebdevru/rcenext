@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Head from 'next/head';
 import { SubjectCreateForm, SubjectEditingRow } from '@/features/subjects';
 import { AdminLayout } from '@/layouts';
-import { API_SUBJECTS, deleteEntities, Subject } from '@/shared/api';
+import { API_SUBJECTS, Subject, apiSubjects } from '@/shared/api';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { Button } from '@/shared/ui/Controls/Button';
 import { Table } from '@/shared/ui/Table';
@@ -19,7 +19,7 @@ export default function Subjects() {
   );
 
   const deleteSubjects = async (urls: string[]) => {
-    await deleteEntities(urls);
+    await Promise.all(urls.map(apiSubjects.delete));
     return mutate();
   };
 

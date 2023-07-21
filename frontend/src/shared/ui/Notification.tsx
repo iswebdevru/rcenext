@@ -103,6 +103,7 @@ function Notification({ data, onRemove }: NotificationProps) {
         <p className="text-slate-900 dark:text-slate-200">{data.text}</p>
       </div>
       <button
+        type="button"
         className="ml-auto flex h-10 w-10 items-center justify-center rounded-2xl text-lg text-slate-500 transition-colors hover:text-slate-900 dark:hover:text-slate-200"
         onClick={onRemove}
         disabled={data.isRemoving}

@@ -1,6 +1,6 @@
 import { ComponentProps, forwardRef, useRef, useState } from 'react';
 import useSWR from 'swr';
-import { ClassesScheduleChanges, Group, fetcher } from '@/shared/api';
+import { ClassesScheduleChanges, Group } from '@/shared/api';
 import {
   faComment,
   faEllipsis,
@@ -38,7 +38,6 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
   ) {
     const { isValidating } = useSWR<ClassesScheduleChanges>(
       `${group.classes}${searchParams}`,
-      fetcher,
       {
         shouldRetryOnError: false,
         revalidateOnFocus: false,

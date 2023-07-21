@@ -2,12 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { TextField } from '@/shared/ui/Controls';
 import { Table } from '@/shared/ui/Table';
-import {
-  fetcher,
-  Hyperlink,
-  partiallyUpdateEntity,
-  Teacher,
-} from '@/shared/api';
+import { Hyperlink, Teacher, apiTeachers } from '@/shared/api';
 import { SelectSubjects } from '../subjects/SelectSubjects'; // TODO: fix one-level cross import
 
 export type TeacherEditingRowProps = {
@@ -26,7 +21,7 @@ export function TeacherEditingRow({
     new Set<Hyperlink>(),
   );
 
-  const { data: teacher, mutate } = useSWR<Teacher>(url, fetcher);
+  const { data: teacher, mutate } = useSWR<Teacher>(url);
 
   useEffect(() => {
     if (teacher) {
@@ -39,13 +34,11 @@ export function TeacherEditingRow({
   }
 
   const onSave = async () => {
-    await partiallyUpdateEntity(url, {
-      body: {
-        first_name: firstNameRef.current?.value,
-        last_name: lastNameRef.current?.value,
-        patronymic: patronymicRef.current?.value,
-        subjects: [...selectedSubjects],
-      },
+    await apiTeachers.edit(url, {
+      first_name: firstNameRef.current?.value,
+      last_name: lastNameRef.current?.value,
+      patronymic: patronymicRef.current?.value,
+      subjects: [...selectedSubjects],
     });
     return Promise.all([refresh(), mutate()]);
   };

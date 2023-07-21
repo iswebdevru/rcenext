@@ -132,6 +132,7 @@ export const SelectOption = forwardRef(function SelectOption<T>(
       ref={ref}
     >
       <button
+        type="button"
         className="w-full select-none overflow-hidden overflow-ellipsis whitespace-nowrap px-3 py-2 text-left text-sm text-zinc-700 dark:text-zinc-200"
         onClick={() => onSelect(value)}
         ref={scrollIntoViewSelected && selected ? scrollIntoViewCallback : null}

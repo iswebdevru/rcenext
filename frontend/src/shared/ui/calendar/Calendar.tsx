@@ -34,16 +34,22 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
       >
         <div className="flex items-center gap-2">
           <div>
-            <Button onClick={() => onDateChange(new Date())}>Сегодня</Button>
+            <Button type="button" onClick={() => onDateChange(new Date())}>
+              Сегодня
+            </Button>
           </div>
           <div>
-            <Button onClick={() => onDateChange(new Date(Date.now() + DAY))}>
+            <Button
+              type="button"
+              onClick={() => onDateChange(new Date(Date.now() + DAY))}
+            >
               Завтра
             </Button>
           </div>
         </div>
         <div className="flex items-center justify-between">
           <button
+            type="button"
             disabled={disabled}
             className="h-8 w-8 rounded-xl border border-zinc-200 text-zinc-900 shadow-sm shadow-zinc-900/5 transition-colors hover:bg-zinc-100 dark:border-none dark:bg-zinc-700 dark:text-zinc-200 dark:shadow-zinc-900/30 dark:hover:bg-zinc-600"
             onClick={() => {
@@ -58,6 +64,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
             <SelectYear date={date} onChange={onDateChange} />
           </div>
           <button
+            type="button"
             disabled={disabled}
             className="h-8 w-8 rounded-xl border border-zinc-200 text-zinc-900 shadow-sm shadow-zinc-900/5 transition-colors hover:bg-zinc-100 dark:border-none dark:bg-zinc-700 dark:text-zinc-200 dark:shadow-zinc-900/30 dark:hover:bg-zinc-600"
             onClick={() => {
@@ -93,6 +100,7 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
           </div>
           {days.map(day => (
             <button
+              type="button"
               onClick={() => {
                 const newDate = new Date(date);
                 newDate.setDate(day.date);

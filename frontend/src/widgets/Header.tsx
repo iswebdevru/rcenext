@@ -205,6 +205,7 @@ const HeaderOpenButton = withOutsideClickExceptionsContext(
 function LogoutButton() {
   return (
     <button
+      type="button"
       onClick={() => signOut()}
       className="items-center text-slate-700 transition-colors hover:text-slate-500 dark:text-zinc-500 dark:hover:text-zinc-200"
     >

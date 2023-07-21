@@ -7,7 +7,7 @@ import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { BellsType, SelectBellsType } from '@/shared/ui/Select';
 import useSWR from 'swr';
-import { API_BELLS, BellsMixed, fetcher } from '@/shared/api';
+import { API_BELLS, BellsMixed } from '@/shared/api';
 
 type BellsProps = {
   date: string;
@@ -17,10 +17,7 @@ export default function Bells({ date: initDate }: BellsProps) {
   const [date, setDate] = useState(new Date(initDate));
   const [bellsType, setBellsType] = useState<BellsType>('normal');
 
-  const { data } = useSWR<BellsMixed>(
-    `${API_BELLS}?date=${formatDate(date)}`,
-    fetcher,
-  );
+  const { data } = useSWR<BellsMixed>(`${API_BELLS}?date=${formatDate(date)}`);
 
   return (
     <>

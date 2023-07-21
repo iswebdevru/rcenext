@@ -24,6 +24,7 @@ export function SelectWeekType<T extends WeekType>({
       onClose={() => toggleTransition(false)}
       inputElement={
         <Button
+          type="button"
           className="min-w-[120px]"
           onClick={() => toggleTransition(true)}
         >

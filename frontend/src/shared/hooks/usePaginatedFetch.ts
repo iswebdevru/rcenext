@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import useSWRInfinite from 'swr/infinite';
-import { fetcher, Paginated } from '../api';
+import { Paginated } from '../api';
 import { usePagination } from './usePagination';
 
 export function usePaginatedFetch<T>(key: string | null) {
@@ -13,7 +13,6 @@ export function usePaginatedFetch<T>(key: string | null) {
       }
       return prevPageData?.next;
     },
-    fetcher,
     {
       persistSize: true,
       keepPreviousData: true,

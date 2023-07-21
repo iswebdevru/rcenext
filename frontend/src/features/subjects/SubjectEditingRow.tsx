@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import useSWR from 'swr';
 import { TextField } from '@/shared/ui/Controls';
 import { Table } from '@/shared/ui/Table';
-import { fetcher, partiallyUpdateEntity, Subject } from '@/shared/api';
+import { Subject, apiSubjects } from '@/shared/api';
 
 export type SubjectEditingRowProps = {
   id: string;
@@ -14,17 +14,15 @@ export function SubjectEditingRow({
   refresh,
 }: SubjectEditingRowProps) {
   const nameRef = useRef<HTMLInputElement>(null);
-  const { data: subject, mutate } = useSWR<Subject>(url, fetcher);
+  const { data: subject, mutate } = useSWR<Subject>(url);
 
   if (!subject) {
     return null;
   }
 
   const onSave = async () => {
-    await partiallyUpdateEntity(url, {
-      body: {
-        name: nameRef.current?.value,
-      },
+    await apiSubjects.edit(url, {
+      name: nameRef.current?.value,
     });
     return Promise.all([refresh(), mutate()]);
   };

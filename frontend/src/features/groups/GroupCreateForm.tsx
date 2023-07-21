@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { API_GROUPS, createEntity } from '@/shared/api';
+import { apiGroups } from '@/shared/api';
 import { Button } from '@/shared/ui/Controls/Button';
 import { TextField } from '@/shared/ui/Controls';
 
@@ -19,11 +19,9 @@ export function GroupCreateForm({ refresh, onClose }: GroupCreateForm) {
   });
 
   const onSave = async (data: GroupCreateFormData) => {
-    await createEntity(API_GROUPS, {
-      body: {
-        name: data.group,
-        main_block: parseInt(data.main_block),
-      },
+    await apiGroups.create({
+      name: data.group,
+      main_block: parseInt(data.main_block),
     });
     onClose();
     return refresh();

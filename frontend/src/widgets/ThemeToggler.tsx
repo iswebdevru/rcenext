@@ -12,7 +12,7 @@ export function ThemeToggler() {
   const isDark = theme === 'dark';
 
   return (
-    <button onClick={toggleTheme}>
+    <button type="button" onClick={toggleTheme}>
       <svg className="h-7 lg:h-6" viewBox="0 0 42 22">
         <rect
           x={0}

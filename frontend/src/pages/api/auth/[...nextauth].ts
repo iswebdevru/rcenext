@@ -1,7 +1,7 @@
 import nextAuth from 'next-auth';
 import { AuthOptions } from 'next-auth/core/types';
 import Credentials from 'next-auth/providers/credentials';
-import { API_LOGIN, API_LOGOUT, fetcher, Token } from '@/shared/api';
+import { apiToken } from '@/shared/api';
 
 interface WithAccessToken {
   accessToken: {
@@ -20,13 +20,11 @@ export const authOptions: AuthOptions = {
     Credentials({
       id: 'credentials',
       authorize: async credentials => {
+        if (!credentials) {
+          return null;
+        }
         try {
-          const data = await fetcher.post<Token, any>(API_LOGIN, {
-            body: credentials,
-          });
-          if (!data.token) {
-            return null;
-          }
+          const data = await apiToken.login(credentials);
           return {
             id: data.token,
             accessToken: {
@@ -58,9 +56,7 @@ export const authOptions: AuthOptions = {
   },
   events: {
     async signOut({ token }) {
-      return fetcher.post(API_LOGOUT, undefined, {
-        token: token.accessToken.value,
-      });
+      await apiToken.logout(token.accessToken.value);
     },
   },
 };

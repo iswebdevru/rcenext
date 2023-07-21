@@ -24,6 +24,7 @@ export function SelectWeekDay<T extends WeekDay>({
       transitionState={transitionState}
       inputElement={
         <Button
+          type="button"
           variant="common"
           className="min-w-[120px]"
           onClick={() => toggleTransition(true)}

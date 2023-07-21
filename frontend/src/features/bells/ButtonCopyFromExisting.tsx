@@ -1,6 +1,7 @@
-import { API_BELLS, BellsMixed, WeekDay, fetcher } from '@/shared/api';
+import { API_BELLS, BellsMixed, WeekDay } from '@/shared/api';
 import {
   useClickOutside,
+  useDebounce,
   usePositionCoords,
   useRegisterOutsideClickException,
   withOutsideClickExceptionsContext,
@@ -15,17 +16,25 @@ import { useEffect, useRef, useState } from 'react';
 import useTransition from 'react-transition-state';
 import useSWR from 'swr';
 
-export type LoadExisting = {
+export type ButtonCopyFromExistingProps = {
   onLoad: (data: BellsMixed) => void;
+  date: Date;
 };
 
-export const LoadExisting = withOutsideClickExceptionsContext(
-  function LoadExisting({ onLoad }: LoadExisting) {
-    const [shouldLoad, setShouldLoad] = useState(false);
+export const ButtonCopyFromExisting = withOutsideClickExceptionsContext(
+  function ButtonCopyFromExisting({
+    onLoad,
+    date: initDate,
+  }: ButtonCopyFromExistingProps) {
     const [bellsType, setBellsType] = useState('main');
     const [bellsVariant, setBellsVariant] = useState('normal');
     const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
-    const [date, setDate] = useState<Date | null>(null);
+    const [date, setDate] = useState<Date>(initDate);
+
+    const debouncedBellsType = useDebounce(bellsType);
+    const debouncedBellsVariant = useDebounce(bellsVariant);
+    const debouncedWeekDay = useDebounce(weekDay);
+    const debouncedDate = useDebounce(date);
 
     const btnRef = useRef<HTMLButtonElement>(null);
     const componentRef = useRef<HTMLDivElement>(null);
@@ -41,9 +50,23 @@ export const LoadExisting = withOutsideClickExceptionsContext(
       componentRef,
     );
 
+    const { data } = useSWR<BellsMixed>(
+      isMounted
+        ? `${API_BELLS}?type=${debouncedBellsType}&week_day=${debouncedWeekDay}&date=${formatDate(
+            debouncedDate,
+          )}&variant=${debouncedBellsVariant}`
+        : null,
+      {
+        shouldRetryOnError: false,
+        revalidateOnFocus: false,
+      },
+    );
+
     const handleLoad = () => {
-      setShouldLoad(true);
-      toggleTransition(false);
+      if (data) {
+        onLoad(data);
+        toggleTransition(false);
+      }
     };
 
     useClickOutside(componentRef, () => toggleTransition(false));
@@ -53,34 +76,13 @@ export const LoadExisting = withOutsideClickExceptionsContext(
         recalculatePosition();
       }
     }, [isMounted, recalculatePosition]);
-    useEffect(() => {
-      setDate(new Date());
-    }, []);
 
-    useSWR<BellsMixed>(
-      shouldLoad
-        ? `${API_BELLS}?type=${bellsType}&week_day=${weekDay}&date=${formatDate(
-            date!,
-          )}&variant=${bellsVariant}`
-        : null,
-      fetcher,
-      {
-        shouldRetryOnError: false,
-        revalidateOnFocus: false,
-        onSuccess(data) {
-          onLoad(data);
-          setShouldLoad(false);
-        },
-        onError() {
-          setShouldLoad(true);
-          console.log('Not found');
-        },
-      },
-    );
+    const cantSave = !data;
 
     return (
       <div>
         <Button
+          type="button"
           onClick={() => {
             toggleTransition();
           }}
@@ -94,7 +96,7 @@ export const LoadExisting = withOutsideClickExceptionsContext(
               <div
                 ref={componentRef}
                 className={clsx(
-                  'rounded-md border border-zinc-200 p-2 transition dark:border-zinc-700 dark:bg-zinc-800',
+                  'rounded-md border border-zinc-200 bg-white p-2 shadow-sm transition dark:border-zinc-700 dark:bg-zinc-800',
                   {
                     '-translate-y-2 opacity-0':
                       status === 'preEnter' || status === 'exiting',
@@ -125,12 +127,16 @@ export const LoadExisting = withOutsideClickExceptionsContext(
                         weekDayId={weekDay}
                         onSelect={setWeekDay}
                       />
-                    ) : date ? (
-                      <DateField date={date} onDateChange={setDate as any} />
-                    ) : null}
+                    ) : (
+                      <DateField date={date} onDateChange={setDate} />
+                    )}
                   </div>
                 </div>
-                <Button variant="primary" onClick={handleLoad}>
+                <Button
+                  variant="primary"
+                  disabled={cantSave}
+                  onClick={handleLoad}
+                >
                   Загрузить
                 </Button>
               </div>

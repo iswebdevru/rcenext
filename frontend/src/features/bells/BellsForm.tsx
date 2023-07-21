@@ -1,28 +1,87 @@
 import {
-  BellsAction,
-  BellsPeriodEditing,
   formatPeriodTime,
   isBellsPeriodValid,
+  useBellsStore,
 } from '@/entities/bells';
 import { Button, CheckboxField, TimeField } from '@/shared/ui/Controls';
-import { Dispatch, FormEventHandler } from 'react';
-import { LoadExisting } from './LoadExisting';
+import { FormEventHandler, useEffect, useState } from 'react';
+import useSWR from 'swr';
+import { ButtonCopyFromExisting } from './ButtonCopyFromExisting';
+import {
+  API_BELLS,
+  BellsMixed,
+  Hyperlink,
+  WeekDay,
+  apiBells,
+} from '@/shared/api';
+import { formatDate } from '@/shared/lib/date';
 
 export type BellsFormProps = {
-  dispatch: Dispatch<BellsAction>;
-  periods: BellsPeriodEditing[];
-  onSave: (periods: BellsPeriodEditing[]) => void;
+  type: BellsMixed['type'];
+  variant: BellsMixed['variant'];
+  date: Date;
+  weekDay: WeekDay;
 };
 
-export function BellsForm({ dispatch, periods, onSave }: BellsFormProps) {
+export function BellsForm({ type, variant, date, weekDay }: BellsFormProps) {
+  const [periods, dispatch] = useBellsStore();
+  const [bellsUrl, setBellsUrl] = useState<Hyperlink | null>(null);
+
   const preparedPeriods = periods
     .filter(isBellsPeriodValid)
     .map(formatPeriodTime);
 
-  const handleSubmit: FormEventHandler<HTMLFormElement> = e => {
-    e.preventDefault();
-    onSave(preparedPeriods);
+  const handleDelete = () => {
+    if (bellsUrl) {
+      apiBells.delete(bellsUrl);
+      dispatch({ type: 'init' });
+      setBellsUrl(null);
+    }
   };
+
+  const handleSubmit: FormEventHandler<HTMLFormElement> = async e => {
+    e.preventDefault();
+    const data = await apiBells.create({
+      type,
+      variant,
+      date: formatDate(date),
+      week_day: weekDay,
+      periods: preparedPeriods,
+    } as any);
+    if (data) {
+      setBellsUrl(data.url);
+      dispatch({
+        type: 'load',
+        payload: data.periods,
+      });
+    }
+  };
+
+  const { data } = useSWR<BellsMixed>(
+    `${API_BELLS}?type=${type}&date=${formatDate(
+      date,
+    )}&week_day=${weekDay}&variant=${variant}`,
+    {
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
+    },
+  );
+
+  useEffect(() => {
+    if (data) {
+      dispatch({
+        type: 'load',
+        payload: data.periods,
+      });
+      setBellsUrl(data.url);
+    } else {
+      dispatch({ type: 'init' });
+      setBellsUrl(null);
+    }
+  }, [data, dispatch]);
+
+  const cantSave = !preparedPeriods.length;
+  const cantDelete = !bellsUrl;
 
   return (
     <form onSubmit={handleSubmit}>
@@ -164,20 +223,22 @@ export function BellsForm({ dispatch, periods, onSave }: BellsFormProps) {
           </table>
         </div>
         <div className="flex items-center gap-4 border-t border-zinc-200 px-2 pt-4 dark:border-zinc-700">
-          <LoadExisting
+          <ButtonCopyFromExisting
+            date={date}
             onLoad={data => dispatch({ type: 'load', payload: data.periods })}
           />
           <div className="ml-auto">
-            <Button variant="danger-outline" type="button" disabled>
+            <Button
+              variant="danger-outline"
+              type="button"
+              disabled={cantDelete}
+              onClick={handleDelete}
+            >
               Удалить
             </Button>
           </div>
           <div>
-            <Button
-              variant="primary"
-              type="submit"
-              disabled={!preparedPeriods.length}
-            >
+            <Button variant="primary" type="submit" disabled={cantSave}>
               Сохранить
             </Button>
           </div>

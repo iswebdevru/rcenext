@@ -211,7 +211,7 @@ Table.SelectRowCheckbox = function TableSelectRowCheckbox() {
 Table.ButtonEdit = function TableButtonEdit() {
   const { toggleEdit } = useContext(TableRowContext) as TableRowContext;
   return (
-    <button className="group/edit-btn p-1" onClick={toggleEdit}>
+    <button type="button" className="group/edit-btn p-1" onClick={toggleEdit}>
       <FontAwesomeIcon
         icon={faPenToSquare}
         fixedWidth
@@ -252,6 +252,7 @@ Table.ButtonCancel = function TableButtonCancel() {
 
   return (
     <button
+      type="button"
       className="group/editor-cancel flex items-center justify-center p-1"
       onClick={ctx?.toggleEdit}
     >

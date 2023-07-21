@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 import { useRef, useState } from 'react';
-import { API_SUBJECTS, Hyperlink, Subject, fetcher } from '@/shared/api';
+import { API_SUBJECTS, Hyperlink, Subject } from '@/shared/api';
 import { usePaginatedFetch } from '@/shared/hooks';
 import { Select, SelectOption, useSelectTransition } from '@/shared/ui/Select';
 
@@ -19,10 +19,7 @@ export function SubjectSelect({ selectedSubjectURL, onSelect }: SubjectSelect) {
   const { data: pages, lastElementRef } = usePaginatedFetch<Subject>(
     transitionState.isMounted ? `${API_SUBJECTS}?search=${searchStr}` : null,
   );
-  const { data: selectedSubject } = useSWR<Subject>(
-    selectedSubjectURL,
-    fetcher,
-  );
+  const { data: selectedSubject } = useSWR<Subject>(selectedSubjectURL);
 
   return (
     <Select<Hyperlink>

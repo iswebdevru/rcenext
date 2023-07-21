@@ -12,3 +12,5 @@ export function arrayN(n: number) {
   }
   return a;
 }
+
+export function noop() {}

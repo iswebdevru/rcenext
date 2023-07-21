@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { TextField, Button } from '@/shared/ui/Controls';
-import { API_TEACHERS, Hyperlink, createEntity } from '@/shared/api';
+import { Hyperlink, apiTeachers } from '@/shared/api';
 import { SelectSubjects } from '../subjects/SelectSubjects';
 
 export type TeachersFormCreateProps = {
@@ -25,11 +25,9 @@ export function TeacherCreateForm({
   const [subjects, setSubjects] = useState(new Set<Hyperlink>());
 
   const onValid = async (data: TeacherCreateFormData) => {
-    await createEntity(API_TEACHERS, {
-      body: {
-        ...data,
-        subjects: [...subjects],
-      },
+    await apiTeachers.create({
+      ...data,
+      subjects: [...subjects],
     });
     onClose();
     return refresh();

@@ -29,6 +29,7 @@ export function SelectYear({ date, onChange }: SelectYearProps) {
       onClose={() => toggleTransition(false)}
       inputElement={
         <button
+          type="button"
           onClick={() => toggleTransition()}
           className="w-full text-lg font-bold text-slate-900 dark:text-zinc-300"
         >
