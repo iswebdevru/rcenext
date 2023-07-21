@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { clsx } from '@/shared/lib/ui';
-import { Calendar } from '@/shared/ui/calendar';
+import { Calendar } from '@/shared/ui/Calendar';
 import {
   Toggles,
   Button,

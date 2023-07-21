@@ -11,7 +11,7 @@ import { clsx } from '@/shared/lib/ui';
 import { Button, Toggles } from '@/shared/ui/Controls';
 import { SelectWeekDay } from '@/shared/ui/Select';
 import { Portal, useZIndex } from '@/shared/ui/Utils';
-import { DateField } from '@/shared/ui/calendar';
+import { DateField } from '@/shared/ui/Calendar';
 import { useEffect, useRef, useState } from 'react';
 import useTransition from 'react-transition-state';
 import useSWR from 'swr';

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { BaseLayout } from '@/layouts';
 import { formatDate, getAppDate } from '@/shared/lib/date';
 import { Table } from '@/shared/ui/Table';
-import { Calendar } from '@/shared/ui/calendar';
+import { Calendar } from '@/shared/ui/Calendar';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { BellsType, SelectBellsType } from '@/shared/ui/Select';

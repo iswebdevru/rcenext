@@ -7,6 +7,7 @@ import { openSans } from '@/shared/ui/fonts';
 import '@/application/style.css';
 import Head from 'next/head';
 import { SWRConfig } from '@/shared/swr';
+import { NotificationProvider } from '@/shared/ui/Notification';
 
 config.autoAddCss = false;
 
@@ -17,16 +18,18 @@ export default function App({
   return (
     <SWRConfig>
       <SessionProvider session={session}>
-        <Head>
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-          />
-        </Head>
-        <div className={clsx(openSans.variable, 'h-full font-sans')}>
-          <Component {...pageProps} />
-          <div id="__portal"></div>
-        </div>
+        <NotificationProvider>
+          <Head>
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0"
+            />
+          </Head>
+          <div className={clsx(openSans.variable, 'h-full font-sans')}>
+            <Component {...pageProps} />
+            <div id="__portal"></div>
+          </div>
+        </NotificationProvider>
       </SessionProvider>
     </SWRConfig>
   );

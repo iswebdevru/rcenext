@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { Button } from '@/shared/ui/Controls';
-import { DateField } from '@/shared/ui/calendar';
+import { DateField } from '@/shared/ui/Calendar';
 import { SelectWeekType, SelectWeekDay } from '@/shared/ui/Select';
 import { Toggles } from '@/shared/ui/Controls';
 import { AdminLayout } from '@/layouts';

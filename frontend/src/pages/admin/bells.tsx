@@ -5,7 +5,7 @@ import { useDebounce } from '@/shared/hooks';
 import { getAppDate } from '@/shared/lib/date';
 import { Toggles } from '@/shared/ui/Controls';
 import { BellsType, SelectWeekDay } from '@/shared/ui/Select';
-import { DateField } from '@/shared/ui/calendar';
+import { DateField } from '@/shared/ui/Calendar';
 import { GetServerSideProps } from 'next';
 import { useState } from 'react';
 
