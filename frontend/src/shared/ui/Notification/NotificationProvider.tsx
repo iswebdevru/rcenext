@@ -1,68 +1,71 @@
 import { noop } from '@/shared/lib/common';
 import {
-  Fragment,
   PropsWithChildren,
   ReactNode,
   createContext,
   useCallback,
+  useContext,
+  useRef,
   useState,
 } from 'react';
 import { Portal, ZIndex } from '../Utils';
-import { Notification } from './Notification';
+import { NotificationPrivateContext } from './NotificationPrivateContext';
 
 type NotificationData = {
   id: number;
   element: ReactNode;
 };
 
-type NotificationContext = {
-  // notifications: NotificationData[];
+type NotificationsPublicContext = {
   notify: (notification: ReactNode) => void;
 };
 
-const NotificationContext = createContext<NotificationContext>({
+const NotificationsPublicContext = createContext<NotificationsPublicContext>({
   notify: noop,
 });
 
-export function NotificationProvider({ children }: PropsWithChildren) {
-  const [notifications, setNotifications] = useState<NotificationData[]>([
-    {
-      id: 1,
-      element: <Notification>Пример</Notification>,
-    },
-    {
-      id: 2,
-      element: <Notification>Пример</Notification>,
-    },
-    {
-      id: 3,
-      element: <Notification>Пример</Notification>,
-    },
-  ]);
+export function NotificationsProvider({ children }: PropsWithChildren) {
+  const idRef = useRef(0);
+
+  const [notifications, setNotifications] = useState<NotificationData[]>([]);
 
   const notify = useCallback((notification: ReactNode) => {
     setNotifications(prev => {
-      return [...prev, { id: 0, element: notification }];
+      return [...prev, { id: ++idRef.current, element: notification }];
     });
   }, []);
 
   const zIndex = 40;
 
   return (
-    <NotificationContext.Provider value={{ notify }}>
+    <NotificationsPublicContext.Provider value={{ notify }}>
       {children}
       <ZIndex index={zIndex}>
         <Portal>
           <div
             style={{ zIndex }}
-            className="fixed bottom-9 right-9 w-full max-w-xs space-y-3"
+            className="fixed bottom-4 right-4 w-full max-w-xs sm:bottom-9 sm:right-9"
           >
             {notifications.map(notification => (
-              <Fragment key={notification.id}>{notification.element}</Fragment>
+              <NotificationPrivateContext.Provider
+                key={notification.id}
+                value={{
+                  onClose: () =>
+                    setNotifications(prev =>
+                      prev.filter(current => notification.id !== current.id),
+                    ),
+                }}
+              >
+                {notification.element}
+              </NotificationPrivateContext.Provider>
             ))}
           </div>
         </Portal>
       </ZIndex>
-    </NotificationContext.Provider>
+    </NotificationsPublicContext.Provider>
   );
+}
+
+export function useNotification() {
+  return useContext(NotificationsPublicContext).notify;
 }

@@ -10,3 +10,4 @@ export {
   useRegisterOutsideClickException,
 } from './useClickOutside';
 export { usePositionCoords } from './usePositionCoords';
+export { useTimeout } from './useTimeout';

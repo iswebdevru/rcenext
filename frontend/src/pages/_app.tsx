@@ -7,7 +7,7 @@ import { openSans } from '@/shared/ui/fonts';
 import '@/application/style.css';
 import Head from 'next/head';
 import { SWRConfig } from '@/shared/swr';
-import { NotificationProvider } from '@/shared/ui/Notification';
+import { NotificationsProvider } from '@/shared/ui/Notification';
 
 config.autoAddCss = false;
 
@@ -18,7 +18,7 @@ export default function App({
   return (
     <SWRConfig>
       <SessionProvider session={session}>
-        <NotificationProvider>
+        <NotificationsProvider>
           <Head>
             <meta
               name="viewport"
@@ -29,7 +29,7 @@ export default function App({
             <Component {...pageProps} />
             <div id="__portal"></div>
           </div>
-        </NotificationProvider>
+        </NotificationsProvider>
       </SessionProvider>
     </SWRConfig>
   );
