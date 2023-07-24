@@ -1,6 +1,6 @@
 from django.db import models
-from apps.subjects.models import Subject
-from apps.core.models import TimestampModel
+from backend.subjects.models import Subject
+from backend.core.models import TimestampModel
 
 
 class Teacher(TimestampModel):

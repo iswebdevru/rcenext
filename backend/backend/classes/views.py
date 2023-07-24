@@ -2,7 +2,7 @@ from django.db.models import Q, Exists, OuterRef
 from rest_framework import viewsets, mixins
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 import django_filters
-from apps.core.models import ScheduleType
+from backend.core.models import ScheduleType
 from .filters import GroupBlockFilterBackend, ClassesScheduleFilter
 from .models import ClassesSchedule
 from .serializers import ClassesScheduleMixedSerializer

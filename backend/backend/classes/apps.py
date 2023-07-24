@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class TeachersConfig(AppConfig):
+class ClassesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.teachers'
+    name = 'backend.classes'

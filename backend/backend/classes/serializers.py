@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from apps.teachers.models import Teacher
-from apps.subjects.models import Subject
+from backend.teachers.models import Teacher
+from backend.subjects.models import Subject
+from backend.core.models import WeekDay
 from .models import ClassesSchedule, ClassesSchedulePeriod
-from apps.core.models import WeekDay
 
 
 class ClassesScheduleCreateTypeSerializer(serializers.Serializer):

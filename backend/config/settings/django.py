@@ -11,14 +11,12 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-from datetime import timedelta
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -44,13 +42,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'knox',
     'django_filters',
-    'apps.login',
-    'apps.core',
-    'apps.teachers',
-    'apps.subjects',
-    'apps.groups',
-    'apps.classes',
-    'apps.bells'
+    'backend.core',
+    'backend.login',
+    'backend.teachers',
+    'backend.subjects',
+    'backend.groups',
+    'backend.classes',
+    'backend.bells'
 ]
 
 MIDDLEWARE = [
@@ -66,17 +64,11 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
-    'DEFAULT_PAGINATION_CLASS': 'apps.core.pagination.ApiPagination',
+    'DEFAULT_PAGINATION_CLASS': 'backend.core.pagination.ApiPagination',
     'PAGE_SIZE': 10,
 }
 
-REST_KNOX = {
-    'AUTH_HEADER_PREFIX': 'Bearer',
-    'AUTO_REFRESH': True,
-    'TOKEN_TTL': timedelta(days=2),
-}
-
-ROOT_URLCONF = 'apps.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -94,7 +86,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'apps.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database

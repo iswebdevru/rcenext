@@ -2,12 +2,12 @@ from django.urls import path
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from knox.views import LogoutView
-from apps.teachers.views import TeacherViewSet
-from apps.subjects.views import SubjectViewSet
-from apps.groups.views import GroupViewSet
-from apps.login.views import LoginView
-from apps.classes.views import ClassesScheduleViewSet
-from apps.bells.views import BellsViewSet
+from backend.teachers.views import TeacherViewSet
+from backend.subjects.views import SubjectViewSet
+from backend.groups.views import GroupViewSet
+from backend.login.views import LoginView
+from backend.classes.views import ClassesScheduleViewSet
+from backend.bells.views import BellsViewSet
 
 router = DefaultRouter()
 router.register('teachers', TeacherViewSet)

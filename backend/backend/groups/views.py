@@ -3,9 +3,9 @@ from rest_framework import viewsets, filters
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.decorators import action
-from apps.classes.serializers import ClassesScheduleMixedSerializer
-from apps.classes.validators import validate_classes_query_params
-from apps.classes.models import ClassesSchedule, ScheduleType
+from backend.classes.serializers import ClassesScheduleMixedSerializer
+from backend.classes.validators import validate_classes_query_params
+from backend.classes.models import ClassesSchedule, ScheduleType
 from .models import Group
 from .serializers import GroupSerializer
 

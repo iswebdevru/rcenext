@@ -1,5 +1,5 @@
 from django.db import models
-from apps.core.models import TimestampModel
+from backend.core.models import TimestampModel
 
 
 class Subject(TimestampModel):

@@ -1,8 +1,8 @@
+from datetime import timedelta
 from django.db import models
 from django.db.models import Q
-from apps.core.models import TimestampModel, ScheduleType, WeekDay
 from django.core.validators import MaxValueValidator
-from datetime import timedelta
+from backend.core.models import TimestampModel, ScheduleType, WeekDay
 
 
 class Bells(TimestampModel):
