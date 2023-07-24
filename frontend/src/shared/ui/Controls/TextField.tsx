@@ -38,6 +38,11 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
             },
           )}
         />
+        {props.error ? (
+          <p className="mt-1 text-sm text-red-500 dark:text-red-600">
+            {props.error}
+          </p>
+        ) : null}
       </div>
     );
   },

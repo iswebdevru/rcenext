@@ -4,6 +4,8 @@ export type Paginated<T> = {
   results: T[];
 };
 
+export type ErrorsMap = Record<string, string[]>;
+
 export type Hyperlink = string;
 
 export type Token = {

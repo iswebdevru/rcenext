@@ -10,6 +10,7 @@ import { SubjectTextView } from '@/entities/subjects';
 import { TeacherEditingRow, TeacherCreateForm } from '@/features/teachers';
 import { AdminLayout } from '@/layouts';
 import { Reveal } from '@/shared/ui/Utils/Reveal';
+import { useNotification, Notification } from '@/shared/ui/Notification';
 
 export default function Teachers() {
   const [searchFilter, setSearchFilter] = useState('');
@@ -19,9 +20,30 @@ export default function Teachers() {
     `${API_TEACHERS}?search=${searchFilterDebounced}`,
   );
 
+  const notify = useNotification();
+
   const deleteTeachers = async (urls: string[]) => {
-    await Promise.all(urls.map(apiTeachers.delete));
-    return mutate();
+    try {
+      await Promise.all(urls.map(apiTeachers.delete));
+      notify(
+        <Notification variant="success">
+          <Notification.Title>Удалено</Notification.Title>
+          <Notification.Message>
+            Успешно удалено {urls.length} преподавателей
+          </Notification.Message>
+        </Notification>,
+      );
+      return mutate();
+    } catch (e) {
+      notify(
+        <Notification variant="danger">
+          <Notification.Title>Ошибка</Notification.Title>
+          <Notification.Message>
+            Не удалось удалить записи о преподавателях
+          </Notification.Message>
+        </Notification>,
+      );
+    }
   };
 
   return (

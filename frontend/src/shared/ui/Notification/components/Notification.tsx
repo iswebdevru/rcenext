@@ -7,7 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PropsWithChildren, ReactNode, createContext, useContext } from 'react';
-import { NotificationPrivateContext } from './NotificationPrivateContext';
+import { NotificationPrivateContext } from '../NotificationPrivateContext';
 import useTransition from 'react-transition-state';
 import { useTimeout } from '@/shared/hooks';
 
@@ -98,10 +98,10 @@ export function Notification({
       >
         <div
           className={clsx('overflow-hidden rounded-xl shadow-md', {
-            'shadow-zinc-500/20 dark:shadow-zinc-800/30': variant === 'common',
-            'shadow-green-500/20 dark:shadow-green-800/30':
+            'shadow-zinc-500/10 dark:shadow-zinc-800/10': variant === 'common',
+            'shadow-green-500/10 dark:shadow-green-800/10':
               variant === 'success',
-            'shadow-red-500/20 dark:shadow-red-800/30': variant === 'danger',
+            'shadow-red-500/10 dark:shadow-red-800/10': variant === 'danger',
           })}
         >
           <div

@@ -1,4 +1,5 @@
 import { getSession } from 'next-auth/react';
+import { ErrorsMap } from './contracts';
 
 export class ApiError<T extends unknown> extends Error {
   constructor(
@@ -26,4 +27,12 @@ export async function withToken<T>(action: (session: string) => Promise<T>) {
     return;
   }
   return action(`Bearer ${session.accessToken.value}`);
+}
+
+export function isErrorMap(body: unknown): body is ErrorsMap {
+  return (
+    typeof body === 'object' &&
+    body !== null &&
+    !Object.values(body).some(value => !Array.isArray(value))
+  );
 }

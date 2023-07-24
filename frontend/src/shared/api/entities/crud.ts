@@ -28,6 +28,8 @@ export const crud = {
         e instanceof NoTokenError
       ) {
         signOut({ callbackUrl: '/' });
+      } else {
+        throw e;
       }
     }
   },
@@ -38,16 +40,22 @@ export const crud = {
         throw new NoTokenError();
       }
       const token = `Bearer ${session.accessToken.value}`;
-      return await fetcher<void>(url, {
+      const res = await fetch(url, {
         method: 'DELETE',
         headers: [['Authorization', token]],
       });
+      if (!res.ok) {
+        throw new ApiError(res.status, {});
+      }
+      return res;
     } catch (e) {
       if (
         (e instanceof ApiError && e.status === 401) ||
         e instanceof NoTokenError
       ) {
         signOut({ callbackUrl: '/' });
+      } else {
+        throw e;
       }
     }
   },
@@ -76,6 +84,8 @@ export const crud = {
         e instanceof NoTokenError
       ) {
         signOut({ callbackUrl: '/' });
+      } else {
+        throw e;
       }
     }
   },

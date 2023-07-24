@@ -1,5 +1,10 @@
-import { apiSubjects } from '@/shared/api';
+import { ApiError, apiSubjects, isErrorMap } from '@/shared/api';
 import { TextField, Button } from '@/shared/ui/Controls';
+import {
+  useNotification,
+  Notification,
+  NotificationErrorsMap,
+} from '@/shared/ui/Notification';
 import { useForm } from 'react-hook-form';
 
 export type SubjectCreateFormProps = {
@@ -15,16 +20,40 @@ export function SubjectCreateForm({
   refresh,
   onClose,
 }: SubjectCreateFormProps) {
-  const { register, handleSubmit } = useForm<SubjectCreateFormData>({
+  const { register, handleSubmit, reset } = useForm<SubjectCreateFormData>({
     mode: 'all',
   });
+  const notify = useNotification();
 
   const onSave = async (data: SubjectCreateFormData) => {
-    await apiSubjects.create({
-      name: data.subject,
-    });
-    onClose();
-    return refresh();
+    try {
+      const subject = await apiSubjects.create({
+        name: data.subject,
+      });
+      reset();
+      notify(
+        <Notification variant="success">
+          <Notification.Title>Сохранено</Notification.Title>
+          <Notification.Message>
+            Предмет &quot;{subject.name}&quot; успешно сохранен.
+          </Notification.Message>
+        </Notification>,
+      );
+      return refresh();
+    } catch (e) {
+      if (e instanceof ApiError && isErrorMap(e.body)) {
+        notify(<NotificationErrorsMap errorsMap={e.body} />);
+      } else {
+        notify(
+          <Notification variant="danger">
+            <Notification.Title>Ошибка</Notification.Title>
+            <Notification.Message>
+              Предмет не удалось сохранить.
+            </Notification.Message>
+          </Notification>,
+        );
+      }
+    }
   };
 
   return (
@@ -42,12 +71,16 @@ export function SubjectCreateForm({
         />
       </div>
       <div className="flex justify-end gap-4 p-4">
-        <Button type="button" onClick={onClose}>
-          Отменить
-        </Button>
-        <Button type="submit" variant="primary">
-          Сохранить
-        </Button>
+        <div>
+          <Button type="button" onClick={onClose}>
+            Отменить
+          </Button>
+        </div>
+        <div>
+          <Button type="submit" variant="primary">
+            Сохранить
+          </Button>
+        </div>
       </div>
     </form>
   );
