@@ -1,4 +1,4 @@
-from backend.core.serializers import DateSerializer, ScheduleTypeSerializer
+from backend.shared.serializers import DateSerializer, ScheduleTypeSerializer
 from .serializers import ClassesScheduleMainTypeSerializer
 from .service import get_day_info
 

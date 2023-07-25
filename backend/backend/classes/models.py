@@ -1,9 +1,9 @@
 from django.db import models
 from django.db.models import Q
+from backend.shared.models import TimestampModel, ScheduleType, WeekDay
 from backend.groups.models import Group
 from backend.subjects.models import Subject
 from backend.teachers.models import Teacher
-from backend.core.models import TimestampModel, ScheduleType, WeekDay
 
 
 class ClassesSchedule(TimestampModel):

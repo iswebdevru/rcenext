@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'knox',
     'django_filters',
-    'backend.core',
+    'backend.shared',
     'backend.login',
     'backend.teachers',
     'backend.subjects',
@@ -64,7 +64,7 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
-    'DEFAULT_PAGINATION_CLASS': 'backend.core.pagination.ApiPagination',
+    'DEFAULT_PAGINATION_CLASS': 'backend.shared.pagination.ApiPagination',
     'PAGE_SIZE': 10,
 }
 

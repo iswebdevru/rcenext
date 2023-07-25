@@ -1,7 +1,7 @@
 from rest_framework import serializers
+from backend.shared.models import WeekDay
 from backend.teachers.models import Teacher
 from backend.subjects.models import Subject
-from backend.core.models import WeekDay
 from .models import ClassesSchedule, ClassesSchedulePeriod
 
 

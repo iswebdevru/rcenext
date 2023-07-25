@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from backend.core.serializers import ScheduleTypeSerializer, DateSerializer
-from backend.core.models import WeekDay
-from backend.core.helpers import get_weekday
+from backend.shared.serializers import ScheduleTypeSerializer, DateSerializer
+from backend.shared.models import WeekDay
+from backend.shared.helpers import get_weekday
 from .models import Bells
 
 

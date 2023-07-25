@@ -1,5 +1,5 @@
 from django.db import models
-from backend.core.models import TimestampModel
+from backend.shared.models import TimestampModel
 
 
 class Group(TimestampModel):
