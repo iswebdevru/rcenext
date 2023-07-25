@@ -1,7 +1,4 @@
-import {
-  ClassesScheduleMessageView,
-  ClassesScheduleTableView,
-} from '@/shared/api';
+import { ClassesScheduleMixed } from '@/shared/api';
 import { Reducer, useReducer } from 'react';
 import { withBlankPeriods } from './lib';
 import {
@@ -46,9 +43,10 @@ export function hasInitAndDraftDiff(data: ClassesDataWithDraft) {
 }
 
 function createClassesDataWithHistoryFromPayload(
-  payload: ClassesScheduleTableView | ClassesScheduleMessageView,
+  payload: ClassesScheduleMixed,
 ): ClassesDataWithDraft {
   return {
+    url: payload.url,
     init: {
       view: payload.view,
       message: payload.view === 'message' ? payload.message : '',

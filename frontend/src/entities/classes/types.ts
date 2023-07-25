@@ -1,8 +1,4 @@
-import {
-  ClassesScheduleMessageView,
-  ClassesScheduleTableView,
-  Hyperlink,
-} from '@/shared/api';
+import { ClassesScheduleMixed, Hyperlink } from '@/shared/api';
 
 // Store related types
 export type ClassesPartialPeriod = {
@@ -23,6 +19,7 @@ export type ClassesData = {
   periods: ClassesPartialPeriod[];
 };
 export type ClassesDataWithDraft = {
+  url?: Hyperlink;
   init: ClassesData;
   draft: ClassesData;
 };
@@ -55,9 +52,7 @@ export type ClassesStoreInitEmptyAction = {
 };
 export type ClassesStoreInitDefinedAction = {
   type: 'init-defined';
-  payload: ClassesStoreGroupActionPayload<
-    ClassesScheduleTableView | ClassesScheduleMessageView
-  >;
+  payload: ClassesStoreGroupActionPayload<ClassesScheduleMixed>;
 };
 export type ClassesStoreChangeViewAction = {
   type: 'change-view';

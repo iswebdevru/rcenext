@@ -1,6 +1,11 @@
-import { ComponentProps, forwardRef, useRef, useState } from 'react';
+import { ComponentProps, forwardRef, useEffect, useRef } from 'react';
 import useSWR from 'swr';
-import { ClassesScheduleChanges, Group } from '@/shared/api';
+import {
+  ApiError,
+  ClassesScheduleChanges,
+  Group,
+  apiClasses,
+} from '@/shared/api';
 import {
   faComment,
   faEllipsis,
@@ -11,6 +16,8 @@ import { SubjectSelect } from '../subjects';
 import { clsx } from '@/shared/lib/ui';
 import {
   useClickOutside,
+  usePositionCoords,
+  useRegisterOutsideClickException,
   withOutsideClickExceptionsContext,
 } from '@/shared/hooks';
 import { Button } from '@/shared/ui/Controls';
@@ -21,6 +28,8 @@ import {
   hasInitAndDraftDiff,
 } from '@/entities/classes';
 import { LoaderRect } from '@/shared/ui/Loader';
+import useTransition from 'react-transition-state';
+import { Portal, useZIndex } from '@/shared/ui/Utils';
 
 export const classPeriods = [0, 1, 2, 3, 4, 5, 6, 7] as const;
 
@@ -36,33 +45,42 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
     { group, searchParams, classes, dispatch },
     ref,
   ) {
-    const { isValidating } = useSWR<ClassesScheduleChanges>(
-      `${group.classes}${searchParams}`,
-      {
-        shouldRetryOnError: false,
-        revalidateOnFocus: false,
-        onError() {
-          dispatch({
-            type: 'init-empty',
-            payload: {
-              group: group.url,
-            },
-          });
-        },
-        onSuccess(data) {
-          dispatch({
-            type: 'init-defined',
-            payload: {
-              group: group.url,
-              data: data as any,
-            },
-          });
-        },
-      },
-    );
+    const { isValidating, data, error, mutate } = useSWR<
+      ClassesScheduleChanges,
+      ApiError<unknown>
+    >(`${group.classes}${searchParams}`, {
+      shouldRetryOnError: false,
+      revalidateOnFocus: false,
+    });
+
+    const handleDelete = async () => {
+      if (classes?.url) {
+        await apiClasses.delete(classes.url);
+        await mutate();
+      }
+    };
+
+    useEffect(() => {
+      if (error) {
+        dispatch({
+          type: 'init-empty',
+          payload: { group: group.url },
+        });
+      } else if (data) {
+        dispatch({
+          type: 'init-defined',
+          payload: {
+            group: group.url,
+            data: data as any,
+          },
+        });
+      }
+    }, [data, error, dispatch, group.url]);
 
     const isChanged =
       classes && !isValidating ? hasInitAndDraftDiff(classes) : false;
+
+    const cantDelete = !classes?.url;
 
     return (
       <div
@@ -87,6 +105,8 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
                   payload: { group: group.url, data: view },
                 })
               }
+              onDelete={handleDelete}
+              deleteDisabled={cantDelete}
             />
           ) : (
             <div className="h-7 w-7 overflow-hidden rounded-lg">
@@ -121,79 +141,104 @@ type ModeButtonProps = { isActive?: boolean } & ComponentProps<'button'>;
 type SettingsProps = {
   view: 'table' | 'message';
   onViewChange: (view: 'table' | 'message') => void;
+  onDelete: () => void;
+  deleteDisabled: boolean;
 };
 
 const Settings = withOutsideClickExceptionsContext(function Settings({
   view,
   onViewChange,
+  onDelete,
+  deleteDisabled,
 }: SettingsProps) {
   const settingsRef = useRef<HTMLDivElement>(null);
-  const [isSettingsOpened, setIsSettingsOpened] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const { right, top } = usePositionCoords(btnRef, settingsRef, {
+    alignCenter: false,
+  });
+  const [{ isMounted, status }, toggleTransition] = useTransition({
+    mountOnEnter: true,
+    timeout: 150,
+    preEnter: true,
+    unmountOnExit: true,
+  });
 
-  useClickOutside(settingsRef, () => setIsSettingsOpened(false));
+  useRegisterOutsideClickException(btnRef);
+  useClickOutside(settingsRef, () => toggleTransition(false));
+
+  const zIndex = useZIndex();
 
   return (
-    <div className="relative" ref={settingsRef}>
+    <div>
       <button
+        ref={btnRef}
         className={clsx(
           'flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-100 hover:bg-zinc-100 hover:text-zinc-900 dark:hover:bg-zinc-700 dark:hover:text-zinc-50',
           {
             'bg-zinc-100 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-50':
-              isSettingsOpened,
-            'text-zinc-500': !isSettingsOpened,
+              isMounted,
+            'text-zinc-500': !isMounted,
           },
         )}
-        onClick={() => setIsSettingsOpened(true)}
+        onClick={() => toggleTransition(true)}
       >
-        <FontAwesomeIcon
-          icon={faEllipsis}
-          fixedWidth
-          size="lg"
-          className="pointer-events-none"
-        />
+        <FontAwesomeIcon icon={faEllipsis} fixedWidth size="lg" />
       </button>
-      <div
-        className={clsx(
-          'absolute right-0 top-full mt-2 flex flex-col overflow-hidden rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] dark:border-zinc-700 dark:bg-zinc-800',
-          {
-            'opacity-1 z-10 translate-y-0 scale-100': isSettingsOpened,
-            'pointer-events-none invisible -translate-y-12 scale-75 opacity-0':
-              !isSettingsOpened,
-          },
-        )}
-      >
-        <div className="flex">
-          <ModeButton
-            className="h-10 flex-grow"
-            isActive={view === 'table'}
-            onClick={() => {
-              onViewChange('table');
-              setIsSettingsOpened(false);
-            }}
+      <Portal>
+        {isMounted ? (
+          <div
+            ref={settingsRef}
+            style={{ zIndex, right, top }}
+            className={clsx(
+              'fixed flex flex-col overflow-hidden rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] dark:border-zinc-700 dark:bg-zinc-800',
+              {
+                '-translate-y-6 scale-75 opacity-0':
+                  status === 'preEnter' || status === 'exiting',
+                'translate-y-0 scale-100 opacity-100': status === 'entering',
+              },
+            )}
           >
-            <FontAwesomeIcon icon={faTable} fixedWidth />
-          </ModeButton>
-          <ModeButton
-            className="h-10 flex-grow"
-            isActive={view === 'message'}
-            onClick={() => {
-              onViewChange('message');
-              setIsSettingsOpened(false);
-            }}
-          >
-            <FontAwesomeIcon icon={faComment} fixedWidth />
-          </ModeButton>
-        </div>
-        <div className="px-2 py-1.5">
-          <Button className="w-full">Основное</Button>
-        </div>
-        <div className="px-2 py-1.5">
-          <Button className="w-full">Сбросить</Button>
-        </div>
-        <div className="px-2 py-1.5">
-          <Button className="w-full">Удалить</Button>
-        </div>
-      </div>
+            <div className="flex">
+              <ModeButton
+                className="h-10 flex-grow"
+                isActive={view === 'table'}
+                onClick={() => {
+                  onViewChange('table');
+                  toggleTransition(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faTable} fixedWidth />
+              </ModeButton>
+              <ModeButton
+                className="h-10 flex-grow"
+                isActive={view === 'message'}
+                onClick={() => {
+                  onViewChange('message');
+                  toggleTransition(false);
+                }}
+              >
+                <FontAwesomeIcon icon={faComment} fixedWidth />
+              </ModeButton>
+            </div>
+            <div className="px-2 py-1.5">
+              <Button className="w-full">Основное</Button>
+            </div>
+            <div className="px-2 py-1.5">
+              <Button className="w-full">Сбросить</Button>
+            </div>
+            <div className="px-2 py-1.5">
+              <Button
+                variant="danger-outline"
+                className="w-full"
+                disabled={deleteDisabled}
+                onClick={onDelete}
+              >
+                Удалить
+              </Button>
+            </div>
+          </div>
+        ) : null}
+      </Portal>
     </div>
   );
 });
