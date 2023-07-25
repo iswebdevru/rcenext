@@ -90,7 +90,12 @@ export const Header = withOutsideClickExceptionsContext(function Header({
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm font-semibold text-slate-700 transition-colors hover:text-blue-600 dark:text-zinc-200 dark:hover:text-zinc-400"
+                    className={clsx('text-sm font-semibold transition-colors', {
+                      'text-primary-500 dark:text-white':
+                        router.route === link.href,
+                      'text-zinc-700 hover:text-primary-500 dark:text-zinc-400 dark:hover:text-white':
+                        router.route !== link.href,
+                    })}
                   >
                     {link.text}
                   </Link>
