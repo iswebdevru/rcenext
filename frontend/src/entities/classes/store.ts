@@ -131,8 +131,14 @@ const classesStoreReducer: Reducer<ClassesStore, ClassesStoreAction> = (
       });
       return clone;
     }
-    default:
-      return state;
+    case 'reset':
+      const clone = structuredClone(state);
+      const data = clone.get(action.payload.group);
+      if (!data) {
+        return state;
+      }
+      data.draft = structuredClone(data.init);
+      return clone;
   }
 };
 

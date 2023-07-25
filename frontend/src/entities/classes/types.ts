@@ -39,16 +39,22 @@ export type ClassesStore = Map<Hyperlink, ClassesDataWithDraft>;
  */
 
 // Actions
-export type ClassesStoreGroupActionPayload<T = undefined> = {
+export type ClassesStoreGroupActionBasePayload = {
   group: Hyperlink;
-} & (T extends undefined ? {} : { data: T });
-export type ClassesStoreGroupsActionPayload<T = undefined> = {
+};
+export type ClassesStoreGroupsActionBasePayload = {
   groups: Hyperlink[];
-} & (T extends undefined ? {} : { data: T });
+};
+export type ClassesStoreGroupActionPayload<T> = {
+  data: T;
+} & ClassesStoreGroupActionBasePayload;
+export type ClassesStoreGroupsActionPayload<T> = {
+  data: T;
+} & ClassesStoreGroupsActionBasePayload;
 
 export type ClassesStoreInitEmptyAction = {
   type: 'init-empty';
-  payload: ClassesStoreGroupActionPayload;
+  payload: ClassesStoreGroupActionBasePayload;
 };
 export type ClassesStoreInitDefinedAction = {
   type: 'init-defined';
@@ -68,7 +74,11 @@ export type ClassesStoreChangeMessageAction = {
 };
 export type ClassesStoreRemoveAction = {
   type: 'remove';
-  payload: ClassesStoreGroupsActionPayload;
+  payload: ClassesStoreGroupsActionBasePayload;
+};
+export type ClassesStoreCloneResetAction = {
+  type: 'reset';
+  payload: ClassesStoreGroupActionBasePayload;
 };
 export type ClassesStoreAction =
   | ClassesStoreInitEmptyAction
@@ -76,4 +86,5 @@ export type ClassesStoreAction =
   | ClassesStoreChangeViewAction
   | ClassesStoreChangePeriodAction
   | ClassesStoreChangeMessageAction
-  | ClassesStoreRemoveAction;
+  | ClassesStoreRemoveAction
+  | ClassesStoreCloneResetAction;

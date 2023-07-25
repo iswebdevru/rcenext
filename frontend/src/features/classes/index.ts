@@ -1,2 +1,2 @@
-export * from './ClassesEditor';
+export { ClassesEditor } from './editor';
 export * from './ClassesFilters';

@@ -90,7 +90,7 @@ export default function Classes({ date: initDate }: ClassesProps) {
         type: 'init-defined',
         payload: {
           group: data.group,
-          data: data as any,
+          data: data,
         },
       });
     });

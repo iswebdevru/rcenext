@@ -6,7 +6,6 @@ import {
   faBell,
   faBook,
   faBuildingUser,
-  faCalendarDays,
   faHouse,
   faLinesLeaning,
   faUserGroup,
@@ -21,11 +20,10 @@ import useTransition, { TransitionStatus } from 'react-transition-state';
 const links = [
   { href: '/admin', text: 'Главная', icon: faHouse },
   { href: '/admin/classes', text: 'Занятия', icon: faBook },
-  { href: '/admin/practice', text: 'Практика', icon: faBuildingUser },
+  { href: '/admin/practice', text: 'Практика (-)', icon: faBuildingUser },
   { href: '/admin/teachers', text: 'Преподаватели', icon: faUserTie },
   { href: '/admin/groups', text: 'Группы', icon: faUserGroup },
   { href: '/admin/bells', text: 'Звонки', icon: faBell },
-  { href: '/admin/calendar', text: 'Календарь', icon: faCalendarDays },
   { href: '/admin/subjects', text: 'Предметы', icon: faLinesLeaning },
 ] as const;
 
