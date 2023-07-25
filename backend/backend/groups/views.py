@@ -29,9 +29,7 @@ class GroupViewSet(viewsets.ModelViewSet):
                         group__id=pk,
                         date=query_params['date']
                     ),
-                    context={
-                        'request': request
-                    }
+                    context={'request': request}
                 ).data
             )
         if query_params['type'] == 'main':
@@ -44,9 +42,7 @@ class GroupViewSet(viewsets.ModelViewSet):
                         week_day=query_params['week_day'],
                         week_type=query_params['week_type']
                     ),
-                    context={
-                        'request': request
-                    }
+                    context={'request': request}
                 ).data
             )
         try:
@@ -54,12 +50,10 @@ class GroupViewSet(viewsets.ModelViewSet):
                 ClassesScheduleMixedSerializer(
                     ClassesSchedule.objects.get(
                         group__id=pk,
-                        type=ClassesSchedule.ScheduleType.CHANGES,
+                        type=ScheduleType.CHANGES,
                         date=query_params['date']
                     ),
-                    context={
-                        'request': request
-                    }
+                    context={'request': request}
                 ).data
             )
         except:
@@ -68,12 +62,10 @@ class GroupViewSet(viewsets.ModelViewSet):
                     get_object_or_404(
                         ClassesSchedule,
                         group__id=pk,
-                        type=ClassesSchedule.ScheduleType.MAIN,
+                        type=ScheduleType.MAIN,
                         week_day=query_params['week_day'],
                         week_type=query_params['week_type']
                     ),
-                    context={
-                        'request': request
-                    }
+                    context={'request': request}
                 ).data
             )
