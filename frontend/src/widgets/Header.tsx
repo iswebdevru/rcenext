@@ -1,7 +1,8 @@
+'use client';
+
 import { useRef } from 'react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
@@ -15,11 +16,7 @@ import {
   useRegisterOutsideClickException,
   withOutsideClickExceptionsContext,
 } from '@/shared/hooks';
-
-const ThemeTogglerWithNoSSR = dynamic(
-  () => import('./ThemeToggler').then(module => module.ThemeToggler),
-  { ssr: false },
-);
+import { ThemeToggler } from './ThemeToggler';
 
 export type HeaderProps = {
   wide?: boolean;
@@ -44,7 +41,7 @@ export const Header = withOutsideClickExceptionsContext(function Header({
     mountOnEnter: true,
   });
 
-  const router = useRouter();
+  const pathname = usePathname();
 
   const session = useSession();
 
@@ -94,9 +91,9 @@ export const Header = withOutsideClickExceptionsContext(function Header({
                       'text-sm font-semibold transition-colors duration-75',
                       {
                         'text-primary-500 dark:text-white':
-                          router.route === link.href,
+                          pathname === link.href,
                         'text-zinc-700 hover:text-primary-500 dark:text-zinc-400 dark:hover:text-white':
-                          router.route !== link.href,
+                          pathname !== link.href,
                       },
                     )}
                   >
@@ -111,7 +108,7 @@ export const Header = withOutsideClickExceptionsContext(function Header({
           </div>
           <div className="ml-6 hidden h-6 w-[1px] bg-zinc-200 dark:bg-zinc-700 sm:block"></div>
           <div className="ml-6 hidden items-center lg:flex">
-            <ThemeTogglerWithNoSSR />
+            <ThemeToggler />
           </div>
           {session.data ? (
             <div className="ml-6 hidden items-center lg:flex">
@@ -169,9 +166,9 @@ export const Header = withOutsideClickExceptionsContext(function Header({
                             'block w-full px-4 py-2 text-sm font-semibold transition-colors',
                             {
                               'rounded-lg bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-neutral-200':
-                                link.href === router.route,
+                                link.href === pathname,
                               'text-slate-500 dark:text-neutral-200':
-                                link.href !== router.route,
+                                link.href !== pathname,
                             },
                           )}
                         >
@@ -182,7 +179,7 @@ export const Header = withOutsideClickExceptionsContext(function Header({
                   </ul>
                 </nav>
                 <div className="mt-auto flex justify-between gap-4 lg:hidden">
-                  <ThemeTogglerWithNoSSR />
+                  <ThemeToggler />
                   {session.data ? <LogoutButton /> : null}
                 </div>
               </div>

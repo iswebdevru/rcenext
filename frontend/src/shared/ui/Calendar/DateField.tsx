@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef } from 'react';
 import { Button } from '../Controls/Button';
 import { Calendar, CalendarProps } from './Calendar';

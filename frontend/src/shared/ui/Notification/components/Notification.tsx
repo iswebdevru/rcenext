@@ -1,3 +1,5 @@
+'use client';
+
 import { clsx } from '@/shared/lib/ui';
 import {
   faBell,

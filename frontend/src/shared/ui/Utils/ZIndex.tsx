@@ -1,3 +1,5 @@
+'use client';
+
 import { PropsWithChildren, createContext, useContext } from 'react';
 
 const ZIndexContext = createContext(10);

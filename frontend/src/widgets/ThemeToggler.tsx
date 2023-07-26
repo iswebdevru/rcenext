@@ -1,3 +1,5 @@
+'use client';
+
 import { useTheme, useThemeEffect } from '@/shared/ui/Theme';
 
 const WIDTH = 42;

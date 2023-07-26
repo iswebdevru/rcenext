@@ -1,3 +1,5 @@
+'use client';
+
 import { noop } from '@/shared/lib/common';
 import { createContext } from 'react';
 

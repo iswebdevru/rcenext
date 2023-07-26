@@ -2,16 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-#__next,
-html,
-body {
-  @apply h-full;
-}
-
-body {
-  @apply dark:bg-zinc-900;
-}
-
 .dark input[type='time']::-webkit-calendar-picker-indicator {
   @apply invert;
 }

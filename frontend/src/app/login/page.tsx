@@ -1,18 +1,13 @@
-import { GetServerSideProps } from 'next';
-import { getServerSession } from 'next-auth';
+'use client';
+
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/router';
 import { TextField, Button } from '@/shared/ui/Controls';
-import { FormEventHandler, useId, useState } from 'react';
-import { authOptions } from './api/auth/[...nextauth]';
+import { FormEventHandler, useState } from 'react';
 import Link from 'next/link';
 
 export default function Login() {
-  const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const loginLabelId = useId();
-  const passwordLabelId = useId();
 
   const handleSubmit: FormEventHandler = e => {
     e.preventDefault();
@@ -32,7 +27,6 @@ export default function Login() {
         <form className="mb-10 space-y-6" onSubmit={handleSubmit}>
           <TextField
             type="text"
-            id={loginLabelId}
             label="Логин"
             placeholder="Логин"
             name="login"
@@ -44,7 +38,6 @@ export default function Login() {
 
           <TextField
             type="password"
-            id={passwordLabelId}
             label="Пароль"
             placeholder="Пароль"
             name="password"
@@ -71,27 +64,12 @@ export default function Login() {
             на главную
           </Link>
         </div>
-        {router.query.error === 'CredentialsSignin' ? (
+        {/* // TODO {router.query.error === 'CredentialsSignin' ? (
           <div className="mt-6 text-center text-xs text-red-500 sm:text-sm md:mt-8">
             Неверное имя пользователя или пароль
           </div>
-        ) : null}
+        ) : null} */}
       </div>
     </div>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async ctx => {
-  const session = await getServerSession(ctx.req, ctx.res, authOptions);
-
-  if (session) {
-    return {
-      redirect: {
-        destination: '/admin',
-        permanent: false,
-      },
-    };
-  }
-
-  return { props: {} };
-};

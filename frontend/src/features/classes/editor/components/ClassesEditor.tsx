@@ -1,3 +1,5 @@
+'use client';
+
 import { forwardRef, useEffect } from 'react';
 import useSWR from 'swr';
 import {

@@ -1,5 +1,8 @@
+'use client';
+
 import { useEffect } from 'react';
 import { create } from 'zustand';
+import { isBrowser } from '../constants';
 
 export type Theme = 'dark' | 'light';
 
@@ -10,7 +13,7 @@ export type ThemeState = {
 };
 
 export const useTheme = create<ThemeState>(set => ({
-  theme: localStorage.getItem('theme') as Theme,
+  theme: isBrowser ? (localStorage.getItem('theme') as Theme) : 'light',
   setTheme(theme) {
     set({ theme });
   },

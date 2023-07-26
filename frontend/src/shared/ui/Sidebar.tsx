@@ -1,5 +1,5 @@
-import { clsx } from '@/shared/lib/ui';
 import { PropsWithChildren } from 'react';
+import { clsx } from '@/shared/lib/ui';
 
 export type SidebarProps = {
   opened: boolean;

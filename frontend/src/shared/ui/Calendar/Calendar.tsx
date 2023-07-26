@@ -1,3 +1,5 @@
+'use client';
+
 import { clsx } from '@/shared/lib/ui';
 import { Dispatch, SetStateAction, forwardRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

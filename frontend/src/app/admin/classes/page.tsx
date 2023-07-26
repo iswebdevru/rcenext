@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { GetServerSideProps } from 'next';
-import Head from 'next/head';
 import { Button } from '@/shared/ui/Controls';
 import { DateField } from '@/shared/ui/Calendar';
 import { SelectWeekType, SelectWeekDay } from '@/shared/ui/Select';
 import { Toggles } from '@/shared/ui/Controls';
-import { AdminLayout } from '@/layouts';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { API_GROUPS, Group, WeekDay, WeekType, apiClasses } from '@/shared/api';
 import {
@@ -103,81 +101,71 @@ export default function Classes({ date: initDate }: ClassesProps) {
   }
 
   return (
-    <>
-      <Head>
-        <title>Занятия</title>
-      </Head>
-      <AdminLayout>
-        <div className="p-4">
-          <div className="mb-5 rounded-md border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
-            <div className="flex items-start gap-4">
-              <Toggles value={classesType} onToggle={setClassesType}>
-                <Toggles.Variant value="main">Основное</Toggles.Variant>
-                <Toggles.Variant value="changes">Изменения</Toggles.Variant>
-              </Toggles>
-              {debouncedClassesType === 'main' ? (
-                <div className="flex gap-2">
-                  <div>
-                    <SelectWeekDay weekDayId={weekDay} onSelect={setWeekDay} />
-                  </div>
-                  <div>
-                    <SelectWeekType
-                      weekTypeId={weekType}
-                      onSelect={setWeekType}
-                    />
-                  </div>
-                </div>
-              ) : (
-                <DateField
-                  disabled={isSaving}
-                  date={date}
-                  onDateChange={setDate}
-                />
-              )}
-              <div className="ml-auto">
-                <Button disabled={isSaving} variant="danger-outline">
-                  Удалить
-                </Button>
+    <div className="p-4">
+      <div className="mb-5 rounded-md border border-zinc-200 bg-white px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
+        <div className="flex items-start gap-4">
+          <Toggles value={classesType} onToggle={setClassesType}>
+            <Toggles.Variant value="main">Основное</Toggles.Variant>
+            <Toggles.Variant value="changes">Изменения</Toggles.Variant>
+          </Toggles>
+          {debouncedClassesType === 'main' ? (
+            <div className="flex gap-2">
+              <div>
+                <SelectWeekDay weekDayId={weekDay} onSelect={setWeekDay} />
               </div>
               <div>
-                <Button
-                  variant="primary"
-                  disabled={!canSave || isSaving}
-                  onClick={handleSave}
-                >
-                  Сохранить
-                </Button>
+                <SelectWeekType weekTypeId={weekType} onSelect={setWeekType} />
               </div>
             </div>
+          ) : (
+            <DateField disabled={isSaving} date={date} onDateChange={setDate} />
+          )}
+          <div className="ml-auto">
+            <Button disabled={isSaving} variant="danger-outline">
+              Удалить
+            </Button>
           </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-            {groups
-              ?.flatMap(page => page.results)
-              .map((group, i, a) => (
-                <ClassesEditor
-                  key={group.id}
-                  dispatch={dispatch}
-                  group={group}
-                  classes={classesStore.get(group.url)}
-                  searchParams={
-                    debouncedClassesType === 'main'
-                      ? `?type=${debouncedClassesType}&week_day=${debouncedWeekDay}&week_type=${debouncedWeekType}`
-                      : `?type=${debouncedClassesType}&date=${debouncedStrDate}`
-                  }
-                  ref={a.length - 1 === i ? lastElementRef : null}
-                />
-              ))}
+          <div>
+            <Button
+              variant="primary"
+              disabled={!canSave || isSaving}
+              onClick={handleSave}
+            >
+              Сохранить
+            </Button>
           </div>
-          {areGroupsValidating ? (
-            <div className="mt-4 flex justify-center">
-              <LoaderCircle />
-            </div>
-          ) : null}
         </div>
-      </AdminLayout>
-    </>
+      </div>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        {groups
+          ?.flatMap(page => page.results)
+          .map((group, i, a) => (
+            <ClassesEditor
+              key={group.id}
+              dispatch={dispatch}
+              group={group}
+              classes={classesStore.get(group.url)}
+              searchParams={
+                debouncedClassesType === 'main'
+                  ? `?type=${debouncedClassesType}&week_day=${debouncedWeekDay}&week_type=${debouncedWeekType}`
+                  : `?type=${debouncedClassesType}&date=${debouncedStrDate}`
+              }
+              ref={a.length - 1 === i ? lastElementRef : null}
+            />
+          ))}
+      </div>
+      {areGroupsValidating ? (
+        <div className="mt-4 flex justify-center">
+          <LoaderCircle />
+        </div>
+      ) : null}
+    </div>
   );
 }
+
+export const metadata = {
+  title: 'Занятия',
+};
 
 export const getServerSideProps: GetServerSideProps = async () => {
   return {

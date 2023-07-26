@@ -1,3 +1,5 @@
+'use client';
+
 import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { PropsWithChildren, useRef } from 'react';

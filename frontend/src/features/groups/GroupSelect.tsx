@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { SearchField } from '@/shared/ui/Controls';
 import { Select, SelectOption, useSelectTransition } from '@/shared/ui/Select';
 import { API_GROUPS, Group } from '@/shared/api';
+import { useRouter } from 'next/navigation';
 
 export type GroupSelectProps = {
   onSelect: (group: Group) => void;

@@ -1,3 +1,5 @@
+'use client';
+
 import { clsx } from '@/shared/lib/ui';
 import { HamburgerButton } from '@/shared/ui/Controls/Button';
 import { Portal, ZIndex } from '@/shared/ui/Utils';
@@ -13,7 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 import { useRef } from 'react';
 import useTransition, { TransitionStatus } from 'react-transition-state';
 
@@ -28,7 +30,7 @@ const links = [
 ] as const;
 
 export function AdminNav() {
-  const { route } = useRouter();
+  const pathname = usePathname();
   const [transitionState, toggleTransition] = useTransition({
     timeout: 300,
     mountOnEnter: true,
@@ -53,7 +55,7 @@ export function AdminNav() {
           <ul className="space-y-3">
             {links.map(link => (
               <li key={link.href}>
-                <AdminNavLink {...link} isActive={route === link.href} />
+                <AdminNavLink {...link} isActive={pathname === link.href} />
               </li>
             ))}
           </ul>
@@ -76,7 +78,7 @@ type AdminNavMobileProps = {
 };
 
 function AdminNavMobile({ onClose, isMounted, status }: AdminNavMobileProps) {
-  const { route } = useRouter();
+  const pathname = usePathname();
   const componentRef = useRef<HTMLDivElement>(null);
 
   const zIndex = 30;
@@ -118,7 +120,7 @@ function AdminNavMobile({ onClose, isMounted, status }: AdminNavMobileProps) {
               <ul className="space-y-3">
                 {links.map(link => (
                   <li key={link.href}>
-                    <AdminNavLink {...link} isActive={route === link.href} />
+                    <AdminNavLink {...link} isActive={pathname === link.href} />
                   </li>
                 ))}
               </ul>
