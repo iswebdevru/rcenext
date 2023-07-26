@@ -30,6 +30,22 @@ DEBUG = os.getenv('DEBUG') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 # Application definition
+MY_APPS = [
+    'backend.shared',
+    'backend.teachers',
+    'backend.subjects',
+    'backend.groups',
+    'backend.classes',
+    'backend.bells'
+]
+
+THIRD_PARTY_APPS = [
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'django_filters',
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,17 +54,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',
-    'rest_framework',
-    'knox',
-    'django_filters',
-    'backend.shared',
-    'backend.login',
-    'backend.teachers',
-    'backend.subjects',
-    'backend.groups',
-    'backend.classes',
-    'backend.bells'
+    *THIRD_PARTY_APPS,
+    *MY_APPS
 ]
 
 MIDDLEWARE = [
@@ -63,7 +70,7 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
     'DEFAULT_PAGINATION_CLASS': 'backend.shared.pagination.ApiPagination',
     'PAGE_SIZE': 10,
 }
@@ -151,5 +158,3 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https") if os.getenv(
     'ENV') == 'production' else None
-
-from config.settings.knox import *  # noqa
