@@ -13,10 +13,6 @@ export type TokenPair = {
   refresh: string;
 };
 
-export type TokenRefreshed = {
-  access: string;
-};
-
 /**
  * Server only API
  */
@@ -34,15 +30,11 @@ export const apiAuth = {
   },
   async refresh(tokenPair: TokenPair): Promise<JWT> {
     try {
-      const { access } = await fetcher<TokenRefreshed>(API_REFRESH_TOKEN, {
+      return await fetcher<TokenPair>(API_REFRESH_TOKEN, {
         method: 'POST',
         headers: [['Content-Type', 'application/json']],
         body: JSON.stringify({ refresh: tokenPair.refresh }),
       });
-      return {
-        access,
-        refresh: tokenPair.refresh,
-      };
     } catch (e) {
       return {
         ...tokenPair,

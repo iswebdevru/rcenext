@@ -157,3 +157,5 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https") if os.getenv(
     'ENV') == 'production' else None
+
+from config.settings.jwt import *  # noqa
