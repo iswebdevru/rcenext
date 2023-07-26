@@ -1,7 +1,8 @@
 'use client';
 
 import { getSession, signOut } from 'next-auth/react';
-import { ApiError, NoTokenError, fetcher } from '../lib';
+import { fetcher } from '../lib';
+import { ApiError, NoTokenError } from '../errors';
 
 export const crud = {
   async post<U extends RequestInfo | URL, B extends unknown, R extends unknown>(
@@ -13,7 +14,7 @@ export const crud = {
       if (!session) {
         throw new NoTokenError();
       }
-      const token = `Bearer ${session.accessToken.value}`;
+      const token = `Bearer ${session.access}`;
       return await fetcher<R>(url, {
         method: 'POST',
         headers: [
@@ -39,7 +40,7 @@ export const crud = {
       if (!session) {
         throw new NoTokenError();
       }
-      const token = `Bearer ${session.accessToken.value}`;
+      const token = `Bearer ${session.access}`;
       const res = await fetch(url, {
         method: 'DELETE',
         headers: [['Authorization', token]],
@@ -69,7 +70,7 @@ export const crud = {
       if (!session) {
         throw new NoTokenError();
       }
-      const token = `Bearer ${session.accessToken.value}`;
+      const token = `Bearer ${session.access}`;
       return await fetcher<R>(url, {
         method: 'PATCH',
         headers: [

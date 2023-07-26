@@ -1,4 +1,4 @@
-export { apiToken } from './token';
+export * from './auth';
 export { apiTeachers } from './teachers';
 export { apiGroups } from './groups';
 export { apiSubjects } from './subjects';

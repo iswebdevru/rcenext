@@ -16,6 +16,7 @@ import {
 } from '@/entities/classes';
 import { ClassesEditor } from '@/features/classes';
 import { formatDate, getAppDate } from '@/shared/lib/date';
+import { LoaderCircle } from '@/shared/ui/Loader';
 
 type ClassesProps = {
   date: string;
@@ -41,7 +42,11 @@ export default function Classes({ date: initDate }: ClassesProps) {
   // Derived
   const debouncedStrDate = formatDate(debouncedDate);
 
-  const { data: groups, lastElementRef } = usePaginatedFetch<Group>(API_GROUPS);
+  const {
+    data: groups,
+    isValidating: areGroupsValidating,
+    lastElementRef,
+  } = usePaginatedFetch<Group>(API_GROUPS);
 
   const validatedClassesDataList =
     groups
@@ -163,6 +168,11 @@ export default function Classes({ date: initDate }: ClassesProps) {
                 />
               ))}
           </div>
+          {areGroupsValidating ? (
+            <div className="mt-4 flex justify-center">
+              <LoaderCircle />
+            </div>
+          ) : null}
         </div>
       </AdminLayout>
     </>

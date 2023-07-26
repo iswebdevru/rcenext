@@ -7,7 +7,7 @@ export default function index() {
       <Head>
         <title>Админ</title>
       </Head>
-      <AdminLayout>Admin</AdminLayout>
+      <AdminLayout></AdminLayout>
     </>
   );
 }

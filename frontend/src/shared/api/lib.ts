@@ -1,17 +1,13 @@
 import { getSession } from 'next-auth/react';
 import { ErrorsMap } from './contracts';
+import { ApiError } from './errors';
 
-export class ApiError<T extends unknown> extends Error {
-  constructor(
-    public status: number,
-    public body: T,
-  ) {
-    super();
-  }
-}
-
-export class NoTokenError extends Error {}
-
+/**
+ * Small utility over a built-in `fetch`.
+ * 1. Automatically convert response to JSON
+ * 2. Throw an error if response isn't `ok`
+ * 3. Type response by providing generic
+ */
 export const fetcher = <T extends unknown>(...args: Parameters<typeof fetch>) =>
   fetch(...args).then(async res => {
     if (!res.ok) {
@@ -26,7 +22,7 @@ export async function withToken<T>(action: (session: string) => Promise<T>) {
   if (!session) {
     return;
   }
-  return action(`Bearer ${session.accessToken.value}`);
+  return action(`Bearer ${session.access}`);
 }
 
 export function isErrorMap(body: unknown): body is ErrorsMap {

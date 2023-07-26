@@ -8,11 +8,6 @@ export type ErrorsMap = Record<string, string[]>;
 
 export type Hyperlink = string;
 
-export type Token = {
-  token: string;
-  expiry: string;
-};
-
 export type Teacher = {
   id: number;
   url: Hyperlink;

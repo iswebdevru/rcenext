@@ -1,14 +1,8 @@
 import nextAuth from 'next-auth';
 import { AuthOptions } from 'next-auth/core/types';
 import Credentials from 'next-auth/providers/credentials';
-import { apiToken } from '@/shared/api';
-
-interface WithAccessToken {
-  accessToken: {
-    value: string;
-    exp: string;
-  };
-}
+import { apiAuth, TokenPair } from '@/shared/api';
+import { REFRESH_TOKEN_EXPIRED_ERROR } from '@/shared/api/errors';
 
 export const authOptions: AuthOptions = {
   session: { strategy: 'jwt', maxAge: 172800 },
@@ -19,55 +13,60 @@ export const authOptions: AuthOptions = {
   providers: [
     Credentials({
       id: 'credentials',
-      authorize: async credentials => {
-        if (!credentials) {
-          return null;
-        }
-        try {
-          const data = await apiToken.login(credentials);
-          return {
-            id: data.token,
-            accessToken: {
-              exp: data.expiry,
-              value: data.token,
-            },
-          };
-        } catch (e) {
-          return null;
-        }
-      },
       credentials: {
         username: { type: 'text' },
         password: { type: 'password' },
       },
+      authorize: async credentials => {
+        if (!credentials) {
+          return null;
+        }
+        const tokenPair = await apiAuth.login(credentials);
+        if (!tokenPair) {
+          return null;
+        }
+        return {
+          id: tokenPair.access,
+          ...tokenPair,
+        };
+      },
     }),
   ],
   callbacks: {
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.accessToken = user.accessToken;
+        // First login
+        return {
+          access: user.access,
+          refresh: user.refresh,
+        };
       }
-      return token;
+      const isTokenStillValid = await apiAuth.verify(token.access);
+      if (isTokenStillValid) {
+        return token;
+      }
+      return apiAuth.refresh(token);
     },
     session({ session, token }) {
-      session.accessToken = token.accessToken;
+      session.access = token.access;
+      session.error = token.error;
       return session;
-    },
-  },
-  events: {
-    async signOut({ token }) {
-      await apiToken.logout(token.accessToken.value);
     },
   },
 };
 
 declare module 'next-auth' {
-  interface User extends WithAccessToken {}
-  interface Session extends WithAccessToken {}
+  interface User extends TokenPair {}
+  interface Session {
+    access: string;
+    error?: typeof REFRESH_TOKEN_EXPIRED_ERROR;
+  }
 }
 
 declare module 'next-auth/jwt' {
-  interface JWT extends WithAccessToken {}
+  interface JWT extends TokenPair {
+    error?: typeof REFRESH_TOKEN_EXPIRED_ERROR;
+  }
 }
 
 export default nextAuth(authOptions);
