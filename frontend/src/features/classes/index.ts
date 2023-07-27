@@ -1,3 +1,3 @@
-export { ClassesEditor } from './editor';
-export * from './ClassesFilters';
-export * from './ClassesScheduleScreen';
+export * from './editor';
+export * from './list';
+export * from './filters';

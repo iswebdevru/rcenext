@@ -1,3 +1,5 @@
+'use client';
+
 import { ClassesScheduleMixed } from '@/shared/api';
 import { Reducer, useReducer } from 'react';
 import { withBlankPeriods } from './lib';

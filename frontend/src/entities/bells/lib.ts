@@ -1,4 +1,7 @@
 import { BellsPeriodEditing } from './types';
+import { formatDate, prepareDate, prepareWeekDay } from '@/shared/lib/date';
+import { prepareType, prepareVariant } from './validators';
+import { NextServerURLSearchParams } from '@/shared/packages/next';
 
 export function isBellsPeriodValid(period: BellsPeriodEditing) {
   return (
@@ -22,4 +25,15 @@ export function formatPeriodTime(period: BellsPeriodEditing) {
     clone.period_to_after = _format(clone.period_to_after);
   }
   return clone;
+}
+
+export function getBellsScheduleSearchParams(
+  searchParams: NextServerURLSearchParams,
+) {
+  return new URLSearchParams({
+    type: prepareType(searchParams.type),
+    variant: prepareVariant(searchParams.variant),
+    date: formatDate(prepareDate(searchParams.date)),
+    week_day: prepareWeekDay(searchParams.weekDay),
+  }).toString();
 }

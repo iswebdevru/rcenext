@@ -1,6 +1,6 @@
 'use client';
 
-import { Dispatch, SetStateAction, useRef } from 'react';
+import { useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { clsx } from '@/shared/lib/ui';
@@ -11,8 +11,7 @@ import {
   SearchField,
   CheckboxField,
 } from '@/shared/ui/Controls';
-import { ClassesType } from '@/entities/classes';
-import { GroupSelect } from '../groups';
+import { GroupSelect } from '../../groups';
 import { Portal, ZIndex } from '@/shared/ui/Utils';
 import useTransition from 'react-transition-state';
 import {
@@ -20,22 +19,10 @@ import {
   useRegisterOutsideClickException,
   withOutsideClickExceptionsContext,
 } from '@/shared/hooks';
+import { useClassesScheduleFiltersStore } from './store';
 
-export type ClassesFiltersProps = {
-  date: Date;
-  onDateChange: Dispatch<SetStateAction<Date>>;
-  collegeBlock: number;
-  onCollegeBlockChange: (collegeBlock: number) => void;
-  classesType: ClassesType;
-  onClassesTypeChange: (classesType: ClassesType) => void;
-  groupSearch: string;
-  onGroupSearchChange: (groupSearch: string) => void;
-  cabinet: string;
-  onCabinetChange: (cabinet: string) => void;
-};
-
-export const ClassesFilters = withOutsideClickExceptionsContext(
-  function ClassesFilters(props: ClassesFiltersProps) {
+export const ClassesScheduleFilters = withOutsideClickExceptionsContext(
+  function ClassesScheduleFilters() {
     const mobileFiltersViewRef = useRef<HTMLDivElement>(null);
 
     const [transitionState, toggleTransition] = useTransition({
@@ -62,7 +49,7 @@ export const ClassesFilters = withOutsideClickExceptionsContext(
     return (
       <>
         <div className="hidden h-full lg:block">
-          <Filters {...props} />
+          <Filters />
         </div>
         <FiltersButton onOpen={openFilters} />
         <ZIndex index={zIndex}>
@@ -96,7 +83,7 @@ export const ClassesFilters = withOutsideClickExceptionsContext(
                 ref={mobileFiltersViewRef}
               >
                 <div className="w-full max-w-xs">
-                  <Filters {...props} />
+                  <Filters />
                 </div>
                 <div className="mt-auto w-full max-w-xs lg:hidden">
                   <Button variant="primary" onClick={closeFilters}>
@@ -112,33 +99,78 @@ export const ClassesFilters = withOutsideClickExceptionsContext(
   },
 );
 
-function Filters(props: ClassesFiltersProps) {
+function Filters() {
   return (
     <div className="space-y-4">
-      <Calendar date={props.date} onDateChange={props.onDateChange} />
-      <GroupSelect
-        groupSearch={props.groupSearch}
-        onGroupSearchChange={props.onGroupSearchChange}
-        onSelect={group => props.onGroupSearchChange(group.name)}
-      />
-      <SearchField
-        name="cabinet"
-        autoComplete="off"
-        placeholder="Кабинет"
-        value={props.cabinet}
-        onChange={e => props.onCabinetChange(e.currentTarget.value)}
-      />
-      <Toggles value={props.collegeBlock} onToggle={props.onCollegeBlockChange}>
-        <Toggles.Variant value={-1}>Все</Toggles.Variant>
-        <Toggles.Variant value={1}>1-5</Toggles.Variant>
-        <Toggles.Variant value={6}>6</Toggles.Variant>
-      </Toggles>
-      <Toggles value={props.classesType} onToggle={props.onClassesTypeChange}>
-        <Toggles.Variant value="main">Основное</Toggles.Variant>
-        <Toggles.Variant value="mixed">С изменениями</Toggles.Variant>
-      </Toggles>
+      <DateFilter />
+      <GroupFilter />
+      <CabinetFilter />
+      <CollegeBlockFilter />
+      <ClassesScheduleTypeFilter />
       <CheckboxField label="Показывать звонки" />
     </div>
+  );
+}
+
+function DateFilter() {
+  const date = useClassesScheduleFiltersStore(state => state.date);
+  const onChange = useClassesScheduleFiltersStore(state => state.changeDate);
+
+  return <Calendar date={date} onDateChange={onChange} />;
+}
+
+function GroupFilter() {
+  const groupName = useClassesScheduleFiltersStore(state => state.groupName);
+  const onChange = useClassesScheduleFiltersStore(
+    state => state.changeGroupName,
+  );
+
+  return (
+    <GroupSelect
+      groupSearch={groupName}
+      onGroupSearchChange={onChange}
+      onSelect={group => onChange(group.name)}
+    />
+  );
+}
+
+function CabinetFilter() {
+  const cabinet = useClassesScheduleFiltersStore(state => state.cabinet);
+  const onChange = useClassesScheduleFiltersStore(state => state.changeCabinet);
+
+  return (
+    <SearchField
+      name="cabinet"
+      autoComplete="off"
+      placeholder="Кабинет"
+      value={cabinet}
+      onChange={e => onChange(e.currentTarget.value)}
+    />
+  );
+}
+
+function CollegeBlockFilter() {
+  const block = useClassesScheduleFiltersStore(state => state.block);
+  const onChange = useClassesScheduleFiltersStore(state => state.changeBlock);
+
+  return (
+    <Toggles value={block} onToggle={onChange}>
+      <Toggles.Variant value={-1}>Все</Toggles.Variant>
+      <Toggles.Variant value={1}>1-5</Toggles.Variant>
+      <Toggles.Variant value={6}>6</Toggles.Variant>
+    </Toggles>
+  );
+}
+
+function ClassesScheduleTypeFilter() {
+  const type = useClassesScheduleFiltersStore(state => state.type);
+  const onChange = useClassesScheduleFiltersStore(state => state.changeType);
+
+  return (
+    <Toggles value={type} onToggle={onChange}>
+      <Toggles.Variant value="main">Основное</Toggles.Variant>
+      <Toggles.Variant value="mixed">С изменениями</Toggles.Variant>
+    </Toggles>
   );
 }
 

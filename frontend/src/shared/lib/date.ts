@@ -24,6 +24,10 @@ export const WEEKDAYS_MAP: WeekDay[] = [
   'СБ',
 ];
 
+export function getWeekDay(date: Date) {
+  return WEEKDAYS_MAP[date.getDay()];
+}
+
 export type SimplifiedDate = {
   day: number;
   date: number;
@@ -77,4 +81,25 @@ export function getAppDate() {
   return new Date().toLocaleDateString('en', {
     timeZone: APP_TIMEZONE,
   });
+}
+
+export function prepareDate(data: unknown) {
+  if (
+    typeof data !== 'string' &&
+    typeof data !== 'number' &&
+    !(data instanceof Date)
+  ) {
+    return new Date(getAppDate());
+  }
+  const date = new Date(data);
+  if (date.toString() === 'Invalid Date') {
+    return new Date(getAppDate());
+  }
+  return date;
+}
+
+export function prepareWeekDay(data: unknown) {
+  return typeof data === 'string' && WEEKDAYS_MAP.includes(data as WeekDay)
+    ? data
+    : getWeekDay(new Date(getAppDate()));
 }

@@ -1,3 +1,5 @@
+'use client';
+
 import { Reducer, useReducer } from 'react';
 import { BellsAction, BellsPeriodEditing } from './types';
 

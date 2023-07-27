@@ -1,5 +1,11 @@
 import { ClassesSchedulePeriod, WeekDay, WeekType } from '@/shared/api';
 import { defaultPeriods } from './constants';
+import {
+  formatDate,
+  getAppDate,
+  getWeekDay,
+  getWeekType,
+} from '@/shared/lib/date';
 
 export function withBlankPeriods(periods: ClassesSchedulePeriod[]) {
   return defaultPeriods.map(period => {
@@ -11,28 +17,45 @@ export function withBlankPeriods(periods: ClassesSchedulePeriod[]) {
   });
 }
 
-export type ClassesQueryParamsOptions = (
-  | {
-      classesType: 'main';
-      weekType: WeekType;
-      weekDay: WeekDay;
-    }
-  | {
-      classesType: 'mixed' | 'changes';
-      date: string;
-    }
-) & {
-  groupName: string;
-  collegeBlock: number;
-  cabinet: string;
+export type ClassesQueryParamsOptions = {
+  type?: 'mixed' | 'changes' | 'main' | null;
+  weekType?: WeekType | null;
+  weekDay?: WeekDay | null;
+  date?: string | null;
+  groupName?: string | null;
+  block?: string | null;
+  cabinet?: string | null;
 };
 
-export function getClassesQueryParams(params: ClassesQueryParamsOptions) {
-  return `?type=${params.classesType}&group__name=${params.groupName}&block=${
-    params.collegeBlock
-  }&cabinet=${params.cabinet}${
-    params.classesType === 'main'
-      ? `&week_type=${params.weekType}&week_day=${params.weekDay}`
-      : `&date=${params.date}`
-  }`;
+export function getClassesScheduleSearchParams(
+  params: ClassesQueryParamsOptions,
+) {
+  let date = params.date ? new Date(params.date) : new Date(getAppDate());
+  if (date.toString() === 'Invalid Date') {
+    date = new Date(getAppDate());
+  }
+
+  const filled = {
+    type: params.type ?? 'mixed',
+    date: formatDate(date),
+    groupName: params.groupName ?? '',
+    block: params.block ?? -1,
+    cabinet: params.cabinet ?? '',
+    weekDay: params.weekDay ?? getWeekDay(date),
+    weekType: params.weekType ?? getWeekType(date),
+  };
+
+  const urlParams = new URLSearchParams({
+    type: filled.type,
+    group__name: filled.groupName,
+    block: filled.block.toString(),
+    cabinet: filled.cabinet,
+  });
+  if (filled.type === 'main') {
+    urlParams.append('week_type', filled.weekType);
+    urlParams.append('week_day', filled.weekDay);
+  } else {
+    urlParams.append('date', filled.date);
+  }
+  return urlParams.toString();
 }

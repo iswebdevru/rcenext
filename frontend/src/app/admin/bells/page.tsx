@@ -4,12 +4,13 @@ import { BellsForm } from '@/features/bells';
 import { WeekDay } from '@/shared/api';
 import { useDebounce } from '@/shared/hooks';
 import { Toggles } from '@/shared/ui/Controls';
-import { BellsType, SelectWeekDay } from '@/shared/ui/Select';
+import { BellsScheduleVariant, SelectWeekDay } from '@/shared/ui/Select';
 import { DateField } from '@/shared/ui/Calendar';
 import { useState } from 'react';
 
 export default function Bells() {
-  const [bellsVariant, setBellsVariant] = useState<BellsType>('normal');
+  const [bellsVariant, setBellsVariant] =
+    useState<BellsScheduleVariant>('normal');
   const [bellsType, setBellsType] = useState<'main' | 'changes'>('main');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
   const [date, setDate] = useState(new Date(''));
