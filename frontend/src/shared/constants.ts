@@ -2,6 +2,16 @@ import { WeekDay, WeekType } from './api';
 
 export const isBrowser = typeof window !== 'undefined';
 
+export const WEEK_DAYS_SHORT: WeekDay[] = [
+  'ВС',
+  'ПН',
+  'ВТ',
+  'СР',
+  'ЧТ',
+  'ПТ',
+  'СБ',
+];
+
 export const WEEK_TYPES = new Map<WeekType, string>([
   ['ЧИСЛ', 'Числитель'],
   ['ЗНАМ', 'Знаменатель'],

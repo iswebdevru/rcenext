@@ -7,7 +7,7 @@ import { Toggles } from '@/shared/ui/Controls';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { API_GROUPS, Group, WeekDay, WeekType, apiClasses } from '@/shared/api';
 import {
-  ClassesType,
+  ClassesScheduleType,
   hasInitAndDraftDiff,
   useClassesStore,
   validateClassesDataDraft,
@@ -25,7 +25,7 @@ export default function Classes({ date: initDate }: ClassesProps) {
 
   // State
   const [classesType, setClassesType] =
-    useState<Exclude<ClassesType, 'mixed'>>('changes');
+    useState<Exclude<ClassesScheduleType, 'mixed'>>('changes');
   const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
   const [date, setDate] = useState(new Date(initDate));

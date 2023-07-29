@@ -1,4 +1,4 @@
-import { WeekDay, WeekType } from '../api';
+import { WeekType } from '../api';
 import { APP_TIMEZONE } from '../config';
 
 const baseTimestamp = new Date(2000, 0, 3);
@@ -8,24 +8,10 @@ export function formatDate(date: Date) {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 
-export function getWeekType(date: Date): WeekType {
+export function getWeekTypeFromDate(date: Date): WeekType {
   return ((date.getTime() - baseTimestamp.getTime()) / DAY) % 14 < 7
     ? 'ЗНАМ'
     : 'ЧИСЛ';
-}
-
-export const WEEKDAYS_MAP: WeekDay[] = [
-  'ВС',
-  'ПН',
-  'ВТ',
-  'СР',
-  'ЧТ',
-  'ПТ',
-  'СБ',
-];
-
-export function getWeekDay(date: Date) {
-  return WEEKDAYS_MAP[date.getDay()];
 }
 
 export type SimplifiedDate = {
@@ -33,21 +19,6 @@ export type SimplifiedDate = {
   date: number;
   month: number;
 };
-
-export const HUMAN_READABLE_MONTHS = {
-  0: 'Январь',
-  1: 'Февраль',
-  2: 'Март',
-  3: 'Апрель',
-  4: 'Май',
-  5: 'Июнь',
-  6: 'Июль',
-  7: 'Август',
-  8: 'Сентябрь',
-  9: 'Октябрь',
-  10: 'Ноябрь',
-  11: 'Декабрь',
-} as const;
 
 export function getDaysAroundCurrentMonth(date: Date) {
   const nextMonth = (date.getMonth() + 1) % 12;
@@ -81,25 +52,4 @@ export function getAppDate() {
   return new Date().toLocaleDateString('en', {
     timeZone: APP_TIMEZONE,
   });
-}
-
-export function prepareDate(data: unknown) {
-  if (
-    typeof data !== 'string' &&
-    typeof data !== 'number' &&
-    !(data instanceof Date)
-  ) {
-    return new Date(getAppDate());
-  }
-  const date = new Date(data);
-  if (date.toString() === 'Invalid Date') {
-    return new Date(getAppDate());
-  }
-  return date;
-}
-
-export function prepareWeekDay(data: unknown) {
-  return typeof data === 'string' && WEEKDAYS_MAP.includes(data as WeekDay)
-    ? data
-    : getWeekDay(new Date(getAppDate()));
 }

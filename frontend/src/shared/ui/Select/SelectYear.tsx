@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import { Select, SelectOption, useSelectTransition } from './Select';
-import { HUMAN_READABLE_MONTHS, getYearsAroundDate } from '@/shared/lib/date';
+import { getYearsAroundDate } from '@/shared/lib/date';
+import { HUMAN_READABLE_MONTHS } from '@/shared/lib/human';
 
 export type SelectYearProps = {
   date: Date;

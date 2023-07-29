@@ -1,47 +1,42 @@
-import {
-  ClassesScheduleType,
-  getClassesScheduleSearchParams,
-} from '@/entities/classes';
-import {
-  ClassesScheduleFilters,
-  ClassesScheduleListTitle,
-} from '@/features/classes';
-import { ClassesScheduleList } from '@/features/classes';
+import { NextServerURLSearchParams } from '@/shared/packages/next';
 import {
   API_CLASSES,
   ClassesScheduleMixed,
   Paginated,
-  WeekDay,
-  WeekType,
   fetcher,
 } from '@/shared/api';
+import { getClassesScheduleSearchParams } from '@/entities/classes';
+import {
+  ClassesScheduleFilters,
+  ClassesScheduleList,
+} from '@/features/classes';
+import { getWeekTypeFromDate } from '@/shared/lib/date';
+import { getHumanMonth, getHumanWeekType } from '@/shared/lib/human';
 
 export default async function Page({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: NextServerURLSearchParams;
 }) {
-  const query = getClassesScheduleSearchParams({
-    type: searchParams['type']?.toString() as ClassesScheduleType,
-    weekDay: searchParams['week_day']?.toString() as WeekDay,
-    weekType: searchParams['week_type']?.toString() as WeekType,
-    date: searchParams['date']?.toString(),
-    block: searchParams['block']?.toString(),
-    groupName: searchParams['groupName']?.toString(),
-    cabinet: searchParams['cabinet']?.toString(),
-  });
-  const classesData = await fetcher<Paginated<ClassesScheduleMixed>>(
+  const query = getClassesScheduleSearchParams(searchParams);
+
+  const firstPage = await fetcher<Paginated<ClassesScheduleMixed>>(
     `${API_CLASSES}?${query}`,
   );
-  console.log(classesData);
+
+  const date = new Date(query.get('date')!);
+  const weekType = getWeekTypeFromDate(date);
 
   return (
     <div className="container gap-6 pt-6 lg:flex">
-      <div className="grow">
-        <ClassesScheduleListTitle />
-        <ClassesScheduleList prefetched={classesData} />
+      <div className="flex-auto">
+        <h1 className="mb-4 text-lg font-bold text-slate-900 dark:text-slate-200">
+          Расписание занятий на {date.getDate()} {getHumanMonth(date)} (
+          {getHumanWeekType(weekType)})
+        </h1>
+        <ClassesScheduleList firstPage={firstPage} />
       </div>
-      <div className="flex-shrink-0">
+      <div className="flex-none">
         <ClassesScheduleFilters />
       </div>
     </div>

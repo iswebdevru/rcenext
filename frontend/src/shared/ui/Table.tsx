@@ -1,5 +1,7 @@
 'use client';
 
+// TODO: separate Table on different files...
+
 import {
   faCheck,
   faPenToSquare,
@@ -72,7 +74,7 @@ export type TableControlsProps<T extends Id> = {
   onSearchChange: (search: string) => void;
 };
 
-Table.Controls = function TableControls<T extends Id>({
+export function TableControls<T extends Id>({
   onDelete,
   onSearchChange,
   search,
@@ -116,9 +118,9 @@ Table.Controls = function TableControls<T extends Id>({
       </div>
     </div>
   );
-};
+}
 
-Table.Main = function TableMain({ children }: PropsWithChildren) {
+export function TableMain({ children }: PropsWithChildren) {
   return (
     <div className="overflow-auto">
       <table className="min-w-full table-fixed border-separate border-spacing-0 rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
@@ -126,11 +128,11 @@ Table.Main = function TableMain({ children }: PropsWithChildren) {
       </table>
     </div>
   );
-};
+}
 
-Table.Head = function TableHead({ children }: PropsWithChildren) {
+export function TableHead({ children }: PropsWithChildren) {
   return <thead className="group/thead">{children}</thead>;
-};
+}
 
 export type TableBodyProps<T extends Id> = {
   children?:
@@ -139,7 +141,7 @@ export type TableBodyProps<T extends Id> = {
   editingRow?: (id: T) => ReactElement;
 };
 
-Table.Body = function TableBody<T extends Id>({
+export function TableBody<T extends Id>({
   children,
   editingRow,
 }: TableBodyProps<T>) {
@@ -201,16 +203,16 @@ Table.Body = function TableBody<T extends Id>({
         : null}
     </tbody>
   );
-};
+}
 
-Table.SelectRowCheckbox = function TableSelectRowCheckbox() {
+export function TableSelectRowCheckbox() {
   const { isSelected, toggleSelect } = useContext(
     TableRowContext,
   ) as TableRowContext;
   return <input type="checkbox" checked={isSelected} onChange={toggleSelect} />;
-};
+}
 
-Table.ButtonEdit = function TableButtonEdit() {
+export function TableButtonEdit() {
   const { toggleEdit } = useContext(TableRowContext) as TableRowContext;
   return (
     <button type="button" className="group/edit-btn p-1" onClick={toggleEdit}>
@@ -221,9 +223,9 @@ Table.ButtonEdit = function TableButtonEdit() {
       />
     </button>
   );
-};
+}
 
-Table.SelectAllRowsCheckbox = function TableSelectAllRowsCheckbox() {
+export function TableSelectAllRowsCheckbox() {
   const { visibleItems, selectedItems, setSelectedItems } =
     useContext(TableContext);
 
@@ -247,9 +249,9 @@ Table.SelectAllRowsCheckbox = function TableSelectAllRowsCheckbox() {
       }}
     />
   );
-};
+}
 
-Table.ButtonCancel = function TableButtonCancel() {
+export function TableButtonCancel() {
   const ctx = useContext(TableRowContext)!;
 
   return (
@@ -265,7 +267,7 @@ Table.ButtonCancel = function TableButtonCancel() {
       />
     </button>
   );
-};
+}
 
 export type TableButtonCreateProps = {
   onSave: AsyncAction;
@@ -273,9 +275,7 @@ export type TableButtonCreateProps = {
 
 export type TableButtonUpdateProps = TableButtonCreateProps;
 
-Table.ButtonUpdate = function TableButtonUpdate({
-  onSave,
-}: TableButtonUpdateProps) {
+export function TableButtonUpdate({ onSave }: TableButtonUpdateProps) {
   const ctx = useContext(TableRowContext) as TableRowContext;
 
   const handleUpdate = async () => {
@@ -295,62 +295,62 @@ Table.ButtonUpdate = function TableButtonUpdate({
       ></FontAwesomeIcon>
     </button>
   );
-};
+}
 
 export type TableRowProps<T extends Id = Id> = {
   rowId?: T;
 } & ComponentPropsWithRef<'tr'>;
 
-Table.Row = forwardRef<HTMLTableRowElement, TableRowProps>(function TableRow(
-  { className, rowId, ...props },
-  ref,
-) {
-  return (
-    <tr
-      {...props}
-      ref={ref}
-      className={clsx(
-        className,
-        'group/row rounded-md transition-[background]',
-      )}
-    />
-  );
-});
-
-Table.DataLoader = function TableDataPlaceholder() {
-  return (
-    <Table.DataCell>
-      <div className="h-8 w-full animate-pulse rounded-md bg-neutral-200"></div>
-    </Table.DataCell>
-  );
-};
-
-Table.DataCell = forwardRef<HTMLTableCellElement, ComponentPropsWithRef<'td'>>(
-  function TableDataCell({ className, children, ...props }, ref) {
-    const ctx = useContext(TableRowContext);
-
+export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
+  function TableRow({ className, rowId, ...props }, ref) {
     return (
-      <td
+      <tr
+        {...props}
+        ref={ref}
         className={clsx(
           className,
-          'border-b border-zinc-200 p-0 text-sm text-black group-last/row:border-0 group-last/row:first:rounded-bl-md group-last:last:rounded-br-md dark:border-zinc-700 dark:text-zinc-200',
-          !!ctx?.isSelected && 'bg-zinc-50 dark:bg-zinc-800',
+          'group/row rounded-md transition-[background]',
         )}
-        {...props}
-      >
-        <div className="flex items-center px-6 py-3">{children}</div>
-      </td>
+      />
     );
   },
 );
 
-Table.HeadCell = function TableHeadCell({ children }: PropsWithChildren) {
+export function TableDataPlaceholder() {
+  return (
+    <TableDataCell>
+      <div className="h-8 w-full animate-pulse rounded-md bg-neutral-200"></div>
+    </TableDataCell>
+  );
+}
+
+export const TableDataCell = forwardRef<
+  HTMLTableCellElement,
+  ComponentPropsWithRef<'td'>
+>(function TableDataCell({ className, children, ...props }, ref) {
+  const ctx = useContext(TableRowContext);
+
+  return (
+    <td
+      className={clsx(
+        className,
+        'border-b border-zinc-200 p-0 text-sm text-black group-last/row:border-0 group-last/row:first:rounded-bl-md group-last:last:rounded-br-md dark:border-zinc-700 dark:text-zinc-200',
+        !!ctx?.isSelected && 'bg-zinc-50 dark:bg-zinc-800',
+      )}
+      {...props}
+    >
+      <div className="flex items-center px-6 py-3">{children}</div>
+    </td>
+  );
+});
+
+export function TableHeadCell({ children }: PropsWithChildren) {
   return (
     <th className="border-b border-zinc-200 p-0 text-left text-sm font-semibold text-slate-900 first:w-[61px] first:rounded-tl-md last:w-[114px] last:rounded-tr-md dark:border-zinc-700 dark:text-slate-100">
       <div className="flex h-12 items-center px-6 py-3">{children}</div>
     </th>
   );
-};
+}
 
 // Let's rethink <Table> component...
 

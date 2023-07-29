@@ -1,6 +1,6 @@
 import { ClassesDataWithDraft, ClassesPartialPeriod } from './types';
 
-export type ClassesType = 'main' | 'changes' | 'mixed';
+export type ClassesScheduleType = 'main' | 'changes' | 'mixed';
 
 export const defaultPeriods: ClassesPartialPeriod[] = [
   { index: 0, subject: null, cabinet: '', teachers: [] },
@@ -25,3 +25,6 @@ export const defaultClassesDataWithHistory: ClassesDataWithDraft = {
     periods: structuredClone(defaultPeriods),
   },
 };
+
+export const DEFAULT_CLASSES_SCHEDULE_TYPE = 'mixed';
+export const DEFAULT_CLASSES_SCHEDULE_BLOCK = '-1';

@@ -1,7 +1,8 @@
-import { BellsPeriodEditing } from './types';
-import { formatDate, prepareDate, prepareWeekDay } from '@/shared/lib/date';
-import { prepareType, prepareVariant } from './validators';
+import { formatDate } from '@/shared/lib/date';
 import { NextServerURLSearchParams } from '@/shared/packages/next';
+import { prepareDate, prepareWeekDay } from '@/shared/lib/filters';
+import { prepareType, prepareVariant } from './filters';
+import { BellsPeriodEditing } from './types';
 
 export function isBellsPeriodValid(period: BellsPeriodEditing) {
   return (

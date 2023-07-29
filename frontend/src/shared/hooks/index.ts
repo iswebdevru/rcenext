@@ -1,3 +1,4 @@
+export { useIsFirstRender } from './useIsFirstRender';
 export { useDebounce } from './useDebounce';
 export { usePrevious } from './usePrevious';
 export { useOnMount } from './useOnMount';
@@ -11,3 +12,4 @@ export {
 } from './useClickOutside';
 export { usePositionCoords } from './usePositionCoords';
 export { useTimeout } from './useTimeout';
+export { useUpdateEffect } from './useUpdateEffect';
