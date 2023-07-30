@@ -12,7 +12,7 @@ import { NotificationsProvider } from '@/shared/ui/Notification';
 import { PortalProvider } from '@/shared/ui/Utils';
 config.autoAddCss = false;
 
-export const openSans = Open_Sans({
+const openSans = Open_Sans({
   variable: '--font-main',
   subsets: ['cyrillic', 'latin'],
 });
