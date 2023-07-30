@@ -316,7 +316,7 @@ export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
   },
 );
 
-export function TableDataPlaceholder() {
+export function TableDataLoader() {
   return (
     <TableDataCell>
       <div className="h-8 w-full animate-pulse rounded-md bg-neutral-200"></div>

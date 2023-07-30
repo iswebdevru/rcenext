@@ -1,11 +1,23 @@
+'use client';
+
 import { useState } from 'react';
-import Head from 'next/head';
 import { SubjectCreateForm, SubjectEditingRow } from '@/features/subjects';
-import { AdminLayout } from '@/layouts';
 import { API_SUBJECTS, Subject, apiSubjects } from '@/shared/api';
 import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
 import { Button } from '@/shared/ui/Controls/Button';
-import { Table } from '@/shared/ui/Table';
+import {
+  Table,
+  TableBody,
+  TableButtonEdit,
+  TableControls,
+  TableDataCell,
+  TableHead,
+  TableHeadCell,
+  TableMain,
+  TableRow,
+  TableSelectAllRowsCheckbox,
+  TableSelectRowCheckbox,
+} from '@/shared/ui/Table';
 import { Title } from '@/shared/ui/Typography';
 import { Reveal } from '@/shared/ui/Utils/Reveal';
 
@@ -24,78 +36,73 @@ export default function Subjects() {
   };
 
   return (
-    <>
-      <Head>
-        <title>Предметы</title>
-      </Head>
-      <AdminLayout>
-        <div className="h-full p-6">
-          <div className="flex items-center justify-between px-6 pb-6">
-            <Title>Предметы</Title>
-            <div>
-              <Button
-                type="button"
-                variant="primary"
-                onClick={() => {
-                  setIsFormVisible(true);
-                }}
-              >
-                Добавить
-              </Button>
-            </div>
-          </div>
-          <Reveal isVisible={isFormVisible}>
-            <div className="mb-6">
-              <SubjectCreateForm
-                refresh={mutate}
-                onClose={() => setIsFormVisible(false)}
-              />
-            </div>
-          </Reveal>
-          <Table>
-            <Table.Controls
-              onDelete={deleteSubjects}
-              search={searchFilter}
-              onSearchChange={setSearchFilter}
-            />
-            <Table.Main>
-              <Table.Head>
-                <Table.Row>
-                  <Table.HeadCell>
-                    <Table.SelectAllRowsCheckbox />
-                  </Table.HeadCell>
-                  <Table.HeadCell>Предмет</Table.HeadCell>
-                  <Table.HeadCell />
-                </Table.Row>
-              </Table.Head>
-              <Table.Body<string>
-                editingRow={url => (
-                  <SubjectEditingRow refresh={mutate} id={url} />
-                )}
-              >
-                {data
-                  ?.map(page => page.results)
-                  .flat()
-                  .map((subject, i, a) => (
-                    <Table.Row
-                      ref={a.length === i + 1 ? lastElementRef : null}
-                      key={subject.url}
-                      rowId={subject.url}
-                    >
-                      <Table.DataCell>
-                        <Table.SelectRowCheckbox />
-                      </Table.DataCell>
-                      <Table.DataCell>{subject.name}</Table.DataCell>
-                      <Table.DataCell>
-                        <Table.ButtonEdit />
-                      </Table.DataCell>
-                    </Table.Row>
-                  ))}
-              </Table.Body>
-            </Table.Main>
-          </Table>
+    <div className="h-full p-6">
+      <div className="flex items-center justify-between px-6 pb-6">
+        <Title>Предметы</Title>
+        <div>
+          <Button
+            type="button"
+            variant="primary"
+            onClick={() => {
+              setIsFormVisible(true);
+            }}
+          >
+            Добавить
+          </Button>
         </div>
-      </AdminLayout>
-    </>
+      </div>
+      <Reveal isVisible={isFormVisible}>
+        <div className="mb-6">
+          <SubjectCreateForm
+            refresh={mutate}
+            onClose={() => setIsFormVisible(false)}
+          />
+        </div>
+      </Reveal>
+      <Table>
+        <TableControls
+          onDelete={deleteSubjects}
+          search={searchFilter}
+          onSearchChange={setSearchFilter}
+        />
+        <TableMain>
+          <TableHead>
+            <TableRow>
+              <TableHeadCell>
+                <TableSelectAllRowsCheckbox />
+              </TableHeadCell>
+              <TableHeadCell>Предмет</TableHeadCell>
+              <TableHeadCell />
+            </TableRow>
+          </TableHead>
+          <TableBody<string>
+            editingRow={url => <SubjectEditingRow refresh={mutate} id={url} />}
+          >
+            {data
+              ?.map(page => page.results)
+              .flat()
+              .map((subject, i, a) => (
+                <TableRow
+                  ref={a.length === i + 1 ? lastElementRef : null}
+                  key={subject.url}
+                  rowId={subject.url}
+                >
+                  <TableDataCell>
+                    <TableSelectRowCheckbox />
+                  </TableDataCell>
+                  <TableDataCell>{subject.name}</TableDataCell>
+                  <TableDataCell>
+                    <TableButtonEdit />
+                  </TableDataCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </TableMain>
+      </Table>
+    </div>
   );
 }
+
+export const metadata = {
+  title: 'Предметы',
+};

@@ -1,23 +1,43 @@
 'use client';
 
-import { PropsWithChildren, useState } from 'react';
+import {
+  ElementRef,
+  PropsWithChildren,
+  RefObject,
+  createContext,
+  useContext,
+  useRef,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
-import { isBrowser } from '@/shared/constants';
 import { useOnMount } from '@/shared/hooks';
 
-const portalRoot = isBrowser ? document.getElementById('__portal') : null;
+type PortalContext = {
+  root: RefObject<Element> | null;
+};
 
-/**
- * Render children outside of application root.
- */
+const PortalContext = createContext<PortalContext>({ root: null });
+
 export function Portal({ children }: PropsWithChildren) {
+  const { root } = useContext(PortalContext);
   const [isMounted, setIsMounted] = useState(false);
 
   useOnMount(() => setIsMounted(true));
 
-  if (!portalRoot || !isMounted) {
+  if (!isMounted) {
     return null;
   }
 
-  return createPortal(children, portalRoot!);
+  return createPortal(children, root?.current!);
+}
+
+export function PortalProvider({ children }: PropsWithChildren) {
+  const ref = useRef<ElementRef<'div'>>(null);
+
+  return (
+    <PortalContext.Provider value={{ root: ref }}>
+      {children}
+      <div ref={ref}></div>
+    </PortalContext.Provider>
+  );
 }

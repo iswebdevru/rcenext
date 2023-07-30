@@ -1,7 +1,12 @@
 import { useRef } from 'react';
 import useSWR from 'swr';
 import { TextField } from '@/shared/ui/Controls';
-import { Table } from '@/shared/ui/Table';
+import {
+  TableButtonCancel,
+  TableButtonUpdate,
+  TableDataCell,
+  TableRow,
+} from '@/shared/ui/Table';
 import { Subject, apiSubjects } from '@/shared/api';
 
 export type SubjectEditingRowProps = {
@@ -28,15 +33,15 @@ export function SubjectEditingRow({
   };
 
   return (
-    <Table.Row>
-      <Table.DataCell />
-      <Table.DataCell>
+    <TableRow>
+      <TableDataCell />
+      <TableDataCell>
         <TextField ref={nameRef} defaultValue={subject.name} />
-      </Table.DataCell>
-      <Table.DataCell>
-        <Table.ButtonUpdate onSave={onSave} />
-        <Table.ButtonCancel />
-      </Table.DataCell>
-    </Table.Row>
+      </TableDataCell>
+      <TableDataCell>
+        <TableButtonUpdate onSave={onSave} />
+        <TableButtonCancel />
+      </TableDataCell>
+    </TableRow>
   );
 }

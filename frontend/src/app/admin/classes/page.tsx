@@ -1,5 +1,8 @@
+'use client';
+
+// todo: refactor to enable SSR
+
 import { useState } from 'react';
-import { GetServerSideProps } from 'next';
 import { Button } from '@/shared/ui/Controls';
 import { DateField } from '@/shared/ui/Calendar';
 import { SelectWeekType, SelectWeekDay } from '@/shared/ui/Select';
@@ -16,11 +19,7 @@ import { ClassesEditor } from '@/features/classes';
 import { formatDate, getAppDate } from '@/shared/lib/date';
 import { LoaderCircle } from '@/shared/ui/Loader';
 
-type ClassesProps = {
-  date: string;
-};
-
-export default function Classes({ date: initDate }: ClassesProps) {
+export default function Classes() {
   const [classesStore, dispatch] = useClassesStore();
 
   // State
@@ -28,7 +27,7 @@ export default function Classes({ date: initDate }: ClassesProps) {
     useState<Exclude<ClassesScheduleType, 'mixed'>>('changes');
   const [weekType, setWeekType] = useState<WeekType>('ЧИСЛ');
   const [weekDay, setWeekDay] = useState<WeekDay>('ПН');
-  const [date, setDate] = useState(new Date(initDate));
+  const [date, setDate] = useState(new Date(getAppDate()));
   const [isSaving, setIsSaving] = useState(false);
 
   // Debounced
@@ -165,12 +164,4 @@ export default function Classes({ date: initDate }: ClassesProps) {
 
 export const metadata = {
   title: 'Занятия',
-};
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  return {
-    props: {
-      date: getAppDate(),
-    },
-  };
 };

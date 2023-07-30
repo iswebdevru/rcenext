@@ -2,7 +2,12 @@ import { useRef } from 'react';
 import useSWR from 'swr';
 import { Group, apiGroups } from '@/shared/api';
 import { TextField } from '@/shared/ui/Controls';
-import { Table } from '@/shared/ui/Table';
+import {
+  TableButtonCancel,
+  TableButtonUpdate,
+  TableDataCell,
+  TableRow,
+} from '@/shared/ui/Table';
 
 export type GroupEditingRowProps = {
   id: string;
@@ -30,26 +35,26 @@ export default function GroupEditingRow({
   };
 
   return (
-    <Table.Row>
-      <Table.DataCell />
-      <Table.DataCell>
+    <TableRow>
+      <TableDataCell />
+      <TableDataCell>
         <TextField
           pattern="[А-ЯA-Z]+к?-[1-4]\d{2,}"
           ref={groupNameRef}
           defaultValue={group.name}
         />
-      </Table.DataCell>
-      <Table.DataCell>
+      </TableDataCell>
+      <TableDataCell>
         <TextField
           pattern="[1-9]+"
           ref={mainBlockRef}
           defaultValue={group.main_block}
         />
-      </Table.DataCell>
-      <Table.DataCell>
-        <Table.ButtonUpdate onSave={onSave} />
-        <Table.ButtonCancel />
-      </Table.DataCell>
-    </Table.Row>
+      </TableDataCell>
+      <TableDataCell>
+        <TableButtonUpdate onSave={onSave} />
+        <TableButtonCancel />
+      </TableDataCell>
+    </TableRow>
   );
 }

@@ -4,6 +4,10 @@ import { APP_TIMEZONE } from '../config';
 const baseTimestamp = new Date(2000, 0, 3);
 export const DAY = 86400000;
 
+export const appDateFormatter = new Intl.DateTimeFormat('en', {
+  timeZone: APP_TIMEZONE,
+});
+
 export function formatDate(date: Date) {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
@@ -49,7 +53,5 @@ export function getYearsAroundDate(year: number, offset = 10) {
 }
 
 export function getAppDate() {
-  return new Date().toLocaleDateString('en', {
-    timeZone: APP_TIMEZONE,
-  });
+  return appDateFormatter.format(new Date());
 }

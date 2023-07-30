@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 import { TextField } from '@/shared/ui/Controls';
-import { Table } from '@/shared/ui/Table';
+import {
+  TableButtonCancel,
+  TableButtonUpdate,
+  TableDataCell,
+  TableDataLoader,
+  TableRow,
+} from '@/shared/ui/Table';
 import { Hyperlink, Teacher, apiTeachers } from '@/shared/api';
 import { SelectSubjects } from '../subjects/SelectSubjects'; // TODO: fix one-level cross import
 
@@ -44,40 +50,40 @@ export function TeacherEditingRow({
   };
 
   return (
-    <Table.Row>
-      <Table.DataCell />
-      <Table.DataCell>
+    <TableRow>
+      <TableDataCell />
+      <TableDataCell>
         <TextField
           defaultValue={teacher ? teacher.first_name : ''}
           ref={firstNameRef}
         />
-      </Table.DataCell>
-      <Table.DataCell>
+      </TableDataCell>
+      <TableDataCell>
         <TextField
           defaultValue={teacher ? teacher.last_name : ''}
           ref={lastNameRef}
         />
-      </Table.DataCell>
-      <Table.DataCell>
+      </TableDataCell>
+      <TableDataCell>
         <TextField
           defaultValue={teacher ? teacher.patronymic : ''}
           ref={patronymicRef}
         />
-      </Table.DataCell>
+      </TableDataCell>
       {selectedSubjects ? (
-        <Table.DataCell>
+        <TableDataCell>
           <SelectSubjects
             selectedSubjects={selectedSubjects}
             onChange={setSelectedSubjects}
           />
-        </Table.DataCell>
+        </TableDataCell>
       ) : (
-        <Table.DataLoader />
+        <TableDataLoader />
       )}
-      <Table.DataCell>
-        <Table.ButtonUpdate onSave={onSave} />
-        <Table.ButtonCancel />
-      </Table.DataCell>
-    </Table.Row>
+      <TableDataCell>
+        <TableButtonUpdate onSave={onSave} />
+        <TableButtonCancel />
+      </TableDataCell>
+    </TableRow>
   );
 }

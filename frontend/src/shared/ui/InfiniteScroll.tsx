@@ -1,12 +1,13 @@
 import { ElementRef, PropsWithChildren, useEffect, useRef } from 'react';
 import { noop } from '../lib/common';
-// todo: dodelay
 export type InfiniteScrollProps = PropsWithChildren<{
   loadMore: () => void;
 }>;
 
 export function InfiniteScroll({ children, loadMore }: InfiniteScrollProps) {
   const ref = useRef<ElementRef<'div'>>(null);
+  const loadMoreCbRef = useRef(loadMore);
+  loadMoreCbRef.current = loadMore;
 
   useEffect(() => {
     if (!ref.current) {
@@ -19,9 +20,7 @@ export function InfiniteScroll({ children, loadMore }: InfiniteScrollProps) {
           if (!entry.isIntersecting) {
             return;
           }
-          console.log(entry);
-
-          loadMore();
+          loadMoreCbRef.current();
         });
       },
       {
@@ -30,12 +29,15 @@ export function InfiniteScroll({ children, loadMore }: InfiniteScrollProps) {
     );
     observer.observe(element);
     return () => observer.unobserve(element);
-  }, [loadMore]);
+  }, []);
 
   return (
     <div className="relative">
       {children}
-      <div className="pointer-events-none absolute bottom-96" ref={ref}></div>
+      <div
+        className="pointer-events-none absolute bottom-[min(75%,75vh)]"
+        ref={ref}
+      ></div>
     </div>
   );
 }

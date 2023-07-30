@@ -9,6 +9,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import './style.css';
 import { NotificationsProvider } from '@/shared/ui/Notification';
+import { PortalProvider } from '@/shared/ui/Utils';
 config.autoAddCss = false;
 
 export const openSans = Open_Sans({
@@ -22,20 +23,19 @@ export default async function Layout({ children }: PropsWithChildren) {
   return (
     <AuthSessionProvider session={session}>
       <SWRGlobalConfig>
-        <NotificationsProvider>
-          <html className="h-full" lang="ru">
-            <head></head>
-            <body
-              className={clsx(
-                openSans.variable,
-                'h-full font-sans dark:bg-zinc-900',
-              )}
-            >
-              {children}
-              <div id="__portal"></div>
-            </body>
-          </html>
-        </NotificationsProvider>
+        <html className="h-full" lang="ru">
+          <head></head>
+          <body
+            className={clsx(
+              openSans.variable,
+              'h-full font-sans dark:bg-zinc-900',
+            )}
+          >
+            <PortalProvider>
+              <NotificationsProvider>{children}</NotificationsProvider>
+            </PortalProvider>
+          </body>
+        </html>
       </SWRGlobalConfig>
     </AuthSessionProvider>
   );
