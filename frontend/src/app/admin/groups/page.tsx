@@ -107,6 +107,6 @@ export default function Groups() {
   );
 }
 
-export const metadata = {
-  title: 'Группы',
-};
+// export const metadata = {
+//   title: 'Группы',
+// };

@@ -162,6 +162,6 @@ export default function Classes() {
   );
 }
 
-export const metadata = {
-  title: 'Занятия',
-};
+// export const metadata = {
+//   title: 'Занятия',
+// };

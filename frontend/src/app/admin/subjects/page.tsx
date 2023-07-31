@@ -103,6 +103,6 @@ export default function Subjects() {
   );
 }
 
-export const metadata = {
-  title: 'Предметы',
-};
+// export const metadata = {
+//   title: 'Предметы',
+// };

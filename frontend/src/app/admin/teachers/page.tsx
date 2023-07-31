@@ -139,6 +139,6 @@ export default function Page() {
   );
 }
 
-export const metadata = {
-  title: 'Преподаватели',
-};
+// export const metadata = {
+//   title: 'Преподаватели',
+// };

@@ -24,7 +24,3 @@ export default function PageNotFound() {
     </div>
   );
 }
-
-export const metadata = {
-  title: 'Не найдено',
-};
