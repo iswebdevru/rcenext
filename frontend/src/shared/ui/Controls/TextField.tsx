@@ -1,7 +1,7 @@
-import { clsx } from '@/shared/lib/ui';
 import { ComponentPropsWithRef, forwardRef, useId } from 'react';
+import { clsx } from '@/shared/lib/ui';
 
-export type TextFieldProps = ComponentPropsWithRef<'input'> & {
+export type TextFieldProps = Omit<ComponentPropsWithRef<'input'>, 'id'> & {
   variant?: 'darker' | 'lighter';
   error?: string | null;
   label?: string;

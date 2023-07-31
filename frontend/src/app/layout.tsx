@@ -1,7 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { getServerSession } from 'next-auth';
 import { Open_Sans } from 'next/font/google';
-import { AuthSessionProvider } from '@/shared/packages/next-auth';
 import { SWRGlobalConfig } from '@/shared/packages/swr';
 import { clsx } from '@/shared/lib/ui';
 
@@ -17,27 +15,23 @@ const openSans = Open_Sans({
   subsets: ['cyrillic', 'latin'],
 });
 
-export default async function Layout({ children }: PropsWithChildren) {
-  const session = await getServerSession();
-
+export default function Layout({ children }: PropsWithChildren) {
   return (
-    <AuthSessionProvider session={session}>
-      <SWRGlobalConfig>
-        <html className="h-full" lang="ru">
-          <head></head>
-          <body
-            className={clsx(
-              openSans.variable,
-              'h-full font-sans dark:bg-zinc-900',
-            )}
-          >
-            <PortalProvider>
-              <NotificationsProvider>{children}</NotificationsProvider>
-            </PortalProvider>
-          </body>
-        </html>
-      </SWRGlobalConfig>
-    </AuthSessionProvider>
+    <SWRGlobalConfig>
+      <html className="h-full" lang="ru">
+        <head></head>
+        <body
+          className={clsx(
+            openSans.variable,
+            'h-full font-sans dark:bg-zinc-900',
+          )}
+        >
+          <PortalProvider>
+            <NotificationsProvider>{children}</NotificationsProvider>
+          </PortalProvider>
+        </body>
+      </html>
+    </SWRGlobalConfig>
   );
 }
 

@@ -11,6 +11,7 @@ import { prepareBlock, prepareType } from '@/entities/classes';
 import { useDebounce, useUpdateEffect } from '@/shared/hooks';
 import { formatDate, getWeekTypeFromDate } from '@/shared/lib/date';
 import { getWeekDayExcerpt } from '@/shared/lib/human';
+import { Route } from 'next';
 
 export function ClassesScheduleFilters() {
   const searchParams = useSearchParams()!;
@@ -42,7 +43,7 @@ export function ClassesScheduleFilters() {
     nextSearchParams.set('week_day', getWeekDayExcerpt(date));
     nextSearchParams.set('week_type', getWeekTypeFromDate(date));
 
-    router.push(`${pathname}?${nextSearchParams}`);
+    router.push(`${pathname}?${nextSearchParams}` as Route);
   }, [
     router,
     pathname,

@@ -4,13 +4,13 @@ import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
 import { PropsWithChildren } from 'react';
 
-export type AuthSessionProvider = {
+export type AuthSessionProviderProps = {
   session: Session | null;
 } & PropsWithChildren;
 
 export function AuthSessionProvider({
   session,
   children,
-}: AuthSessionProvider) {
+}: AuthSessionProviderProps) {
   return <SessionProvider session={session}>{children}</SessionProvider>;
 }
