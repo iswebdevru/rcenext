@@ -45,7 +45,7 @@
       "type": "shell",
       "isBackground": true,
       "command": "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
-      "args": ["http://localhost:3000"],
+      "args": ["http://127.0.0.1:3000"],
       "presentation": {
         "showReuseMessage": false,
         "reveal": "never",

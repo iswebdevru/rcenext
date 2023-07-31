@@ -29,7 +29,7 @@ export function useClickOutside(
   const handler = (e: MouseEvent) => {
     if (
       !ctx ||
-      [...ctx.exceptions.current].every(exception => {
+      Array.from(ctx.exceptions.current).every(exception => {
         return (
           !(e.target instanceof Node) ||
           !exception.current ||

@@ -32,7 +32,7 @@ export function TeacherCreateForm({
     try {
       const teacher = await apiTeachers.create({
         ...data,
-        subjects: [...subjects],
+        subjects: Array.from(subjects),
       });
       reset();
       setSubjects(new Set());

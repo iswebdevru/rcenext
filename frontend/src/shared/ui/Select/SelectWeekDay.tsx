@@ -33,7 +33,7 @@ export function SelectWeekDay<T extends WeekDay>({
         </Button>
       }
     >
-      {[...WEEK_DAYS.entries()].map(([id, value]) => (
+      {Array.from(WEEK_DAYS.entries()).map(([id, value]) => (
         <SelectOption key={id} selected={weekDayId === id} value={id}>
           {value}
         </SelectOption>

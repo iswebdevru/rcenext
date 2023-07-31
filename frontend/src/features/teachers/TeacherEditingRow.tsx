@@ -44,7 +44,7 @@ export function TeacherEditingRow({
       first_name: firstNameRef.current?.value,
       last_name: lastNameRef.current?.value,
       patronymic: patronymicRef.current?.value,
-      subjects: [...selectedSubjects],
+      subjects: Array.from(selectedSubjects),
     });
     return Promise.all([refresh(), mutate()]);
   };

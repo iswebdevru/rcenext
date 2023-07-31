@@ -32,7 +32,7 @@ export function SelectWeekType<T extends WeekType>({
         </Button>
       }
     >
-      {[...WEEK_TYPES.entries()].map(([id, value]) => (
+      {Array.from(WEEK_TYPES.entries()).map(([id, value]) => (
         <SelectOption key={id} selected={weekTypeId === id} value={id}>
           {value}
         </SelectOption>
