@@ -4,7 +4,7 @@ import { Calendar } from '@/shared/ui/Calendar';
 import { Toggles, SearchField, CheckboxField } from '@/shared/ui/Controls';
 import { Wrapper } from './Wrapper';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { GroupSelect } from '@/features/groups'; // todo: move to /entities
+import { GroupSelect } from '@/entities/groups'; // todo: move to /entities
 import { useState } from 'react';
 import { prepareDate } from '@/shared/lib/filters';
 import { prepareBlock, prepareType } from '@/entities/classes';

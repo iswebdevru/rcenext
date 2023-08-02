@@ -14,7 +14,7 @@ export type GroupCreateFormData = {
 };
 
 export function GroupCreateForm({ refresh, onClose }: GroupCreateForm) {
-  const { register, handleSubmit } = useForm<GroupCreateFormData>({
+  const { register, handleSubmit, reset } = useForm<GroupCreateFormData>({
     mode: 'all',
   });
 
@@ -23,7 +23,7 @@ export function GroupCreateForm({ refresh, onClose }: GroupCreateForm) {
       name: data.group,
       main_block: parseInt(data.main_block),
     });
-    onClose();
+    reset();
     return refresh();
   };
 
@@ -52,8 +52,12 @@ export function GroupCreateForm({ refresh, onClose }: GroupCreateForm) {
         </div>
       </div>
       <div className="flex justify-end gap-4 px-6 py-4">
-        <Button onClick={onClose}>Отменить</Button>
-        <Button variant="primary">Сохранить</Button>
+        <div>
+          <Button type="button" onClick={onClose}>Закрыть</Button>
+        </div>
+        <div>
+          <Button type="submit" variant="primary">Сохранить</Button>
+        </div>
       </div>
     </form>
   );

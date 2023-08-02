@@ -1,13 +1,18 @@
-import { ElementRef, PropsWithChildren, useEffect, useRef } from 'react';
+import { ElementRef, ElementType, PropsWithChildren, useEffect, useRef } from 'react';
 import { noop } from '../lib/common';
 export type InfiniteScrollProps = PropsWithChildren<{
-  loadMore: () => void;
+  onLoad: () => void;
+  ignore: boolean;
+  wrapper?: ElementType;
+  trigger?: ElementType;
 }>;
 
-export function InfiniteScroll({ children, loadMore }: InfiniteScrollProps) {
+export function InfiniteScroll({ onLoad, children, ignore, wrapper: Wrapper = 'div', trigger: Trigger = 'div' }: InfiniteScrollProps) {
   const ref = useRef<ElementRef<'div'>>(null);
-  const loadMoreCbRef = useRef(loadMore);
-  loadMoreCbRef.current = loadMore;
+  const onLoadRef = useRef(onLoad);
+  const ignoreRef = useRef(ignore);
+  onLoadRef.current = onLoad;
+  ignoreRef.current = ignore;
 
   useEffect(() => {
     if (!ref.current) {
@@ -17,10 +22,10 @@ export function InfiniteScroll({ children, loadMore }: InfiniteScrollProps) {
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
-          if (!entry.isIntersecting) {
+          if (!entry.isIntersecting || ignoreRef.current) {
             return;
           }
-          loadMoreCbRef.current();
+          onLoadRef.current();
         });
       },
       {
@@ -32,12 +37,12 @@ export function InfiniteScroll({ children, loadMore }: InfiniteScrollProps) {
   }, []);
 
   return (
-    <div className="relative">
+    <Wrapper className="relative">
       {children}
-      <div
-        className="pointer-events-none absolute bottom-[min(75%,75vh)]"
+      <Trigger
+        className="pointer-events-none absolute bottom-[min(25%,25vh)]"
         ref={ref}
-      ></div>
-    </div>
+      />
+    </Wrapper>
   );
 }

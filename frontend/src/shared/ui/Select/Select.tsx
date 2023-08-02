@@ -35,6 +35,7 @@ export type SelectProps<T> = {
   transitionState: TransitionState;
   scrollIntoViewSelected?: boolean;
   onSelect: (selected: T) => void;
+  noWrapWithUl?: boolean;
 } & PropsWithChildren;
 
 export const Select = withOutsideClickExceptionsContext(function Select<T>({
@@ -42,6 +43,7 @@ export const Select = withOutsideClickExceptionsContext(function Select<T>({
   inputElement,
   onClose,
   onSelect,
+  noWrapWithUl = false,
   scrollIntoViewSelected = false,
   transitionState: { status, isMounted },
 }: SelectProps<T>) {
@@ -86,10 +88,10 @@ export const Select = withOutsideClickExceptionsContext(function Select<T>({
                 className={clsx(
                   'max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-200 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-700 dark:bg-zinc-800 dark:scrollbar-thumb-zinc-600',
                   (status === 'preEnter' || status === 'exiting') &&
-                    '-translate-y-2 opacity-0',
+                  '-translate-y-2 opacity-0',
                 )}
               >
-                <ul>{children}</ul>
+                {noWrapWithUl ? children : <ul>{children}</ul>}
               </div>
             </div>
           ) : null}

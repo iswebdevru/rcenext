@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
+import useSWRInfinite from 'swr/infinite';
+import { useDebounce } from '@/shared/hooks';
 import { SearchField } from '@/shared/ui/Controls';
 import { Select, SelectOption, useSelectTransition } from '@/shared/ui/Select';
-import { API_GROUPS, Group } from '@/shared/api';
-import { useRouter } from 'next/navigation';
+import { API_GROUPS, Group, Paginated } from '@/shared/api';
+import { createInfiniteKey } from '@/shared/packages/swr';
+import { InfiniteScroll } from '@/shared/ui/InfiniteScroll';
 
 export type GroupSelectProps = {
   onSelect: (group: Group) => void;
@@ -20,14 +21,13 @@ export function GroupSelect({
 
   const groupSearchDebounced = useDebounce(groupSearch);
 
-  const { data, lastElementRef } = usePaginatedFetch<Group>(
-    transitionState.isMounted
-      ? `${API_GROUPS}?search=${groupSearchDebounced}`
-      : null,
-  );
+  const { data, setSize } = useSWRInfinite<Paginated<Group>>(createInfiniteKey(`${API_GROUPS}?search=${groupSearchDebounced}`));
+
+  const isEnd = !data || !data.at(-1)?.next
 
   return (
     <Select<Group>
+      noWrapWithUl
       transitionState={transitionState}
       onClose={() => toggleTransition(false)}
       onSelect={group => {
@@ -45,31 +45,19 @@ export function GroupSelect({
         />
       }
     >
-      {data
-        ?.flatMap(page => page.results)
-        .map((group, i, arr) => (
-          <SelectOption
-            key={group.id}
-            ref={i === arr.length - 1 ? lastElementRef : null}
-            selected={group.name === groupSearch}
-            value={group}
-          >
-            {group.name}
-          </SelectOption>
-        ))}
+      <InfiniteScroll wrapper="ul" trigger="li" ignore={isEnd} onLoad={() => setSize(p => p + 1)}>
+        {data
+          ?.flatMap(page => page.results)
+          .map(group => (
+            <SelectOption
+              key={group.id}
+              selected={group.name === groupSearch}
+              value={group}
+            >
+              {group.name}
+            </SelectOption>
+          ))}
+      </InfiniteScroll>
     </Select>
-  );
-}
-
-export function GroupSearch() {
-  const router = useRouter();
-  const [groupSearch, setGroupSearch] = useState('');
-
-  return (
-    <GroupSelect
-      groupSearch={groupSearch}
-      onGroupSearchChange={setGroupSearch}
-      onSelect={() => router.push('/')}
-    />
   );
 }
