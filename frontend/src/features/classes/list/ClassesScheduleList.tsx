@@ -18,8 +18,10 @@ export function ClassesScheduleList({ firstPage }: ClassesScheduleListProps) {
 
   const pages = data ? [firstPage, ...data] : [firstPage];
 
+  const isEnd = !data || !data.at(-1)?.next;
+
   return (
-    <InfiniteScroll onLoad={() => setSize(p => p + 1)}>
+    <InfiniteScroll ignore={isEnd} onLoad={() => setSize(p => p + 1)}>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {pages
           .flatMap(page => page.results)
