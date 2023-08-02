@@ -5,6 +5,7 @@ import { Select, SelectOption, useSelectTransition } from '@/shared/ui/Select';
 import { API_GROUPS, Group, Paginated } from '@/shared/api';
 import { createInfiniteKey } from '@/shared/packages/swr';
 import { InfiniteScroll } from '@/shared/ui/InfiniteScroll';
+import { LoaderCircle } from '@/shared/ui/Loader';
 
 export type GroupSelectProps = {
   onSelect: (group: Group) => void;
@@ -21,7 +22,7 @@ export function GroupSelect({
 
   const groupSearchDebounced = useDebounce(groupSearch);
 
-  const { data, setSize } = useSWRInfinite<Paginated<Group>>(createInfiniteKey(`${API_GROUPS}?search=${groupSearchDebounced}`));
+  const { data, setSize, isValidating } = useSWRInfinite<Paginated<Group>>(createInfiniteKey(`${API_GROUPS}?search=${groupSearchDebounced}`));
 
   const isEnd = !data || !data.at(-1)?.next
 
@@ -57,6 +58,7 @@ export function GroupSelect({
               {group.name}
             </SelectOption>
           ))}
+        {isValidating ? (<li className='flex justify-center p-2'>{<LoaderCircle />}</li>) : null}
       </InfiniteScroll>
     </Select>
   );

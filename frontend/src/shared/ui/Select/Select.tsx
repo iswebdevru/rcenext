@@ -128,7 +128,7 @@ export const SelectOption = forwardRef(function SelectOption<T>(
   return (
     <li
       className={clsx(
-        'border-b border-b-zinc-200 last:border-b-0 dark:border-b-zinc-700',
+        'border-t border-t-zinc-200 first:border-t-0 dark:border-t-zinc-700',
         {
           'bg-zinc-100 dark:bg-zinc-700': selected,
         },
