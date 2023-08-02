@@ -1,8 +1,8 @@
-const { fontFamily } = require("tailwindcss/defaultTheme");
-const colors = require("tailwindcss/colors");
+import type { Config } from 'tailwindcss'
+import { fontFamily } from 'tailwindcss/defaultTheme';
+import colors from 'tailwindcss/colors';
 
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: ["./src/**/*.tsx"],
   darkMode: "class",
   theme: {
@@ -20,4 +20,5 @@ module.exports = {
     },
   },
   plugins: [require("tailwind-scrollbar")],
-};
+} satisfies Config
+
