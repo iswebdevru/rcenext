@@ -1,4 +1,6 @@
-import { ReactNode, forwardRef } from 'react';
+'use client';
+
+import { ReactNode } from 'react';
 import useSWR from 'swr';
 import {
   ClassesScheduleMixed,
@@ -6,42 +8,40 @@ import {
   Group,
   Subject,
 } from '@/shared/api';
+import { LoaderRect } from '@/shared/ui/Loader';
 import { withBlankPeriods } from '../lib';
 import { ClassesPartialPeriod } from '../types';
-import { LoaderRect } from '@/shared/ui/Loader';
 
 export type ClassesCardProps = {
   schedule: ClassesScheduleMixed;
   controlPanel?: ReactNode;
 };
 
-export const ClassesScheduleCard = forwardRef<HTMLDivElement, ClassesCardProps>(
-  function ClassesScheduleCard({ schedule, controlPanel }, ref) {
-    const { data: group } = useSWR<Group>(schedule.group);
+export
+  function ClassesScheduleCard({ schedule }: ClassesCardProps) {
+  const { data: group } = useSWR<Group>(schedule.group);
 
-    return (
-      <div
-        ref={ref}
-        className="rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800"
-      >
-        <div className="border-b border-zinc-200 px-2.5 py-1.5 dark:border-zinc-700">
-          <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
-            {group?.name ?? (
-              <div className="h-5 w-16 overflow-hidden rounded-md">
-                <LoaderRect />
-              </div>
-            )}
-          </h3>
-        </div>
-        {schedule.view === 'table' ? (
-          <ClassesCardTableView periods={schedule.periods} />
-        ) : (
-          <ClassesCardMessageView message={schedule.message} />
-        )}
+  return (
+    <div
+      className="rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800"
+    >
+      <div className="border-b border-zinc-200 px-2.5 py-1.5 dark:border-zinc-700">
+        <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+          {group?.name ?? (
+            <div className="h-5 w-16 overflow-hidden rounded-md">
+              <LoaderRect />
+            </div>
+          )}
+        </h3>
       </div>
-    );
-  },
-);
+      {schedule.view === 'table' ? (
+        <ClassesCardTableView periods={schedule.periods} />
+      ) : (
+        <ClassesCardMessageView message={schedule.message} />
+      )}
+    </div>
+  );
+}
 
 type ClassesCardTableViewProps = {
   periods: ClassesSchedulePeriod[];
@@ -78,10 +78,10 @@ function ClassesCardPeriod({ period }: ClassesCardPeriodProps) {
       <td className="border-r border-zinc-200 px-2 py-1 text-sm dark:border-zinc-700 ">
         {period.subject
           ? subject?.name ?? (
-              <div className="h-4 w-full overflow-hidden rounded-md">
-                <LoaderRect />
-              </div>
-            )
+            <div className="h-4 w-full overflow-hidden rounded-md">
+              <LoaderRect />
+            </div>
+          )
           : ''}
       </td>
       <td className="w-10 px-2.5 py-1 text-center text-sm">{period.cabinet}</td>
