@@ -15,7 +15,7 @@ export default function PageNotFound() {
           <span className="text-slate-700 dark:text-zinc-400">Вернуться </span>
           <Link
             className="font-semibold text-primary-400 transition-colors hover:text-primary-500"
-            href="/"
+            href="/bells"
           >
             на главную
           </Link>
