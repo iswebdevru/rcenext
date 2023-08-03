@@ -36,5 +36,5 @@ export function getBellsScheduleSearchParams(
     variant: prepareVariant(searchParams.variant),
     date: formatDate(prepareDate(searchParams.date)),
     week_day: prepareWeekDay(searchParams.weekDay),
-  }).toString();
+  });
 }

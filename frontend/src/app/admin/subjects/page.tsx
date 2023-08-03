@@ -1,108 +1,36 @@
-'use client';
-
-import { useState } from 'react';
-import { SubjectCreateForm, SubjectEditingRow } from '@/features/subjects';
-import { API_SUBJECTS, Subject, apiSubjects } from '@/shared/api';
-import { useDebounce, usePaginatedFetch } from '@/shared/hooks';
-import { Button } from '@/shared/ui/Controls/Button';
-import {
-  Table,
-  TableBody,
-  TableButtonEdit,
-  TableControls,
-  TableDataCell,
-  TableHead,
-  TableHeadCell,
-  TableMain,
-  TableRow,
-  TableSelectAllRowsCheckbox,
-  TableSelectRowCheckbox,
-} from '@/shared/ui/Table';
 import { Title } from '@/shared/ui/Typography';
-import { Reveal } from '@/shared/ui/Utils/Reveal';
+import { NextPageWithSearchParams } from '@/shared/packages/next';
+import { API_SUBJECTS, Paginated, Subject, fetcher } from '@/shared/api';
+import {
+  SubjectCreateForm,
+  SubjectCreateFormOpenButton,
+  SubjectsTable,
+  getSubjectsSearchParams,
+} from '@/features/subjects';
 
-export default function Subjects() {
-  const [searchFilter, setSearchFilter] = useState('');
-  const searchFilterDebounced = useDebounce(searchFilter);
-  const [isFormVisible, setIsFormVisible] = useState(false);
+export default async function Subjects({
+  searchParams,
+}: NextPageWithSearchParams) {
+  const query = getSubjectsSearchParams(searchParams);
 
-  const { data, lastElementRef, mutate } = usePaginatedFetch<Subject>(
-    `${API_SUBJECTS}?search=${searchFilterDebounced}`,
+  const firstPage = await fetcher<Paginated<Subject>>(
+    `${API_SUBJECTS}?${query}`,
   );
-
-  const deleteSubjects = async (urls: string[]) => {
-    await Promise.all(urls.map(apiSubjects.delete));
-    return mutate();
-  };
 
   return (
     <div className="h-full p-6">
       <div className="flex items-center justify-between px-6 pb-6">
         <Title>Предметы</Title>
         <div>
-          <Button
-            type="button"
-            variant="primary"
-            onClick={() => {
-              setIsFormVisible(true);
-            }}
-          >
-            Добавить
-          </Button>
+          <SubjectCreateFormOpenButton />
         </div>
       </div>
-      <Reveal isVisible={isFormVisible}>
-        <div className="mb-6">
-          <SubjectCreateForm
-            refresh={mutate}
-            onClose={() => setIsFormVisible(false)}
-          />
-        </div>
-      </Reveal>
-      <Table>
-        <TableControls
-          onDelete={deleteSubjects}
-          search={searchFilter}
-          onSearchChange={setSearchFilter}
-        />
-        <TableMain>
-          <TableHead>
-            <TableRow>
-              <TableHeadCell>
-                <TableSelectAllRowsCheckbox />
-              </TableHeadCell>
-              <TableHeadCell>Предмет</TableHeadCell>
-              <TableHeadCell />
-            </TableRow>
-          </TableHead>
-          <TableBody<string>
-            editingRow={url => <SubjectEditingRow refresh={mutate} id={url} />}
-          >
-            {data
-              ?.map(page => page.results)
-              .flat()
-              .map((subject, i, a) => (
-                <TableRow
-                  ref={a.length === i + 1 ? lastElementRef : null}
-                  key={subject.url}
-                  rowId={subject.url}
-                >
-                  <TableDataCell>
-                    <TableSelectRowCheckbox />
-                  </TableDataCell>
-                  <TableDataCell>{subject.name}</TableDataCell>
-                  <TableDataCell>
-                    <TableButtonEdit />
-                  </TableDataCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </TableMain>
-      </Table>
+      <SubjectCreateForm />
+      <SubjectsTable firstPage={firstPage} />
     </div>
   );
 }
 
-// export const metadata = {
-//   title: 'Предметы',
-// };
+export const metadata = {
+  title: 'Предметы',
+};

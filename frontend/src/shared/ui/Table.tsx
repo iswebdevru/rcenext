@@ -134,12 +134,9 @@ export function TableHead({ children }: PropsWithChildren) {
   return <thead className="group/thead">{children}</thead>;
 }
 
-export type TableBodyProps<T extends Id> = {
-  children?:
-    | ReactElement<TableRowProps<T>>
-    | ReactElement<TableRowProps<any>>[];
+export type TableBodyProps<T extends Id> = PropsWithChildren<{
   editingRow?: (id: T) => ReactElement;
-};
+}>;
 
 export function TableBody<T extends Id>({
   children,
@@ -158,7 +155,8 @@ export function TableBody<T extends Id>({
       if (!children) {
         return [];
       }
-      return Children.map(children, child => child.props.rowId);
+      const visibleItems = Children.map(children, child => child)?.filter(child => typeof child === 'object' && 'props' in child && child.props.rowId).map<Id>(child => (child as ReactElement).props.rowId);
+      return visibleItems ?? [];
     });
   }, [children, setVisibleItems]);
 
@@ -166,40 +164,43 @@ export function TableBody<T extends Id>({
     <tbody>
       {children
         ? Children.map(children, child => {
-            const id = child.props.rowId;
-            const isEditing = editingItems.has(id);
-            const isSelected = selectedItems.has(id);
-            return (
-              <TableRowContext.Provider
-                key={id}
-                value={{
-                  isSelected,
-                  toggleSelect: () =>
-                    setSelectedItems(prev => {
-                      const updated = new Set(prev);
-                      if (updated.has(id)) {
-                        updated.delete(id);
-                      } else {
-                        updated.add(id);
-                      }
-                      return updated;
-                    }),
-                  toggleEdit: () =>
-                    setEditingItems(prev => {
-                      const updated = new Set(prev);
-                      if (updated.has(id)) {
-                        updated.delete(id);
-                      } else {
-                        updated.add(id);
-                      }
-                      return updated;
-                    }),
-                }}
-              >
-                {isEditing && editingRow ? editingRow(id) : child}
-              </TableRowContext.Provider>
-            );
-          })
+          if (!child || typeof child !== 'object' || !('props' in child) || !child.props.rowId) {
+            return child;
+          }
+          const id = child.props.rowId;
+          const isEditing = editingItems.has(id);
+          const isSelected = selectedItems.has(id);
+          return (
+            <TableRowContext.Provider
+              key={id}
+              value={{
+                isSelected,
+                toggleSelect: () =>
+                  setSelectedItems(prev => {
+                    const updated = new Set(prev);
+                    if (updated.has(id)) {
+                      updated.delete(id);
+                    } else {
+                      updated.add(id);
+                    }
+                    return updated;
+                  }),
+                toggleEdit: () =>
+                  setEditingItems(prev => {
+                    const updated = new Set(prev);
+                    if (updated.has(id)) {
+                      updated.delete(id);
+                    } else {
+                      updated.add(id);
+                    }
+                    return updated;
+                  }),
+              }}
+            >
+              {isEditing && editingRow ? editingRow(id) : child}
+            </TableRowContext.Provider>
+          );
+        })
         : null}
     </tbody>
   );

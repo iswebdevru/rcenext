@@ -1,9 +1,18 @@
 import Link from 'next/link';
 import { LoginForm } from '@/features/auth';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/shared/packages/next-auth';
+import { redirect } from 'next/navigation';
 
 // TODO {router.query.error === 'CredentialsSignin' ? (
 
-export default function Page() {
+export default async function Page() {
+  const session = await getServerSession(authOptions);
+
+  if (session) {
+    redirect('/admin');
+  }
+
   return (
     <div className="grid h-full place-items-center p-4">
       <div className="w-full max-w-sm">

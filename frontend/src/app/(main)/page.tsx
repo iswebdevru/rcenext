@@ -1,4 +1,4 @@
-import { NextServerURLSearchParams } from '@/shared/packages/next';
+import { NextPageWithSearchParams } from '@/shared/packages/next';
 import {
   API_CLASSES,
   ClassesScheduleMixed,
@@ -13,11 +13,7 @@ import {
 import { getWeekTypeFromDate } from '@/shared/lib/date';
 import { getHumanMonth, getHumanWeekType } from '@/shared/lib/human';
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: NextServerURLSearchParams;
-}) {
+export default async function Page({ searchParams }: NextPageWithSearchParams) {
   const query = getClassesScheduleSearchParams(searchParams);
 
   const firstPage = await fetcher<Paginated<ClassesScheduleMixed>>(

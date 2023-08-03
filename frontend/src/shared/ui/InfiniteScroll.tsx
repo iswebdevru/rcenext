@@ -1,5 +1,12 @@
-import { ElementRef, ElementType, PropsWithChildren, useEffect, useRef } from 'react';
+import {
+  ElementRef,
+  ElementType,
+  PropsWithChildren,
+  useEffect,
+  useRef,
+} from 'react';
 import { noop } from '../lib/common';
+
 export type InfiniteScrollProps = PropsWithChildren<{
   onLoad: () => void;
   ignore: boolean;
@@ -7,7 +14,13 @@ export type InfiniteScrollProps = PropsWithChildren<{
   trigger?: ElementType;
 }>;
 
-export function InfiniteScroll({ onLoad, children, ignore, wrapper: Wrapper = 'div', trigger: Trigger = 'div' }: InfiniteScrollProps) {
+export function InfiniteScroll({
+  onLoad,
+  children,
+  ignore,
+  wrapper: Wrapper = 'div',
+  trigger: Trigger = 'div',
+}: InfiniteScrollProps) {
   const ref = useRef<ElementRef<'div'>>(null);
   const onLoadRef = useRef(onLoad);
   const ignoreRef = useRef(ignore);

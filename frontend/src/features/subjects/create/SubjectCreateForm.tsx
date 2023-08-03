@@ -1,29 +1,27 @@
+'use client';
+
+import { useForm } from 'react-hook-form';
 import { ApiError, apiSubjects, isErrorMap } from '@/shared/api';
-import { TextField, Button } from '@/shared/ui/Controls';
+import { Button, TextField } from '@/shared/ui/Controls';
 import {
   useNotification,
   Notification,
   NotificationErrorsMap,
 } from '@/shared/ui/Notification';
-import { useForm } from 'react-hook-form';
-
-export type SubjectCreateFormProps = {
-  refresh: () => Promise<unknown>;
-  onClose: () => void;
-};
+import { Reveal } from '@/shared/ui/Utils';
+import { useSubjectCreateFormIsOpen } from './store';
 
 export type SubjectCreateFormData = {
   subject: string;
 };
 
-export function SubjectCreateForm({
-  refresh,
-  onClose,
-}: SubjectCreateFormProps) {
+export function SubjectCreateForm() {
   const { register, handleSubmit, reset } = useForm<SubjectCreateFormData>({
     mode: 'all',
   });
   const notify = useNotification();
+
+  const { isOpened, toggle } = useSubjectCreateFormIsOpen();
 
   const onSave = async (data: SubjectCreateFormData) => {
     try {
@@ -39,7 +37,7 @@ export function SubjectCreateForm({
           </Notification.Message>
         </Notification>,
       );
-      return refresh();
+      // return refresh();
     } catch (e) {
       if (e instanceof ApiError && isErrorMap(e.body)) {
         notify(<NotificationErrorsMap errorsMap={e.body} />);
@@ -57,31 +55,35 @@ export function SubjectCreateForm({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSave)}
-      className="max-w-lg rounded-md border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-800"
-    >
-      <div className="border-b border-zinc-200 p-6 dark:border-zinc-700">
-        <TextField
-          label="Предмет"
-          placeholder="Название"
-          autoComplete="off"
-          type="text"
-          {...register('subject', { required: true })}
-        />
+    <Reveal isVisible={isOpened}>
+      <div className="mb-6">
+        <form
+          onSubmit={handleSubmit(onSave)}
+          className="max-w-lg rounded-md border border-zinc-200 dark:border-zinc-700 dark:bg-zinc-800"
+        >
+          <div className="border-b border-zinc-200 p-6 dark:border-zinc-700">
+            <TextField
+              label="Предмет"
+              placeholder="Название"
+              autoComplete="off"
+              type="text"
+              {...register('subject', { required: true })}
+            />
+          </div>
+          <div className="flex justify-end gap-4 p-4">
+            <div>
+              <Button type="button" onClick={() => toggle(false)}>
+                Отменить
+              </Button>
+            </div>
+            <div>
+              <Button type="submit" variant="primary">
+                Сохранить
+              </Button>
+            </div>
+          </div>
+        </form>
       </div>
-      <div className="flex justify-end gap-4 p-4">
-        <div>
-          <Button type="button" onClick={onClose}>
-            Отменить
-          </Button>
-        </div>
-        <div>
-          <Button type="submit" variant="primary">
-            Сохранить
-          </Button>
-        </div>
-      </div>
-    </form>
+    </Reveal>
   );
 }

@@ -8,7 +8,7 @@ export type SelectSubjectsProps = {
   onChange: Dispatch<SetStateAction<Set<Hyperlink>>>;
 };
 
-export function SelectSubjects({
+export function SubjectsSelect({
   onChange,
   selectedSubjects,
 }: SelectSubjectsProps) {

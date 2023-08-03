@@ -1,6 +1,6 @@
 import { Group } from '@/shared/api';
 import { ClassesPartialPeriod, ClassesStoreAction } from '@/entities/classes';
-import { SubjectSelect } from '@/features/subjects';
+import { SubjectSelect } from '@/entities/subjects';
 
 export type ClassesTableViewProps = {
   periods: ClassesPartialPeriod[];

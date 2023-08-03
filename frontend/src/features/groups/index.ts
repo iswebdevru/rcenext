@@ -1,3 +1,3 @@
-export * from './GroupCreateForm';
-export * from './GroupEditingRow';
+export * from './table';
+export * from './create';
 export * from './GroupSearch';

@@ -9,7 +9,7 @@ import {
   TableRow,
 } from '@/shared/ui/Table';
 import { Hyperlink, Teacher, apiTeachers } from '@/shared/api';
-import { SelectSubjects } from '../subjects/SelectSubjects'; // TODO: fix one-level cross import
+import { SubjectsSelect } from '../../../entities/subjects/ui/SubjectsSelect'; // TODO: fix one-level cross import
 
 export type TeacherEditingRowProps = {
   id: string;
@@ -72,7 +72,7 @@ export function TeacherEditingRow({
       </TableDataCell>
       {selectedSubjects ? (
         <TableDataCell>
-          <SelectSubjects
+          <SubjectsSelect
             selectedSubjects={selectedSubjects}
             onChange={setSelectedSubjects}
           />

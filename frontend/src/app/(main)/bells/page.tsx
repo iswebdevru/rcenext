@@ -1,4 +1,4 @@
-import { NextServerURLSearchParams } from '@/shared/packages/next';
+import { NextPageWithSearchParams } from '@/shared/packages/next';
 import { API_BELLS, BellsMixed, fetcher } from '@/shared/api';
 import {
   Table,
@@ -12,7 +12,7 @@ import {
 import { getBellsScheduleSearchParams } from '@/entities/bells';
 import { BellsScheduleFilters } from '@/features/bells';
 
-async function getBellsSchedule(query: string) {
+async function getBellsSchedule(query: URLSearchParams) {
   try {
     return await fetcher<BellsMixed>(`${API_BELLS}?${query}`);
   } catch (error) {
@@ -20,11 +20,7 @@ async function getBellsSchedule(query: string) {
   }
 }
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: NextServerURLSearchParams;
-}) {
+export default async function Page({ searchParams }: NextPageWithSearchParams) {
   const data = await getBellsSchedule(
     getBellsScheduleSearchParams(searchParams),
   );

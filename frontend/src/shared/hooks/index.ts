@@ -13,3 +13,4 @@ export {
 export { usePositionCoords } from './usePositionCoords';
 export { useTimeout } from './useTimeout';
 export { useUpdateEffect } from './useUpdateEffect';
+export { useUpdateSearchParams } from './useUpdateSearchParams';
