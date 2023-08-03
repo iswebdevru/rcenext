@@ -1,7 +1,7 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTheme } from './ThemeProvider';
-import { changeTheme } from './change-theme';
 
 const WIDTH = 42;
 const HEIGHT = 22;
@@ -9,13 +9,20 @@ const R = 7;
 
 export function ThemeToggler() {
   const theme = useTheme();
+  const router = useRouter();
 
   const isDark = theme === 'dark';
 
   return (
     <button
       type="button"
-      onClick={() => changeTheme(theme === 'dark' ? 'light' : 'dark')}
+      onClick={async () => {
+        await fetch('/api/theme', {
+          method: 'POST',
+          body: theme === 'dark' ? 'light' : 'dark',
+        });
+        router.refresh();
+      }}
     >
       <svg className="h-7 lg:h-6" viewBox="0 0 42 22">
         <rect
