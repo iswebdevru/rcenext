@@ -19,7 +19,7 @@ export default async function Subjects({
 
   return (
     <div className="h-full p-6">
-      <div className="flex items-center justify-between px-6 pb-6">
+      <div className="flex items-center justify-between px-6 pb-4">
         <Title>Предметы</Title>
         <div>
           <SubjectCreateFormOpenButton />

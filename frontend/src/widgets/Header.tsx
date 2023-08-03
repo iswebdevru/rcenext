@@ -16,7 +16,7 @@ import {
   useRegisterOutsideClickException,
   withOutsideClickExceptionsContext,
 } from '@/shared/hooks';
-import { ThemeToggler } from './ThemeToggler';
+import { ThemeToggler } from '@/shared/ui/Theme';
 
 export type HeaderProps = {
   wide?: boolean;

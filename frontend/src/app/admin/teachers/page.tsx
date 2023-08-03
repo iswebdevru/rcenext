@@ -17,7 +17,7 @@ export default async function Page({ searchParams }: NextPageWithSearchParams) {
 
   return (
     <div className="h-full p-6">
-      <div className="flex items-center justify-between pb-6">
+      <div className="flex items-center justify-between px-3 pb-4">
         <Title>Преподаватели</Title>
         <div>
           <TeacherOpenCreateFormButton />

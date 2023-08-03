@@ -2,12 +2,15 @@ import { PropsWithChildren } from 'react';
 import { Open_Sans } from 'next/font/google';
 import { SWRGlobalConfig } from '@/shared/packages/swr';
 import { clsx } from '@/shared/lib/ui';
+import { NotificationsProvider } from '@/shared/ui/Notification';
+import { PortalProvider } from '@/shared/ui/Utils';
+import { ThemeProvider } from '@/shared/ui/Theme';
 
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import './style.css';
-import { NotificationsProvider } from '@/shared/ui/Notification';
-import { PortalProvider } from '@/shared/ui/Utils';
+import { cookies } from 'next/headers';
+
 config.autoAddCss = false;
 
 const openSans = Open_Sans({
@@ -16,36 +19,27 @@ const openSans = Open_Sans({
 });
 
 export default function Layout({ children }: PropsWithChildren) {
+  const theme = cookies().get('theme')?.value;
+
   return (
-    <SWRGlobalConfig>
-      <html className="h-full" lang="ru">
-        <head></head>
-        <body
-          className={clsx(
-            openSans.variable,
-            'h-full font-sans dark:bg-zinc-900',
-          )}
+    <html className={clsx('h-full', theme === 'dark' && 'dark')} lang="ru">
+      <head></head>
+      <SWRGlobalConfig>
+        <ThemeProvider
+          theme={theme === 'dark' || theme === 'light' ? theme : null}
         >
-          <PortalProvider>
-            <NotificationsProvider>{children}</NotificationsProvider>
-          </PortalProvider>
-        </body>
-      </html>
-    </SWRGlobalConfig>
+          <body
+            className={clsx(
+              openSans.variable,
+              'h-full font-sans dark:bg-zinc-900',
+            )}
+          >
+            <PortalProvider>
+              <NotificationsProvider>{children}</NotificationsProvider>
+            </PortalProvider>
+          </body>
+        </ThemeProvider>
+      </SWRGlobalConfig>
+    </html>
   );
 }
-
-/**
- * {`
-          (() => {
-            let theme = localStorage.getItem('theme');
-            if (!theme) {
-              theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-              localStorage.setItem('theme', theme);
-            }
-            if (theme === 'dark') {
-              document.documentElement.classList.add(theme);
-            }
-          })()
-          `}
- */
