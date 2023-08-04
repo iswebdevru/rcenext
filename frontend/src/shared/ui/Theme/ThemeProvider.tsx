@@ -6,27 +6,83 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
 } from 'react';
 import { Theme } from './types';
-import { useRouter } from 'next/navigation';
+import { createStore, useStore } from 'zustand';
 
-const ThemeContext = createContext<Theme>('light');
+export type ThemeState = {
+  theme: Theme;
+  toggle: (theme?: Theme) => void;
+};
+
+export type ThemeStore = ReturnType<typeof createThemeStore>;
+
+function createThemeStore(theme: Theme) {
+  return createStore<ThemeState>(set => ({
+    theme,
+    toggle(theme) {
+      if (!theme) {
+        set(p => ({ theme: p.theme === 'light' ? 'dark' : 'light' }));
+      } else {
+        set({ theme });
+      }
+    },
+  }));
+}
+
+const ThemeContext = createContext<ThemeStore | null>(null);
 
 export type ThemeProviderProps = PropsWithChildren<{
-  theme: Theme | null;
+  theme?: string;
 }>;
 
 export function ThemeProvider({ children, theme }: ThemeProviderProps) {
-  const router = useRouter();
+  const store = useRef<ThemeStore>();
 
+  if (!store.current) {
+    store.current = createThemeStore(
+      theme === 'dark' || theme === 'light' ? theme : 'light',
+    );
+  }
   const initTheme = useCallback(async () => {
     const preferredTheme = window.matchMedia('(prefers-color-scheme: dark)')
       .matches
       ? 'dark'
       : 'light';
-    await fetch('/api/theme', { method: 'POST', body: preferredTheme });
-    router.refresh();
-  }, [router]);
+    store.current?.setState({ theme: preferredTheme });
+  }, []);
+
+  useEffect(() => {
+    return store.current?.subscribe((state, prev) => {
+      if (state.theme !== prev.theme) {
+        if (state.theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout | null = null;
+    const unsubscribe = store.current!.subscribe(state => {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+      timeout = setTimeout(() => {
+        fetch('/api/theme', { method: 'POST', body: state.theme });
+        timeout = null;
+      }, 300);
+    });
+    return () => {
+      unsubscribe();
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!theme) {
@@ -35,12 +91,12 @@ export function ThemeProvider({ children, theme }: ThemeProviderProps) {
   }, [theme, initTheme]);
 
   return (
-    <ThemeContext.Provider value={theme ?? 'light'}>
+    <ThemeContext.Provider value={store.current}>
       {children}
     </ThemeContext.Provider>
   );
 }
 
-export function useTheme() {
-  return useContext(ThemeContext);
+export function useTheme<T>(selector: (state: ThemeState) => T) {
+  return useStore(useContext(ThemeContext)!, selector);
 }

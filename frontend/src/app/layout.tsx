@@ -25,9 +25,7 @@ export default function Layout({ children }: PropsWithChildren) {
     <html className={clsx('h-full', theme === 'dark' && 'dark')} lang="ru">
       <head></head>
       <SWRGlobalConfig>
-        <ThemeProvider
-          theme={theme === 'dark' || theme === 'light' ? theme : null}
-        >
+        <ThemeProvider theme={theme}>
           <body
             className={clsx(
               openSans.variable,
