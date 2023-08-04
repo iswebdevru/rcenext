@@ -73,7 +73,7 @@ export const ButtonCopyFromExisting = withOutsideClickExceptionsContext(
     useRegisterOutsideClickException(btnRef);
     useEffect(() => {
       if (isMounted) {
-        recalculatePosition();
+        setTimeout(recalculatePosition, 0);
       }
     }, [isMounted, recalculatePosition]);
 
@@ -96,7 +96,7 @@ export const ButtonCopyFromExisting = withOutsideClickExceptionsContext(
               <div
                 ref={componentRef}
                 className={clsx(
-                  'rounded-md border border-zinc-200 bg-white p-2 shadow-sm transition dark:border-zinc-700 dark:bg-zinc-800',
+                  'rounded-md border border-zinc-200 bg-white p-2 shadow-sm transition dark:border-zinc-800 dark:bg-zinc-950',
                   {
                     '-translate-y-2 opacity-0':
                       status === 'preEnter' || status === 'exiting',

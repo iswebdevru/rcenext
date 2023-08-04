@@ -44,7 +44,9 @@ export const DateField = withOutsideClickExceptionsContext<DateFieldProps>(
     };
 
     useEffect(() => {
-      recalculatePosition();
+      if (isMounted) {
+        setTimeout(recalculatePosition, 0);
+      }
     }, [recalculatePosition, isMounted]);
 
     useClickOutside(componentRef, ignoreClick(outerRef, closeCalendar));

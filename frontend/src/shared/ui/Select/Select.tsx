@@ -60,7 +60,9 @@ export const Select = withOutsideClickExceptionsContext(function Select<T>({
   useClickOutside(optionsListRef, ignoreClick(outerRef, onClose));
 
   useEffect(() => {
-    recalculatePosition();
+    if (isMounted) {
+      setTimeout(recalculatePosition, 0);
+    }
   }, [recalculatePosition, isMounted]);
 
   return (
