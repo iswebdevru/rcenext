@@ -10,8 +10,6 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import './style.css';
 import { cookies } from 'next/headers';
-import { Metadata } from 'next';
-
 config.autoAddCss = false;
 
 const openSans = Open_Sans({
@@ -42,18 +40,14 @@ export default function Layout({ children }: PropsWithChildren) {
   );
 }
 
-export function generateMetadata(): Metadata {
-  return {
-    title: {
-      default: 'РКЭ',
-      template: '%s | РКЭ',
-    },
-    description:
-      'Расписанием занятий и звонков Рязанского Колледжа Электроники',
-    generator: 'Next.js',
-    applicationName: 'Расписание РКЭ',
-    keywords: ['ркэ', 'расписание', 'пары', 'звонки', 'занятия'],
-    colorScheme: cookies().get('theme')?.value === 'dark' ? 'dark' : 'light',
-    themeColor: '#09090b',
-  };
-}
+export const metadata = {
+  title: {
+    default: 'РКЭ',
+    template: '%s | РКЭ',
+  },
+  description: 'Расписанием занятий и звонков Рязанского Колледжа Электроники',
+  generator: 'Next.js',
+  applicationName: 'Расписание РКЭ',
+  keywords: ['ркэ', 'расписание', 'пары', 'звонки', 'занятия'],
+  themeColor: '#09090b',
+};
