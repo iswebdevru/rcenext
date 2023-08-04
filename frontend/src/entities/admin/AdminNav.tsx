@@ -50,7 +50,7 @@ export function AdminNav() {
 
   return (
     <>
-      <div className="fixed left-0 top-14 z-10 hidden h-[calc(100%-3.5rem)] w-64 overflow-y-auto bg-white px-6 py-8 dark:bg-zinc-900 lg:block">
+      <div className="fixed left-0 top-14 z-10 hidden h-[calc(100%-3.5rem)] w-64 overflow-y-auto bg-white px-6 py-8 dark:bg-zinc-950 lg:block">
         <nav>
           <ul className="space-y-3">
             {links.map(link => (
@@ -107,7 +107,7 @@ function AdminNavMobile({ onClose, isMounted, status }: AdminNavMobileProps) {
           >
             <div
               className={clsx(
-                'h-full w-64 overflow-y-auto bg-white px-6 py-12 transition-[opacity,transform] duration-300 dark:bg-zinc-900',
+                'h-full w-64 overflow-y-auto bg-white px-6 py-12 transition-[opacity,transform] duration-300 dark:bg-zinc-950',
                 {
                   '-translate-x-full opacity-0':
                     status === 'preEnter' || status === 'exiting',
@@ -162,11 +162,11 @@ function AdminNavLink({ href, isActive, text, icon }: AdminNavLinkProps) {
     <Link
       href={href}
       className={clsx(
-        'transition-color block p-2 font-semibold hover:text-blue-500 dark:hover:text-zinc-50',
+        'transition-color block p-2 font-semibold hover:text-blue-500 dark:hover:text-zinc-200',
         {
-          'rounded-md bg-slate-100 text-blue-500 dark:bg-zinc-800 dark:text-white':
+          'rounded-md bg-slate-100 text-blue-500 dark:bg-zinc-900 dark:text-white':
             isActive,
-          'text-slate-800 dark:text-zinc-400': !isActive,
+          'text-slate-800 dark:text-zinc-500': !isActive,
         },
       )}
     >

@@ -32,9 +32,9 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
               'ring-zinc-200': props.error === undefined,
               'ring-green-600 dark:ring-green-600': props.error === null,
               'ring-red-500 dark:ring-red-500': typeof props.error === 'string',
-              'dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder:text-zinc-400 dark:focus:ring-primary-700':
+              'dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:ring-primary-700':
                 !props.variant,
-              'dark:ring-zinc-700': !props.variant && props.error === undefined,
+              'dark:ring-zinc-800': !props.variant && props.error === undefined,
             },
           )}
         />

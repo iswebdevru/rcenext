@@ -67,7 +67,7 @@ export const Header = withOutsideClickExceptionsContext(function Header({
     <ZIndex index={zIndex}>
       <header
         style={{ zIndex }}
-        className="fixed left-0 top-0 h-14 w-full border-b border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800"
+        className="fixed left-0 top-0 h-14 w-full border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
       >
         <div
           className={clsx('flex h-full items-center', {
@@ -77,7 +77,7 @@ export const Header = withOutsideClickExceptionsContext(function Header({
         >
           <Link
             href="/"
-            className="text-sm font-bold text-blue-400 dark:text-white"
+            className="text-sm font-bold text-blue-400 dark:text-zinc-200"
           >
             Расписание РКЭ
           </Link>
@@ -90,9 +90,9 @@ export const Header = withOutsideClickExceptionsContext(function Header({
                     className={clsx(
                       'text-sm font-semibold transition-colors duration-75',
                       {
-                        'text-primary-500 dark:text-white':
+                        'text-primary-500 dark:text-zinc-200':
                           pathname === link.href,
-                        'text-zinc-700 hover:text-primary-500 dark:text-zinc-400 dark:hover:text-white':
+                        'text-zinc-700 hover:text-primary-500 dark:text-zinc-500 dark:hover:text-zinc-200':
                           pathname !== link.href,
                       },
                     )}
@@ -106,7 +106,7 @@ export const Header = withOutsideClickExceptionsContext(function Header({
           <div className="ml-auto hidden sm:block">
             <GroupSearch />
           </div>
-          <div className="ml-6 hidden h-6 w-[1px] bg-zinc-200 dark:bg-zinc-700 sm:block"></div>
+          <div className="ml-6 hidden h-6 w-[1px] bg-zinc-200 dark:bg-zinc-800 sm:block"></div>
           <div className="ml-6 hidden items-center lg:flex">
             <ThemeToggler />
           </div>
@@ -212,7 +212,7 @@ function LogoutButton() {
     <button
       type="button"
       onClick={() => signOut()}
-      className="items-center text-slate-700 transition-colors hover:text-slate-500 dark:text-zinc-500 dark:hover:text-zinc-200"
+      className="items-center text-slate-700 transition-colors hover:text-slate-500 dark:text-zinc-600 dark:hover:text-zinc-200"
     >
       <FontAwesomeIcon
         icon={faRightFromBracket}

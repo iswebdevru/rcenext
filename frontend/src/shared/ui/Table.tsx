@@ -97,7 +97,7 @@ export function TableControls<T extends Id>({
   };
 
   return (
-    <div className="mb-3 flex items-center gap-4 rounded-md rounded-tr-md border border-zinc-200 px-4 py-3 dark:border-zinc-700 dark:bg-zinc-800">
+    <div className="mb-3 flex items-center gap-4 rounded-md rounded-tr-md border border-zinc-200 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-950">
       <SearchField
         onChange={e => onSearchChange(e.currentTarget.value)}
         value={search}
@@ -123,7 +123,7 @@ export function TableControls<T extends Id>({
 export function TableMain({ children }: PropsWithChildren) {
   return (
     <div className="overflow-auto">
-      <table className="min-w-full table-fixed border-separate border-spacing-0 rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800">
+      <table className="min-w-full table-fixed border-separate border-spacing-0 rounded-md border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
         {children}
       </table>
     </div>
@@ -155,7 +155,12 @@ export function TableBody<T extends Id>({
       if (!children) {
         return [];
       }
-      const visibleItems = Children.map(children, child => child)?.filter(child => typeof child === 'object' && 'props' in child && child.props.rowId).map<Id>(child => (child as ReactElement).props.rowId);
+      const visibleItems = Children.map(children, child => child)
+        ?.filter(
+          child =>
+            typeof child === 'object' && 'props' in child && child.props.rowId,
+        )
+        .map<Id>(child => (child as ReactElement).props.rowId);
       return visibleItems ?? [];
     });
   }, [children, setVisibleItems]);
@@ -164,43 +169,48 @@ export function TableBody<T extends Id>({
     <tbody>
       {children
         ? Children.map(children, child => {
-          if (!child || typeof child !== 'object' || !('props' in child) || !child.props.rowId) {
-            return child;
-          }
-          const id = child.props.rowId;
-          const isEditing = editingItems.has(id);
-          const isSelected = selectedItems.has(id);
-          return (
-            <TableRowContext.Provider
-              key={id}
-              value={{
-                isSelected,
-                toggleSelect: () =>
-                  setSelectedItems(prev => {
-                    const updated = new Set(prev);
-                    if (updated.has(id)) {
-                      updated.delete(id);
-                    } else {
-                      updated.add(id);
-                    }
-                    return updated;
-                  }),
-                toggleEdit: () =>
-                  setEditingItems(prev => {
-                    const updated = new Set(prev);
-                    if (updated.has(id)) {
-                      updated.delete(id);
-                    } else {
-                      updated.add(id);
-                    }
-                    return updated;
-                  }),
-              }}
-            >
-              {isEditing && editingRow ? editingRow(id) : child}
-            </TableRowContext.Provider>
-          );
-        })
+            if (
+              !child ||
+              typeof child !== 'object' ||
+              !('props' in child) ||
+              !child.props.rowId
+            ) {
+              return child;
+            }
+            const id = child.props.rowId;
+            const isEditing = editingItems.has(id);
+            const isSelected = selectedItems.has(id);
+            return (
+              <TableRowContext.Provider
+                key={id}
+                value={{
+                  isSelected,
+                  toggleSelect: () =>
+                    setSelectedItems(prev => {
+                      const updated = new Set(prev);
+                      if (updated.has(id)) {
+                        updated.delete(id);
+                      } else {
+                        updated.add(id);
+                      }
+                      return updated;
+                    }),
+                  toggleEdit: () =>
+                    setEditingItems(prev => {
+                      const updated = new Set(prev);
+                      if (updated.has(id)) {
+                        updated.delete(id);
+                      } else {
+                        updated.add(id);
+                      }
+                      return updated;
+                    }),
+                }}
+              >
+                {isEditing && editingRow ? editingRow(id) : child}
+              </TableRowContext.Provider>
+            );
+          })
         : null}
     </tbody>
   );
@@ -335,8 +345,8 @@ export const TableDataCell = forwardRef<
     <td
       className={clsx(
         className,
-        'border-b border-zinc-200 p-0 text-sm text-black group-last/row:border-0 group-last/row:first:rounded-bl-md group-last:last:rounded-br-md dark:border-zinc-700 dark:text-zinc-200',
-        !!ctx?.isSelected && 'bg-zinc-50 dark:bg-zinc-800',
+        'border-b border-zinc-200 p-0 text-sm text-black group-last/row:border-0 group-last/row:first:rounded-bl-md group-last:last:rounded-br-md dark:border-zinc-800 dark:text-zinc-200',
+        !!ctx?.isSelected && 'bg-zinc-50 dark:bg-zinc-900',
       )}
       {...props}
     >
@@ -347,7 +357,7 @@ export const TableDataCell = forwardRef<
 
 export function TableHeadCell({ children }: PropsWithChildren) {
   return (
-    <th className="border-b border-zinc-200 p-0 text-left text-sm font-semibold text-slate-900 first:w-[61px] first:rounded-tl-md last:w-[114px] last:rounded-tr-md dark:border-zinc-700 dark:text-slate-100">
+    <th className="border-b border-zinc-200 p-0 text-left text-sm font-semibold text-slate-900 first:w-[61px] first:rounded-tl-md last:w-[114px] last:rounded-tr-md dark:border-zinc-800 dark:text-slate-100">
       <div className="flex h-12 items-center px-6 py-3">{children}</div>
     </th>
   );

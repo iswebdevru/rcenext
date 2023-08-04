@@ -87,21 +87,21 @@ export function BellsForm({ type, variant, date, weekDay }: BellsFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="rounded-md border border-zinc-200 p-4 dark:border-zinc-700 dark:bg-zinc-800">
+      <div className="rounded-md border border-zinc-200 p-4 dark:border-zinc-800 dark:bg-zinc-950">
         <div className="overflow-x-auto">
           <table className="min-w-full border-collapse">
             <thead>
               <tr>
-                <th className="border-b border-zinc-200 px-6 py-4 text-left text-sm text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
+                <th className="border-b border-zinc-200 px-6 py-4 text-left text-sm text-zinc-700 dark:border-zinc-800 dark:text-zinc-300">
                   №
                 </th>
-                <th className="border-b border-zinc-200 px-6 py-4 text-left text-sm text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
+                <th className="border-b border-zinc-200 px-6 py-4 text-left text-sm text-zinc-700 dark:border-zinc-800 dark:text-zinc-300">
                   Начало
                 </th>
-                <th className="border-b border-zinc-200 px-6 py-4 text-left text-sm text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
+                <th className="border-b border-zinc-200 px-6 py-4 text-left text-sm text-zinc-700 dark:border-zinc-800 dark:text-zinc-300">
                   Конец
                 </th>
-                <th className="border-b border-zinc-200 px-6 py-4 text-left text-sm text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
+                <th className="border-b border-zinc-200 px-6 py-4 text-left text-sm text-zinc-700 dark:border-zinc-800 dark:text-zinc-300">
                   С перерывом
                 </th>
               </tr>
@@ -109,12 +109,12 @@ export function BellsForm({ type, variant, date, weekDay }: BellsFormProps) {
             <tbody>
               {periods.map(period => (
                 <tr className="group" key={period.index}>
-                  <td className="border-b border-zinc-200 px-6 py-4 align-top text-sm text-zinc-700 group-last:border-none dark:border-zinc-700 dark:text-zinc-400">
+                  <td className="border-b border-zinc-200 px-6 py-4 align-top text-sm text-zinc-700 group-last:border-none dark:border-zinc-800 dark:text-zinc-400">
                     {period.index}
                   </td>
                   {period.has_break ? (
                     <>
-                      <td className="border-b border-zinc-200 px-6 py-4 align-top group-last:border-none dark:border-zinc-700">
+                      <td className="border-b border-zinc-200 px-6 py-4 align-top group-last:border-none dark:border-zinc-800">
                         <div className="space-y-3">
                           <TimeField
                             value={period.period_from}
@@ -142,7 +142,7 @@ export function BellsForm({ type, variant, date, weekDay }: BellsFormProps) {
                           />
                         </div>
                       </td>
-                      <td className="border-b border-zinc-200 px-6 py-4 align-top group-last:border-none dark:border-zinc-700">
+                      <td className="border-b border-zinc-200 px-6 py-4 align-top group-last:border-none dark:border-zinc-800">
                         <div className="space-y-3">
                           <TimeField
                             value={period.period_to}
@@ -173,7 +173,7 @@ export function BellsForm({ type, variant, date, weekDay }: BellsFormProps) {
                     </>
                   ) : (
                     <>
-                      <td className="border-b border-zinc-200 px-6 py-4 align-top group-last:border-none dark:border-zinc-700">
+                      <td className="border-b border-zinc-200 px-6 py-4 align-top group-last:border-none dark:border-zinc-800">
                         <TimeField
                           value={period.period_from}
                           onChange={e =>
@@ -187,7 +187,7 @@ export function BellsForm({ type, variant, date, weekDay }: BellsFormProps) {
                           }
                         />
                       </td>
-                      <td className="border-b border-zinc-200 px-6 py-4 align-top group-last:border-none dark:border-zinc-700">
+                      <td className="border-b border-zinc-200 px-6 py-4 align-top group-last:border-none dark:border-zinc-800">
                         <TimeField
                           value={period.period_to}
                           onChange={e =>
@@ -203,7 +203,7 @@ export function BellsForm({ type, variant, date, weekDay }: BellsFormProps) {
                       </td>
                     </>
                   )}
-                  <td className="border-b border-zinc-200 px-6 py-4 align-top group-last:border-none dark:border-zinc-700">
+                  <td className="border-b border-zinc-200 px-6 py-4 align-top group-last:border-none dark:border-zinc-800">
                     <CheckboxField
                       name="with_break"
                       checked={period.has_break}
@@ -224,7 +224,7 @@ export function BellsForm({ type, variant, date, weekDay }: BellsFormProps) {
             </tbody>
           </table>
         </div>
-        <div className="flex items-center gap-4 border-t border-zinc-200 px-2 pt-4 dark:border-zinc-700">
+        <div className="flex items-center gap-4 border-t border-zinc-200 px-2 pt-4 dark:border-zinc-800">
           <ButtonCopyFromExisting
             date={date}
             onLoad={data => dispatch({ type: 'load', payload: data.periods })}

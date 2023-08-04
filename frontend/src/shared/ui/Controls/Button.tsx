@@ -18,7 +18,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               variant === 'primary',
             'border-red-500 bg-white text-red-500 enabled:hover:bg-red-600 enabled:hover:text-white disabled:border-red-200 disabled:text-red-200 dark:border-red-600 dark:bg-transparent dark:text-red-600 dark:enabled:hover:bg-red-700 dark:enabled:hover:text-white dark:disabled:border-red-900 dark:disabled:text-red-900':
               variant === 'danger-outline',
-            'border-transparent bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-600 dark:hover:text-white':
+            'border-transparent bg-zinc-100 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white':
               variant === 'common',
           },
         )}

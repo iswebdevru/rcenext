@@ -75,7 +75,7 @@ export const ClassesEditor = forwardRef<HTMLDivElement, ClassesEditorProps>(
 
     return (
       <div
-        className="flex flex-col rounded-md border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800"
+        className="flex flex-col rounded-md border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
         ref={ref}
       >
         <div className="flex items-center justify-between px-2 py-1">

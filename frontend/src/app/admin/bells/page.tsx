@@ -19,7 +19,7 @@ export default function Bells() {
     <div className="p-4">
       <div className="flex gap-4">
         <div className="">
-          <div className="space-y-3 rounded-md border border-zinc-200 p-3 dark:border-zinc-700 dark:bg-zinc-800">
+          <div className="space-y-3 rounded-md border border-zinc-200 p-3 dark:border-zinc-800 dark:bg-zinc-950">
             <div>
               <Toggles value={bellsType} onToggle={setBellsType}>
                 <Toggles.Variant value="main">Основной</Toggles.Variant>

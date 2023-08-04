@@ -29,7 +29,7 @@ export default function Layout({ children }: PropsWithChildren) {
           <body
             className={clsx(
               openSans.variable,
-              'h-full font-sans dark:bg-zinc-900',
+              'h-full font-sans dark:bg-zinc-950',
             )}
           >
             <PortalProvider>
