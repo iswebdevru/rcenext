@@ -9,23 +9,13 @@ import { Button, CheckboxField, TimeField } from '@/shared/ui/Controls';
 import { FormEventHandler, useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { ButtonCopyFromExisting } from './ButtonCopyFromExisting';
-import {
-  API_BELLS,
-  BellsMixed,
-  Hyperlink,
-  WeekDay,
-  apiBells,
-} from '@/shared/api';
+import { API_BELLS, BellsMixed, Hyperlink, apiBells } from '@/shared/api';
 import { formatDate } from '@/shared/lib/date';
+import { useBellsScheduleEditFiltersStore } from './filters';
 
-export type BellsFormProps = {
-  type: BellsMixed['type'];
-  variant: BellsMixed['variant'];
-  date: Date;
-  weekDay: WeekDay;
-};
+export function BellsForm() {
+  const { type, variant, date, weekDay } = useBellsScheduleEditFiltersStore();
 
-export function BellsForm({ type, variant, date, weekDay }: BellsFormProps) {
   const [periods, dispatch] = useBellsStore();
   const [bellsUrl, setBellsUrl] = useState<Hyperlink | null>(null);
 

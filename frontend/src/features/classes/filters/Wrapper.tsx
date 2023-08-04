@@ -58,7 +58,7 @@ export const Wrapper = withOutsideClickExceptionsContext(function Wrapper({
           >
             <div
               className={clsx(
-                'ml-auto flex h-full flex-col items-center gap-6 overflow-y-auto bg-white px-6 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-900 sm:max-w-xs',
+                'ml-auto flex h-full flex-col items-center gap-6 overflow-y-auto bg-white px-6 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-950 sm:max-w-xs',
                 {
                   'translate-y-full opacity-0 sm:translate-x-full sm:translate-y-0':
                     transitionState.status === 'preEnter' ||

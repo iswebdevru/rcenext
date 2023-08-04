@@ -1,2 +1,2 @@
-export * from './BellsForm';
+export * from './edit';
 export * from './BellsScheduleFilters';

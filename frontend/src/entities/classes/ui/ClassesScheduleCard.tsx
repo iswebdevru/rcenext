@@ -21,7 +21,7 @@ export function ClassesScheduleCard({ schedule }: ClassesCardProps) {
   const { data: group } = useSWR<Group>(schedule.group);
 
   return (
-    <div className="rounded-md border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900  ">
+    <div className="rounded-md border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
       <div className="border-b border-zinc-200 px-2.5 py-1.5 dark:border-zinc-800">
         <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-200">
           {group?.name ?? (
@@ -67,7 +67,7 @@ function ClassesCardPeriod({ period }: ClassesCardPeriodProps) {
   return (
     <tr
       key={period.index}
-      className="border-b border-zinc-200 text-sm text-zinc-700 last:border-0 dark:border-zinc-800 dark:text-zinc-300"
+      className="border-b border-zinc-200 text-sm text-zinc-700 last:border-0 dark:border-zinc-800 dark:text-zinc-400"
     >
       <td className="w-0 border-r border-zinc-200 px-2.5 py-1 text-center text-sm dark:border-zinc-800">
         {period.index}

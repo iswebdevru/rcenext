@@ -10,7 +10,7 @@ import { useDebounce, useUpdateSearchParams } from '@/shared/hooks';
 import { prepareDate } from '@/shared/lib/filters';
 
 export function BellsScheduleFilters() {
-  const searchParams = useSearchParams()!;
+  const searchParams = useSearchParams();
 
   const [variant, setVariant] = useState(
     prepareVariant(searchParams.get('variant')),

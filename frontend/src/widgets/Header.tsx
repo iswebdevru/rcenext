@@ -14,6 +14,7 @@ import { Portal, ZIndex } from '@/shared/ui/Utils';
 import {
   useClickOutside,
   useRegisterOutsideClickException,
+  useUpdateEffect,
   withOutsideClickExceptionsContext,
 } from '@/shared/hooks';
 import { ThemeToggler } from '@/shared/ui/Theme';
@@ -60,6 +61,8 @@ export const Header = withOutsideClickExceptionsContext(function Header({
   };
 
   const zIndex = 30;
+
+  useUpdateEffect(closeMenu, [pathname]);
 
   useClickOutside(mobileComponentRef, closeMenu);
 
@@ -131,11 +134,11 @@ export const Header = withOutsideClickExceptionsContext(function Header({
             >
               <div
                 className={clsx(
-                  'flex h-full flex-col overflow-y-auto bg-white px-8 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-900 sm:max-w-sm',
+                  'flex h-full flex-col overflow-y-auto bg-white px-8 py-8 transition-[transform] duration-300 dark:bg-zinc-950 sm:max-w-sm',
                   {
-                    '-translate-x-full opacity-0':
+                    '-translate-x-full':
                       status === 'preEnter' || status === 'exiting',
-                    'translate-x-0 opacity-100': status === 'entering',
+                    'translate-x-0': status === 'entering',
                   },
                 )}
                 ref={mobileComponentRef}

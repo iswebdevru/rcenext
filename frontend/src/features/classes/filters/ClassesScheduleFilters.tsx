@@ -14,7 +14,7 @@ import { getWeekDayExcerpt } from '@/shared/lib/human';
 import { Route } from 'next';
 
 export function ClassesScheduleFilters() {
-  const searchParams = useSearchParams()!;
+  const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
