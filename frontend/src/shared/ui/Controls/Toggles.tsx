@@ -51,9 +51,9 @@ Toggles.Variant = function Variant({ value, children }: VariantProps) {
         className={clsx(
           'block w-full select-none rounded-md px-1.5 py-0.5 text-sm font-semibold outline-none outline-1 outline-offset-0 transition-[outline,color,background]',
           {
-            'text-zinc-700 hover:text-blue-400 focus-visible:text-zinc-900 focus-visible:outline-2 focus-visible:outline-zinc-600 dark:text-zinc-400 dark:hover:text-blue-50 dark:focus-visible:text-zinc-200':
+            'text-zinc-700 hover:text-blue-400 focus-visible:text-zinc-900 focus-visible:outline-2 focus-visible:outline-zinc-600 dark:text-zinc-500 dark:hover:text-white dark:focus-visible:text-zinc-200':
               value !== selected,
-            'bg-blue-50 text-blue-400 outline-1 outline-blue-400 dark:bg-blue-700 dark:text-blue-50 dark:outline-transparent':
+            'bg-blue-50 text-blue-400 outline-1 outline-blue-400 dark:bg-blue-700 dark:text-white dark:outline-transparent':
               value === selected,
           },
         )}

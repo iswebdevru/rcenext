@@ -86,7 +86,7 @@ export const Select = withOutsideClickExceptionsContext(function Select<T>({
               <div
                 ref={optionsListRef}
                 className={clsx(
-                  'max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-200 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 dark:scrollbar-thumb-zinc-600',
+                  'max-h-60 origin-top transform overflow-y-auto rounded-md border border-zinc-200 bg-white shadow-sm transition-[opacity,transform] duration-200 scrollbar-thin scrollbar-thumb-zinc-200 dark:border-zinc-800 dark:bg-zinc-950 dark:scrollbar-thumb-zinc-600',
                   (status === 'preEnter' || status === 'exiting') &&
                     '-translate-y-2 opacity-0',
                 )}
@@ -128,9 +128,10 @@ export const SelectOption = forwardRef(function SelectOption<T>(
   return (
     <li
       className={clsx(
-        'border-t border-t-zinc-200 first:border-t-0 dark:border-t-zinc-800',
+        'border-t border-t-zinc-200 transition duration-75 first:border-t-0 dark:border-t-zinc-800',
         {
-          'bg-zinc-100 dark:bg-zinc-700': selected,
+          'bg-zinc-100 dark:bg-zinc-900': selected,
+          'dark:hover:bg-zinc-900': !selected,
         },
       )}
       ref={ref}
