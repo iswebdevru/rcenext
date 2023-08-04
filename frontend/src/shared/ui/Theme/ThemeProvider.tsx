@@ -61,6 +61,9 @@ export function ThemeProvider({ children, theme }: ThemeProviderProps) {
         } else {
           document.documentElement.classList.remove('dark');
         }
+        document
+          .querySelector('meta[name="color-scheme"]')
+          ?.setAttribute('content', state.theme);
       }
     });
   }, []);

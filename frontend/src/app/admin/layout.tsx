@@ -22,3 +22,10 @@ export default function Layout({ children }: PropsWithChildren) {
     </Protected>
   );
 }
+
+export const metadata = {
+  title: {
+    default: 'РКЭ Админ',
+    template: '%s | РКЭ Админ',
+  },
+};
