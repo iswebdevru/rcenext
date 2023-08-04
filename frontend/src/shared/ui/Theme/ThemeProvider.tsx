@@ -75,7 +75,10 @@ export function ThemeProvider({ children, theme }: ThemeProviderProps) {
         clearTimeout(timeout);
       }
       timeout = setTimeout(() => {
-        fetch('/api/theme', { method: 'POST', body: state.theme });
+        fetch('/api/theme', {
+          method: 'POST',
+          body: state.theme,
+        });
         timeout = null;
       }, 300);
     });

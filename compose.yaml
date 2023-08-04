@@ -34,6 +34,9 @@ services:
     ports:
       - '4202:3000'
     restart: always
+    depends_on:
+      - rest-api
+      - static-server
 
 volumes:
   rest-api-static-files:
