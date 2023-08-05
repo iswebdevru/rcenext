@@ -2,7 +2,6 @@
 
 import {
   useClickOutside,
-  usePositionCoords,
   withOutsideClickExceptionsContext,
 } from '@/shared/hooks';
 import { clsx } from '@/shared/lib/ui';
@@ -15,12 +14,11 @@ import {
   forwardRef,
   useCallback,
   useContext,
-  useEffect,
   useRef,
 } from 'react';
 import useTransition, { TransitionState } from 'react-transition-state';
 import { ignoreClick } from '@/shared/lib/dom';
-import { Portal, useZIndex } from '../Utils';
+import { Portal, Slave, useZIndex } from '../Utils';
 
 type SelectContext = {
   onSelect: (selected: any) => void;
@@ -52,18 +50,7 @@ export const Select = withOutsideClickExceptionsContext(function Select<T>({
 
   const zIndex = useZIndex();
 
-  const { width, left, top, recalculatePosition } = usePositionCoords(
-    outerRef,
-    optionsListRef,
-  );
-
   useClickOutside(optionsListRef, ignoreClick(outerRef, onClose));
-
-  useEffect(() => {
-    if (isMounted) {
-      setTimeout(recalculatePosition, 0);
-    }
-  }, [recalculatePosition, isMounted]);
 
   return (
     <SelectContext.Provider
@@ -76,11 +63,9 @@ export const Select = withOutsideClickExceptionsContext(function Select<T>({
         {inputElement}
         <Portal>
           {isMounted ? (
-            <div
+            <Slave
+              master={outerRef}
               style={{
-                left,
-                top,
-                width,
                 zIndex,
               }}
               className="fixed"
@@ -95,7 +80,7 @@ export const Select = withOutsideClickExceptionsContext(function Select<T>({
               >
                 {noWrapWithUl ? children : <ul>{children}</ul>}
               </div>
-            </div>
+            </Slave>
           ) : null}
         </Portal>
       </div>
