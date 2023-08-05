@@ -32,7 +32,7 @@ const links = [
 export function AdminNav() {
   const pathname = usePathname();
   const [transitionState, toggleTransition] = useTransition({
-    timeout: 300,
+    timeout: 150,
     mountOnEnter: true,
     preEnter: true,
     unmountOnExit: true,
@@ -90,7 +90,7 @@ function AdminNavMobile({ onClose, isMounted, status }: AdminNavMobileProps) {
           <div
             style={{ zIndex }}
             className={clsx(
-              'fixed left-0 top-0 block h-full w-full bg-black transition-colors duration-300 lg:hidden',
+              'fixed left-0 top-0 block h-full w-full bg-black transition-colors lg:hidden',
               {
                 'bg-opacity-0': status === 'preEnter' || status === 'exiting',
                 'bg-opacity-40': status === 'entering' || status === 'entered',
@@ -107,11 +107,11 @@ function AdminNavMobile({ onClose, isMounted, status }: AdminNavMobileProps) {
           >
             <div
               className={clsx(
-                'h-full w-64 overflow-y-auto bg-white px-6 py-12 transition-[opacity,transform] duration-300 dark:bg-zinc-950',
+                'h-full w-64 overflow-y-auto bg-white px-6 py-12 transition-[transform] dark:bg-zinc-950',
                 {
-                  '-translate-x-full opacity-0':
+                  '-translate-x-full':
                     status === 'preEnter' || status === 'exiting',
-                  'translate-x-0 opacity-100':
+                  'translate-x-0':
                     status === 'entering' || status === 'entered',
                 },
               )}

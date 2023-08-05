@@ -15,7 +15,7 @@ export const Wrapper = withOutsideClickExceptionsContext(function Wrapper({
   const mobileFiltersViewRef = useRef<HTMLDivElement>(null);
 
   const [transitionState, toggleTransition] = useTransition({
-    timeout: 300,
+    timeout: 150,
     mountOnEnter: true,
     preEnter: true,
     unmountOnExit: true,
@@ -29,8 +29,10 @@ export const Wrapper = withOutsideClickExceptionsContext(function Wrapper({
   };
 
   const closeFilters = () => {
-    toggleTransition(false);
-    document.body.style.overflow = '';
+    if (transitionState.status !== 'unmounted') {
+      toggleTransition(false);
+      document.body.style.overflow = '';
+    }
   };
 
   useClickOutside(mobileFiltersViewRef, closeFilters);
@@ -44,7 +46,7 @@ export const Wrapper = withOutsideClickExceptionsContext(function Wrapper({
           <div
             style={{ zIndex }}
             className={clsx(
-              'fixed left-0 top-0 h-full w-full overflow-hidden bg-black bg-opacity-0 transition-colors duration-300 lg:hidden',
+              'fixed left-0 top-0 h-full w-full overflow-hidden bg-black bg-opacity-0 transition-colors lg:hidden',
               {
                 'sm:bg-opacity-50':
                   transitionState.status === 'entering' ||
@@ -58,12 +60,12 @@ export const Wrapper = withOutsideClickExceptionsContext(function Wrapper({
           >
             <div
               className={clsx(
-                'ml-auto flex h-full flex-col items-center gap-6 overflow-y-auto bg-white px-6 py-8 transition-[transform,opacity] duration-300 dark:bg-zinc-950 sm:max-w-xs',
+                'ml-auto flex h-full flex-col items-center gap-6 overflow-y-auto bg-white px-6 py-8 transition-[transform] dark:bg-zinc-950 sm:max-w-xs',
                 {
-                  'translate-y-full opacity-0 sm:translate-x-full sm:translate-y-0':
+                  'translate-y-full sm:translate-x-full sm:translate-y-0':
                     transitionState.status === 'preEnter' ||
                     transitionState.status === 'exiting',
-                  'translate-y-0 opacity-100 sm:translate-x-0':
+                  'translate-y-0 sm:translate-x-0':
                     transitionState.status === 'entering',
                 },
               )}

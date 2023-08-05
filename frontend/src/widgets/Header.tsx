@@ -36,7 +36,7 @@ export const Header = withOutsideClickExceptionsContext(function Header({
   const mobileComponentRef = useRef<HTMLDivElement>(null);
 
   const [{ status }, toggleTransition] = useTransition({
-    timeout: 300,
+    timeout: 150,
     preEnter: true,
     unmountOnExit: true,
     mountOnEnter: true,
@@ -56,8 +56,10 @@ export const Header = withOutsideClickExceptionsContext(function Header({
   };
 
   const closeMenu = () => {
-    toggleTransition(false);
-    document.body.style.overflow = '';
+    if (status !== 'unmounted') {
+      toggleTransition(false);
+      document.body.style.overflow = '';
+    }
   };
 
   const zIndex = 30;
@@ -123,10 +125,11 @@ export const Header = withOutsideClickExceptionsContext(function Header({
             <div
               style={{ zIndex }}
               className={clsx(
-                'fixed left-0 top-0 block h-full w-full bg-black transition-colors duration-300 xl:hidden',
+                'fixed left-0 top-0 block h-full w-full transition-colors sm:bg-black xl:hidden',
                 {
-                  'bg-opacity-0': status === 'preEnter' || status === 'exiting',
-                  'bg-opacity-40':
+                  'sm:bg-opacity-0':
+                    status === 'preEnter' || status === 'exiting',
+                  'sm:bg-opacity-40':
                     status === 'entering' || status === 'entered',
                   hidden: status === 'unmounted',
                 },
@@ -134,7 +137,7 @@ export const Header = withOutsideClickExceptionsContext(function Header({
             >
               <div
                 className={clsx(
-                  'flex h-full flex-col overflow-y-auto bg-white px-8 py-8 transition-[transform] duration-300 dark:bg-zinc-950 sm:max-w-sm',
+                  'flex h-full flex-col overflow-y-auto bg-white px-8 py-8 transition-[transform] dark:bg-zinc-950 sm:max-w-sm',
                   {
                     '-translate-x-full':
                       status === 'preEnter' || status === 'exiting',

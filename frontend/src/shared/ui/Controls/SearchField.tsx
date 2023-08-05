@@ -13,7 +13,7 @@ export const SearchField = forwardRef<HTMLInputElement, InputSearchProps>(
       <div
         className={clsx(
           props.className,
-          'group/search flex h-8 w-full items-center gap-2 rounded-md bg-white p-3 text-sm ring-1 ring-inset ring-zinc-200 transition duration-75 focus-within:ring-2 focus-within:ring-primary-500',
+          'group/search flex h-8 w-full min-w-0 items-center gap-2 rounded-md bg-white p-3 text-sm ring-1 ring-inset ring-zinc-200 transition duration-75 focus-within:ring-2 focus-within:ring-primary-500',
           !props.variant &&
             'dark:bg-zinc-900 dark:text-zinc-100 dark:ring-zinc-800 dark:focus-within:ring-blue-700',
         )}
