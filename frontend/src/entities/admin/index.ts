@@ -1,1 +1,1 @@
-export * from './AdminNav';
+export * from './nav';

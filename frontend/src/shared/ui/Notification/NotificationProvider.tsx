@@ -12,6 +12,7 @@ import {
 } from 'react';
 import { Portal, ZIndex } from '../Utils';
 import { NotificationPrivateContext } from './NotificationPrivateContext';
+import { zIndex } from '@/shared/constants';
 
 type NotificationData = {
   id: number;
@@ -37,15 +38,13 @@ export function NotificationsProvider({ children }: PropsWithChildren) {
     });
   }, []);
 
-  const zIndex = 40;
-
   return (
     <NotificationsPublicContext.Provider value={{ notify }}>
       {children}
-      <ZIndex index={zIndex}>
+      <ZIndex index={zIndex.IMPORTANT_MESSAGE}>
         <Portal>
           <div
-            style={{ zIndex }}
+            style={{ zIndex: zIndex.IMPORTANT_MESSAGE }}
             className="fixed bottom-4 right-4 w-full max-w-xs sm:bottom-9 sm:right-9"
           >
             {notifications.map(notification => (

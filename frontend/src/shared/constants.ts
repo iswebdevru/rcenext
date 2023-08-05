@@ -50,3 +50,10 @@ export const WEEK_DAYS = new Map<WeekDay, string>([
   ['ПТ', 'Пятница'],
   ['СБ', 'Суббота'],
 ]);
+
+export const zIndex = {
+  COMMON: 10,
+  LAYOUT_ELEMENT: 20,
+  WINDOW: 30,
+  IMPORTANT_MESSAGE: 40,
+} as const;

@@ -8,6 +8,7 @@ import { MobileButton } from './MobileButton';
 import { Portal, ZIndex } from '@/shared/ui/Utils';
 import { clsx } from '@/shared/lib/ui';
 import { Button } from '@/shared/ui/Controls';
+import { zIndex } from '@/shared/constants';
 
 export const Wrapper = withOutsideClickExceptionsContext(function Wrapper({
   children,
@@ -20,8 +21,6 @@ export const Wrapper = withOutsideClickExceptionsContext(function Wrapper({
     preEnter: true,
     unmountOnExit: true,
   });
-
-  const zIndex = 30;
 
   const openFilters = () => {
     toggleTransition(true);
@@ -41,10 +40,10 @@ export const Wrapper = withOutsideClickExceptionsContext(function Wrapper({
     <>
       <div className="hidden h-full lg:block">{children}</div>
       <MobileButton onOpen={openFilters} />
-      <ZIndex index={zIndex}>
+      <ZIndex index={zIndex.WINDOW}>
         <Portal>
           <div
-            style={{ zIndex }}
+            style={{ zIndex: zIndex.WINDOW }}
             className={clsx(
               'fixed left-0 top-0 h-full w-full overflow-hidden bg-black bg-opacity-0 transition-colors lg:hidden',
               {

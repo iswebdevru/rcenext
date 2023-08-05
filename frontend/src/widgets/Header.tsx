@@ -18,6 +18,7 @@ import {
   withOutsideClickExceptionsContext,
 } from '@/shared/hooks';
 import { ThemeToggler } from '@/shared/ui/Theme';
+import { zIndex } from '@/shared/constants';
 
 export type HeaderProps = {
   wide?: boolean;
@@ -62,16 +63,14 @@ export const Header = withOutsideClickExceptionsContext(function Header({
     }
   };
 
-  const zIndex = 30;
-
   useUpdateEffect(closeMenu, [pathname]);
 
   useClickOutside(mobileComponentRef, closeMenu);
 
   return (
-    <ZIndex index={zIndex}>
+    <ZIndex index={zIndex.WINDOW}>
       <header
-        style={{ zIndex }}
+        style={{ zIndex: zIndex.WINDOW }}
         className="fixed left-0 top-0 h-14 w-full border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
       >
         <div
@@ -123,7 +122,7 @@ export const Header = withOutsideClickExceptionsContext(function Header({
           <HeaderOpenButton onClick={openMenu} />
           <Portal>
             <div
-              style={{ zIndex }}
+              style={{ zIndex: zIndex.WINDOW }}
               className={clsx(
                 'fixed left-0 top-0 block h-full w-full transition-colors sm:bg-black xl:hidden',
                 {
