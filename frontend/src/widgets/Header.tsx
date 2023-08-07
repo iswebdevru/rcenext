@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
@@ -14,7 +14,6 @@ import { Portal, ZIndex } from '@/shared/ui/Utils';
 import {
   useClickOutside,
   useRegisterOutsideClickException,
-  useUpdateEffect,
   withOutsideClickExceptionsContext,
 } from '@/shared/hooks';
 import { ThemeToggler } from '@/shared/ui/Theme';
@@ -56,14 +55,14 @@ export const Header = withOutsideClickExceptionsContext(function Header({
     document.body.style.overflow = 'hidden';
   };
 
-  const closeMenu = () => {
-    if (status !== 'unmounted') {
-      toggleTransition(false);
-      document.body.style.overflow = '';
-    }
-  };
+  const closeMenu = useCallback(() => {
+    toggleTransition(false);
+    document.body.style.overflow = '';
+  }, []);
 
-  useUpdateEffect(closeMenu, [pathname]);
+  useEffect(() => {
+    closeMenu();
+  }, [pathname, closeMenu]);
 
   useClickOutside(mobileComponentRef, closeMenu);
 
