@@ -32,3 +32,5 @@ export default async function Page({ searchParams }: NextPageWithSearchParams) {
 export const metadata = {
   title: 'Преподаватели',
 };
+
+export const dynamic = 'force-dynamic';

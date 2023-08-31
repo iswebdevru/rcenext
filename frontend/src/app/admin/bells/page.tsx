@@ -18,3 +18,5 @@ export default function Bells() {
 export const metadata = {
   title: 'Звонки',
 };
+
+export const dynamic = 'force-dynamic';

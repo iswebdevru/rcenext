@@ -34,3 +34,5 @@ export default async function Subjects({
 export const metadata = {
   title: 'Предметы',
 };
+
+export const dynamic = 'force-dynamic';

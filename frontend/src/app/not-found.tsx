@@ -15,7 +15,7 @@ export default function PageNotFound() {
           <span className="text-slate-700 dark:text-zinc-400">Вернуться </span>
           <Link
             className="font-semibold text-primary-400 transition-colors hover:text-primary-500"
-            href="/bells"
+            href="/"
           >
             на главную
           </Link>
@@ -24,3 +24,7 @@ export default function PageNotFound() {
     </div>
   );
 }
+
+export const metadata = {
+  title: 'Не найдено',
+};

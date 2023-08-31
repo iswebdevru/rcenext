@@ -32,3 +32,5 @@ export default async function Groups({
 export const metadata = {
   title: 'Группы',
 };
+
+export const dynamic = 'force-dynamic';

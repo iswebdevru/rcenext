@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import {
   faBell,
   faBook,
-  faHouse,
   faLinesLeaning,
   faUserGroup,
   faUserTie,
@@ -13,8 +12,7 @@ import { Wrapper } from './Wrapper';
 import { AdminNavLink } from './Link';
 
 const links = [
-  { href: '/admin', text: 'Главная', icon: faHouse },
-  { href: '/admin/classes', text: 'Занятия', icon: faBook },
+  { href: '/admin', text: 'Занятия', icon: faBook },
   { href: '/admin/bells', text: 'Звонки', icon: faBell },
   { href: '/admin/teachers', text: 'Преподаватели', icon: faUserTie },
   { href: '/admin/groups', text: 'Группы', icon: faUserGroup },
