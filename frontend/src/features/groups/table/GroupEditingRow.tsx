@@ -8,16 +8,14 @@ import {
   TableDataCell,
   TableRow,
 } from '@/shared/ui/Table';
+import { useRouter } from 'next/navigation';
 
 export type GroupEditingRowProps = {
   id: string;
-  refresh: () => Promise<unknown>;
 };
 
-export default function GroupEditingRow({
-  id: url,
-  refresh,
-}: GroupEditingRowProps) {
+export default function GroupEditingRow({ id: url }: GroupEditingRowProps) {
+  const router = useRouter();
   const groupNameRef = useRef<HTMLInputElement>(null);
   const mainBlockRef = useRef<HTMLInputElement>(null);
   const { data: group, mutate } = useSWR<Group>(url);
@@ -31,7 +29,7 @@ export default function GroupEditingRow({
       name: groupNameRef.current!.value,
       main_block: parseInt(mainBlockRef.current!.value),
     });
-    return Promise.all([refresh(), mutate()]);
+    return Promise.all([mutate(), router.refresh()]);
   };
 
   return (

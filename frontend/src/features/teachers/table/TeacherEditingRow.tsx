@@ -10,16 +10,15 @@ import {
 } from '@/shared/ui/Table';
 import { Hyperlink, Teacher, apiTeachers } from '@/shared/api';
 import { SubjectsSelect } from '../../../entities/subjects/ui/SubjectsSelect'; // TODO: fix one-level cross import
+import { useRouter } from 'next/navigation';
 
 export type TeacherEditingRowProps = {
   id: string;
-  refresh: () => Promise<unknown>;
 };
 
-export function TeacherEditingRow({
-  id: url,
-  refresh,
-}: TeacherEditingRowProps) {
+export function TeacherEditingRow({ id: url }: TeacherEditingRowProps) {
+  const router = useRouter();
+
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const patronymicRef = useRef<HTMLInputElement>(null);
@@ -46,7 +45,7 @@ export function TeacherEditingRow({
       patronymic: patronymicRef.current?.value,
       subjects: Array.from(selectedSubjects),
     });
-    return Promise.all([refresh(), mutate()]);
+    return Promise.all([router.refresh(), mutate()]);
   };
 
   return (

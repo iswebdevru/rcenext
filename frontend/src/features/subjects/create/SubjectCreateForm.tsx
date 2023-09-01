@@ -10,12 +10,14 @@ import {
 } from '@/shared/ui/Notification';
 import { Reveal } from '@/shared/ui/Utils';
 import { useSubjectCreateFormIsOpen } from './store';
+import { useRouter } from 'next/navigation';
 
 export type SubjectCreateFormData = {
   subject: string;
 };
 
 export function SubjectCreateForm() {
+  const router = useRouter();
   const { register, handleSubmit, reset } = useForm<SubjectCreateFormData>({
     mode: 'all',
   });
@@ -37,7 +39,7 @@ export function SubjectCreateForm() {
           </Notification.Message>
         </Notification>,
       );
-      // return refresh();
+      router.refresh();
     } catch (e) {
       if (e instanceof ApiError && isErrorMap(e.body)) {
         notify(<NotificationErrorsMap errorsMap={e.body} />);

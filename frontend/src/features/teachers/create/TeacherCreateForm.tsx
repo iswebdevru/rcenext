@@ -9,6 +9,7 @@ import { Notification, useNotification } from '@/shared/ui/Notification';
 import { getFieldError } from '@/shared/lib/errors';
 import { useTeacherCreateFormIsOpen } from './store';
 import { Reveal } from '@/shared/ui/Utils';
+import { useRouter } from 'next/navigation';
 
 export type TeacherCreateFormData = {
   first_name: string;
@@ -17,6 +18,7 @@ export type TeacherCreateFormData = {
 };
 
 export function TeacherCreateForm() {
+  const router = useRouter();
   const { register, handleSubmit, formState, reset } =
     useForm<TeacherCreateFormData>({
       mode: 'all',
@@ -44,7 +46,7 @@ export function TeacherCreateForm() {
           </Notification.Message>
         </Notification>,
       );
-      // return refresh();
+      router.refresh();
     } catch {
       notify(
         <Notification variant="danger">

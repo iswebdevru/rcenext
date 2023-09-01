@@ -6,6 +6,7 @@ import { Button } from '@/shared/ui/Controls/Button';
 import { TextField } from '@/shared/ui/Controls';
 import { Reveal } from '@/shared/ui/Utils';
 import { useGroupsCreateFormIsOpen } from './store';
+import { useRouter } from 'next/navigation';
 
 type GroupCreateFormData = {
   group: string;
@@ -13,6 +14,7 @@ type GroupCreateFormData = {
 };
 
 export function GroupCreateForm() {
+  const router = useRouter();
   const { register, handleSubmit, reset } = useForm<GroupCreateFormData>({
     mode: 'all',
   });
@@ -25,7 +27,7 @@ export function GroupCreateForm() {
       main_block: parseInt(data.main_block),
     });
     reset();
-    // return refresh();
+    router.refresh();
   };
 
   return (

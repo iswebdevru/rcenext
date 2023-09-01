@@ -8,16 +8,14 @@ import {
   TableRow,
 } from '@/shared/ui/Table';
 import { Subject, apiSubjects } from '@/shared/api';
+import { useRouter } from 'next/navigation';
 
 export type SubjectEditingRowProps = {
   id: string;
-  refresh: () => Promise<unknown>;
 };
 
-export function SubjectEditingRow({
-  id: url,
-  refresh,
-}: SubjectEditingRowProps) {
+export function SubjectEditingRow({ id: url }: SubjectEditingRowProps) {
+  const router = useRouter();
   const nameRef = useRef<HTMLInputElement>(null);
   const { data: subject, mutate } = useSWR<Subject>(url);
 
@@ -29,7 +27,7 @@ export function SubjectEditingRow({
     await apiSubjects.edit(url, {
       name: nameRef.current?.value,
     });
-    return Promise.all([refresh(), mutate()]);
+    return Promise.all([router.refresh(), mutate()]);
   };
 
   return (

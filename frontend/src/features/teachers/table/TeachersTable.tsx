@@ -24,6 +24,7 @@ import { createInfiniteKey } from '@/shared/packages/swr';
 import { SubjectTextView } from '@/entities/subjects';
 import { TeacherEditingRow } from './TeacherEditingRow';
 import { LoaderCircle } from '@/shared/ui/Loader';
+import { useRouter } from 'next/navigation';
 
 export type TeachersTableProps = {
   firstPage: Paginated<Teacher>;
@@ -31,6 +32,7 @@ export type TeachersTableProps = {
 
 export function TeachersTable({ firstPage }: TeachersTableProps) {
   const [searchFilter, setSearchFilter] = useState('');
+  const router = useRouter();
 
   const notify = useNotification();
 
@@ -49,7 +51,7 @@ export function TeachersTable({ firstPage }: TeachersTableProps) {
           </Notification.Message>
         </Notification>,
       );
-      return mutate();
+      return Promise.all([mutate(), router.refresh()]);
     } catch (e) {
       notify(
         <Notification variant="danger">
@@ -90,9 +92,7 @@ export function TeachersTable({ firstPage }: TeachersTableProps) {
               <TableHeadCell />
             </TableRow>
           </TableHead>
-          <TableBody<string>
-            editingRow={url => <TeacherEditingRow refresh={mutate} id={url} />}
-          >
+          <TableBody<string> editingRow={url => <TeacherEditingRow id={url} />}>
             {pages
               ?.flatMap(page => page.results)
               .map(teacher => (

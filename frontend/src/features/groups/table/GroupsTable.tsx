@@ -19,15 +19,17 @@ import { InfiniteScroll } from '@/shared/ui/InfiniteScroll';
 import { useDebounce, useUpdateSearchParams } from '@/shared/hooks';
 import { useState } from 'react';
 import GroupEditingRow from './GroupEditingRow';
+import { useRouter } from 'next/navigation';
 
 export type GroupsTableProps = {
   firstPage: Paginated<Group>;
 };
 
 export function GroupsTable({ firstPage }: GroupsTableProps) {
+  const router = useRouter();
   const [searchFilter, setSearchFilter] = useState('');
 
-  const { data, mutate, setSize } = useSWRInfinite<Paginated<Group>>(
+  const { data, setSize } = useSWRInfinite<Paginated<Group>>(
     createInfiniteKey(firstPage.next),
   );
 
@@ -37,7 +39,7 @@ export function GroupsTable({ firstPage }: GroupsTableProps) {
 
   const deleteGroups = async (urls: string[]) => {
     await Promise.all(urls.map(apiGroups.delete));
-    return mutate();
+    router.refresh();
   };
 
   const pages = data ? [firstPage, ...data] : [firstPage];
@@ -62,9 +64,7 @@ export function GroupsTable({ firstPage }: GroupsTableProps) {
               <TableHeadCell />
             </TableRow>
           </TableHead>
-          <TableBody<string>
-            editingRow={url => <GroupEditingRow refresh={mutate} id={url} />}
-          >
+          <TableBody<string> editingRow={url => <GroupEditingRow id={url} />}>
             {pages
               ?.flatMap(page => page.results)
               .map(group => (

@@ -20,6 +20,7 @@ import { InfiniteScroll } from '@/shared/ui/InfiniteScroll';
 import { createInfiniteKey } from '@/shared/packages/swr';
 import { useDebounce, useUpdateSearchParams } from '@/shared/hooks';
 import { SubjectEditingRow } from './SubjectEditingRow';
+import { useRouter } from 'next/navigation';
 
 export type SubjectsTableProps = {
   firstPage: Paginated<Subject>;
@@ -27,8 +28,9 @@ export type SubjectsTableProps = {
 
 export function SubjectsTable({ firstPage }: SubjectsTableProps) {
   const [searchFilter, setSearchFilter] = useState('');
+  const router = useRouter();
 
-  const { data, setSize, mutate } = useSWRInfinite<Paginated<Subject>>(
+  const { data, setSize } = useSWRInfinite<Paginated<Subject>>(
     createInfiniteKey(firstPage.next),
   );
 
@@ -38,7 +40,7 @@ export function SubjectsTable({ firstPage }: SubjectsTableProps) {
 
   const deleteSubjects = async (urls: string[]) => {
     await Promise.all(urls.map(apiSubjects.delete));
-    // return mutate();
+    router.refresh();
   };
 
   const pages = data ? [firstPage, ...data] : [firstPage];
@@ -62,9 +64,7 @@ export function SubjectsTable({ firstPage }: SubjectsTableProps) {
               <TableHeadCell />
             </TableRow>
           </TableHead>
-          <TableBody<string>
-            editingRow={url => <SubjectEditingRow refresh={mutate} id={url} />}
-          >
+          <TableBody<string> editingRow={url => <SubjectEditingRow id={url} />}>
             {pages
               .flatMap(page => page.results)
               .map(subject => (
